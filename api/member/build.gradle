@@ -1,19 +1,12 @@
-plugins {
-    id 'java'
-}
+// 실행가능한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 false로 비활성화함
+// 스프링 부트 2.0 이상이라면 bootRepackage.enabled를 사용해야 함
+bootJar { enabled = true }
 
-group 'org.example'
-version 'unspecified'
-
-repositories {
-    mavenCentral()
-}
+// 외부에서 의존하기 위한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 true로 비활성화함
+jar { enabled = false }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-}
-
-test {
-    useJUnitPlatform()
+    implementation project(":core:domain")
+    implementation project(":core:infra")
+    implementation project(":core:security")
 }

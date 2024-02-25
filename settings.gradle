@@ -15,6 +15,3 @@ include 'api:member'
 include 'core:domain'
 include 'core:infra'
 include 'core:security'
-include 'core:infra'
-findProject(':core:infra')?.name = 'infra'
-
