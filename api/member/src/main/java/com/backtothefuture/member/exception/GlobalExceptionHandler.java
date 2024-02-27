@@ -1,6 +1,7 @@
 package com.backtothefuture.member.exception;
 
-import static com.backtothefuture.domain.enums.code.GlobalErrorCode.*;
+import static com.backtothefuture.domain.common.enums.GlobalErrorCode.*;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
