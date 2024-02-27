@@ -1,4 +1,4 @@
-package com.backtothefuture.domain.enums.code;
+package com.backtothefuture.domain.common.enums;
 
 import org.springframework.http.HttpStatus;
 

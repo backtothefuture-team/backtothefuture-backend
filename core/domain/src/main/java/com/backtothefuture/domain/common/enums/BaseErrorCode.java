@@ -1,11 +1,11 @@
-package com.backtothefuture.domain.enums.code;
+package com.backtothefuture.domain.common.enums;
 
 import org.springframework.http.HttpStatus;
 
 import com.backtothefuture.domain.response.ErrorResponse;
 
 public interface BaseErrorCode {
-	Integer getErrorCode();
+	int getErrorCode();
 
 	String getErrorMessage();
 
