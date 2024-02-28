@@ -1,0 +1,5 @@
+[
+  {
+    "url": "./openapi/member-openapi.yaml", "name": "member-api"
+  }
+]

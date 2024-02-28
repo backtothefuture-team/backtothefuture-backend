@@ -63,3 +63,12 @@ subprojects {
 		delete file('src/main/generated') // annotation processor 생성물 생성위치
 	}
 }
+
+task copyOpenApiSpecsToDocsDir(type: Copy) {
+	// member 프로젝트의 openapi3 스크립트 호출
+	dependsOn ':api:member:openapi3'
+	// member 프로젝트의  /docs로 복사
+	from "${project(':api:member').buildDir}/api-spec/member-openapi.yaml"
+	into "${project.rootDir}/docs/openapi"
+
+}
