@@ -1,5 +1,6 @@
 package com.backtothefuture.member.controller;
 
+import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.service.MemberService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
@@ -71,9 +72,9 @@ class MemberControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(document("register-member",
                         resource(ResourceSnippetParameters.builder()
-                                .description("회원가입 api 입니다.")
+                                .description("회원가입 API 입니다.")
                                 .tags("member")
-                                .summary("회원가입 api")
+                                .summary("회원가입 API")
                                 // request
                                 .requestFields(
                                         fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
@@ -90,6 +91,49 @@ class MemberControllerTest {
                                         fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID")
                                 )
                                 .responseSchema(Schema.schema("[response] member-register")).build()
+                        )));
+    }
+
+    @Test
+    @DisplayName("일반 로그인 테스트")
+    void loginTest() throws Exception {
+        // 로그인 요청에 필요한 정보를 HashMap으로 생성
+        Map<String, Object> loginMap = new HashMap<>();
+        loginMap.put("email", "kildong.hong@naver.com");
+        loginMap.put("password", "123456");
+
+        // 로그인 성공 시 반환할 토큰 설정
+        LoginTokenDto loginTokenDto = LoginTokenDto.builder()
+                .accessToken("access token")
+                .refreshToken("resfresh token")
+                .build();
+
+        // memberService의 login 메서드가 호출될 때 loginTokenDto를 반환하도록 설정
+        when(memberService.login(any())).thenReturn(loginTokenDto);
+
+        // POST 요청으로 로그인 엔드포인트에 요청하고 응답 상태코드가 200인지 확인
+        this.mockMvc.perform(post("/member/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginMap)))
+                .andExpect(status().isOk())
+                .andDo(document("login-member",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("일반 로그인 API 입니다.")
+                                .tags("member")
+                                .summary("일반 로그인 API")
+                                // request
+                                .requestFields(
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                                )
+                                .requestSchema(Schema.schema("[request] member-login"))
+                                // response
+                                .responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token")
+                                )
+                                .responseSchema(Schema.schema("[response] member-login")).build()
                         )));
     }
 }

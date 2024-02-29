@@ -7,12 +7,39 @@ servers:
 - url: https://localhost:8080
 tags: []
 paths:
+  /member/login:
+    post:
+      tags:
+      - member
+      summary: 일반 로그인 API
+      description: 일반 로그인 API 입니다.
+      operationId: login-member
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/[request] member-login"
+            examples:
+              login-member:
+                value: "{\"password\":\"123456\",\"email\":\"kildong.hong@naver.com\"\
+                  }"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] member-login"
+              examples:
+                login-member:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
+                    :\"access token\"}}"
   /member/register:
     post:
       tags:
       - member
-      summary: 회원가입 api
-      description: 회원가입 api 입니다.
+      summary: 회원가입 API
+      description: 회원가입 API 입니다.
       operationId: register-member
       requestBody:
         content:
@@ -37,6 +64,27 @@ paths:
                     id\":1}}"
 components:
   schemas:
+    '[response] member-login':
+      title: "[response] member-login"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - accessToken
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: Access Token
+        message:
+          type: string
+          description: 응답 메시지
     '[request] member-register':
       title: "[request] member-register"
       required:
@@ -65,6 +113,19 @@ components:
         name:
           type: string
           description: 이름
+        email:
+          type: string
+          description: 이메일
+    '[request] member-login':
+      title: "[request] member-login"
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        password:
+          type: string
+          description: 비밀번호
         email:
           type: string
           description: 이메일
