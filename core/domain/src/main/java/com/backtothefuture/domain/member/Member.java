@@ -2,6 +2,7 @@ package com.backtothefuture.domain.member;
 
 import com.backtothefuture.domain.common.MutableBaseEntity;
 import com.backtothefuture.domain.member.enums.ProviderType;
+import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.domain.member.enums.StatusType;
 
 import jakarta.persistence.Column;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -26,15 +28,23 @@ public class Member extends MutableBaseEntity {
 	@Column(name = "member_id")
 	private Long id;
 
-	private String email; // 이메일
+	private String email;			// 이메일
 
-	private String name; // 이름
+	private String name;			// 이름
 
-	private String phoneNumber; // 연락처
+	@Setter
+	private String password;		// 비밀번호
+
+	@Setter
+	private String phoneNumber;		// 연락처
 
 	@Enumerated(EnumType.STRING)
 	private StatusType status = StatusType.PENDING; // 상태
 
 	@Enumerated(EnumType.STRING)
-	private ProviderType provider;
+	private ProviderType provider;	// 계정정보 공급 서비스
+
+	@Setter
+	@Enumerated(EnumType.STRING)
+	private RolesType roles = RolesType.ROLE_USER;		// 권한
 }
