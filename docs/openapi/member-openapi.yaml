@@ -4,7 +4,7 @@ info:
   description: API Documentation
   version: 0.1.0
 servers:
-- url: https://localhost:8080
+- url: http://localhost:8080/v1
 tags: []
 paths:
   /member/login:
