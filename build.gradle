@@ -9,6 +9,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.3'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.epages.restdocs-api-spec' version '0.19.1'
 }
 
 allprojects {
@@ -48,6 +49,8 @@ subprojects {
 		testAnnotationProcessor "org.projectlombok:lombok"
 
 		testImplementation "org.springframework.boot:spring-boot-starter-test"
+		testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+		testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.19.1'
 	}
 
 	// 테스트 설정
@@ -59,4 +62,11 @@ subprojects {
 	clean {
 		delete file('src/main/generated') // annotation processor 생성물 생성위치
 	}
+}
+
+task copyOpenApiSpecsToDocsDir(type: Copy) {
+	// member 프로젝트의 openapi3 스크립트 호출 :: 결과물을 /docs/openapi 로 복사한다.
+	dependsOn ':api:member:openapi3'
+	from "${project(':api:member').buildDir}/api-spec/member-openapi.yaml"
+	into "${project.rootDir}/docs/openapi"
 }
