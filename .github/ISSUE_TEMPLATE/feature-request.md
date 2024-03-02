@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Feature Issue Template
-title: "[Feature] "
+title: ''
 labels: ''
 assignees: ''
 
