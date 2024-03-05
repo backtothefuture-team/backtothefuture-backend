@@ -26,7 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class KakaoOAuthService implements OAuthService {
 
-    @Value("${oauth.kakao}")
+    @Value("${oauth.kakao.client.id}")
     private String clientId;
 
     @Value("${oauth.kakao.redirect.url}")
