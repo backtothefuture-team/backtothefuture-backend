@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backtothefuture.domain.common.repository.RedisRepository;
 import com.backtothefuture.domain.common.util.ConvertUtil;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
@@ -31,6 +32,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtProvider jwtProvider;
+	private final RedisRepository redisRepository;
 
 	/**
 	 * 로그인
@@ -50,12 +52,10 @@ public class MemberService {
 		String accessToken = jwtProvider.createAccessToken(userDetail);
 		String refreshToken = jwtProvider.createRefreshToken();
 
-		LoginTokenDto loginTokenDto = LoginTokenDto.builder()
-			.accessToken(accessToken)
-			.refreshToken(refreshToken)
-			.build();
+		LoginTokenDto loginTokenDto = new LoginTokenDto(accessToken, refreshToken);
 
-		// redis 토큰 정보 저장 로직 추가해야 함
+		// redis 토큰 정보 저장
+		redisRepository.saveToken(userDetail.getId(), refreshToken);
 
 		return loginTokenDto;
 	}
