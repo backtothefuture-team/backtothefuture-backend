@@ -2,8 +2,14 @@ package com.backtothefuture.member.controller;
 
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.*;
 
+import com.backtothefuture.domain.common.enums.OAuthErrorCode;
+import com.backtothefuture.domain.member.enums.ProviderType;
+import com.backtothefuture.member.dto.request.OAuthLoginDto;
+import com.backtothefuture.member.exception.OAuthException;
+import com.backtothefuture.member.service.OAuthService;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +32,10 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/member")
 public class MemberController {
 	private final MemberService memberService;
-
+	@Qualifier("kakaoOAuthService")
+	private final OAuthService kakaoOAuthService;
+	@Qualifier("naverOAuthService")
+	private final OAuthService naverOAuthService;
 	@PostMapping("/login")
 	public ResponseEntity<BfResponse<?>> login(
 		@Valid @RequestBody MemberLoginDto memberLoginDto, HttpServletResponse response) {
@@ -42,4 +51,18 @@ public class MemberController {
 			.body(new BfResponse<>(CREATE, Map.of("id", memberService.registerMember(reqMemberDto))));
 	}
 
+	@PostMapping("/login/oauth")
+	public ResponseEntity<BfResponse<?>> oauthLogin(
+		@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
+
+		if(OAuthLoginDto.getProviderType() == ProviderType.KAKAO){ // 카카오 로그인
+			LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
+			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
+		} else if (OAuthLoginDto.getProviderType() == ProviderType.NAVER) { // 네이버 로그인
+
+		} else { // 구글 로그인
+
+		};
+		throw new OAuthException(OAuthErrorCode.NOT_MATCH_OAUTH_TYPE);
+	}
 }
