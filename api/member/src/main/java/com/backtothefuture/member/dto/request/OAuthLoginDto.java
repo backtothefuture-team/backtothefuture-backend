@@ -6,6 +6,7 @@ import com.backtothefuture.domain.member.enums.RolesType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,10 +19,10 @@ public class OAuthLoginDto {
     @NotBlank(message = "승인 코드는 필수입니다.")
     private String authorizationCode;
 
-    @NotBlank(message = "providerType은 필수입니다.")
+    @NotNull(message = "providerType은 필수입니다.")
     private ProviderType providerType;
 
-    @NotBlank(message = "rolesType은 필수입니다.")
+    @NotNull(message = "rolesType은 필수입니다.")
     private RolesType rolesType;
 
     /*
