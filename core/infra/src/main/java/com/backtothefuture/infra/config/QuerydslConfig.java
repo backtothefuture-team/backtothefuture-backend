@@ -1,4 +1,4 @@
-package com.backtotheture.infra.config;
+package com.backtothefuture.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

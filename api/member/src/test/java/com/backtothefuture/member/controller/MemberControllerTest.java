@@ -103,10 +103,7 @@ class MemberControllerTest {
         loginMap.put("password", "123456");
 
         // 로그인 성공 시 반환할 토큰 설정
-        LoginTokenDto loginTokenDto = LoginTokenDto.builder()
-                .accessToken("access token")
-                .refreshToken("resfresh token")
-                .build();
+        LoginTokenDto loginTokenDto = new LoginTokenDto("access token", "resfresh token");
 
         // memberService의 login 메서드가 호출될 때 loginTokenDto를 반환하도록 설정
         when(memberService.login(any())).thenReturn(loginTokenDto);
