@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - dev
+      - build-config # 테스트용
 
 env:
   CURRENT-VERSION: '0.1.0'
