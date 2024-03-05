@@ -34,6 +34,7 @@ jobs:
       # docker image 를 빌드한다.
       - name: Build Docker images
         run: |
+          ls -lR
           docker build -t yuseonlim/bagtothefuture-member:${{ env.CURRENT-VERSION }} -f api/member/Dockerfile .
           docker build -t yuseonlim/bagtothefuture-swagger:${{ env.CURRENT-VERSION }} -f docs/Dockerfile .
 
