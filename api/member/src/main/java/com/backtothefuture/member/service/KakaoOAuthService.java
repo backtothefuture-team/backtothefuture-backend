@@ -10,11 +10,13 @@ import com.backtothefuture.member.dto.response.KakaoAccessTokenDto;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.OAuthException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -40,6 +42,8 @@ public class KakaoOAuthService implements OAuthService {
     private final MemberRepository memberRepository;
 
     private final MemberService memberService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public String getAccessToken(OAuthLoginDto OAuthLoginDto) {  // token 받아옴
@@ -67,7 +71,7 @@ public class KakaoOAuthService implements OAuthService {
                 if (response.statusCode().equals(HttpStatus.OK)) {
                     return response.bodyToMono(KakaoAccessTokenDto.class);
                 } else if (response.statusCode().is4xxClientError()) { // 4xx 에러 handle
-                    throw new OAuthException(OAuthErrorCode.BAD_WEBCLIENT_REQUEST);
+                    throw new OAuthException(OAuthErrorCode.BAD_WEBCLIENT_REQUEST_IN_ACCESS_TOEKN);
                 } else if (response.statusCode().is5xxServerError()) { // 5xx 에러 handle
                     throw new OAuthException(OAuthErrorCode.BAD_OUTER_SYSTEM_ERROR);
                 } else {
@@ -96,7 +100,7 @@ public class KakaoOAuthService implements OAuthService {
                 if (response.statusCode().equals(HttpStatus.OK)) {
                     return response.bodyToMono(KakaoUserInfo.class);
                 } else if (response.statusCode().is4xxClientError()) { // 4xx 에러 handle
-                    throw new OAuthException(OAuthErrorCode.BAD_WEBCLIENT_REQUEST);
+                    throw new OAuthException(OAuthErrorCode.BAD_WEBCLIENT_REQUEST_IN_USER_INFO);
                 } else if (response.statusCode().is5xxServerError()) { // 5xx 에러 handle
                     throw new OAuthException(OAuthErrorCode.BAD_OUTER_SYSTEM_ERROR);
                 } else {
@@ -106,14 +110,19 @@ public class KakaoOAuthService implements OAuthService {
 
         Member member = isMember(userInfo.getAuthId());
 
-        if(member == null){ // 비회원임으로 회원가입 처리
-            Member newMember = userInfo.toEntity(OAuthLoginDto);
+        if(member == null){ // 비회원임으로 회원가입 처리 후 로그인 처리
+            // 회원 가입
+            // random password 생성
+            String password = UUID.randomUUID().toString().replace("-", "");
+            Member newMember = userInfo.toEntity(OAuthLoginDto, password);
+            newMember.setPassword(passwordEncoder.encode(password));
             memberRepository.save(newMember);
+            // 로그인
             MemberLoginDto memberLoginDto = ConvertUtil.toDtoOrEntity(newMember, MemberLoginDto.class);
+            memberLoginDto.setPassword(password);
             return memberService.login(memberLoginDto);
         } else { // 기존회원은 바로 로그인 처리
-            MemberLoginDto memberLoginDto = ConvertUtil.toDtoOrEntity(member, MemberLoginDto.class);
-            return memberService.login(memberLoginDto);
+            return memberService.OAuthLogin(member);
         }
     }
 

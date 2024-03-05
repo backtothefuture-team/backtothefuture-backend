@@ -32,14 +32,14 @@ public class MemberService {
 	private final AuthenticationManager authenticationManager;
 	private final JwtProvider jwtProvider;
 
-	/**
-	 * 로그인
-	 */
-	public LoginTokenDto login(MemberLoginDto memberloginDto) {
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-			memberloginDto.getEmail(),
-			memberloginDto.getPassword()
-		);
+    /**
+     * 로그인, OAuth 신규 회원 로그인
+     */
+    public LoginTokenDto login(MemberLoginDto memberloginDto) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            memberloginDto.getEmail(),
+            memberloginDto.getPassword()
+        );
 
 		Authentication authenticated = authenticationManager.authenticate(authentication);
 		SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -24,11 +24,12 @@ public class KakaoUserInfo {
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
 
-    public Member toEntity(OAuthLoginDto dto){
+    public Member toEntity(OAuthLoginDto dto, String randomPassword){
+
         return Member.builder()
             .authId(String.valueOf(this.authId))
             .email(this.kakaoAccount.getEmail())
-            .password("1234")
+            .password(randomPassword)
             .phoneNumber(this.kakaoAccount.getPhoneNumber())
             .name(this.kakaoAccount.getName())
             .status(StatusType.ACTIVE)
