@@ -82,12 +82,35 @@ public class MemberService {
 		return memberRepository.save(member).getId();
 	}
 
-	/**
-	 * password, passwordConfirm 체크
-	 */
-	private void validatePassword(String password, String passwordConfirm) {
-		if(!password.equals(passwordConfirm)) {
-			throw new MemberException(PASSWORD_NOT_MATCHED);
-		}
+    /**
+     * password, passwordConfirm 체크
+     */
+    private void validatePassword(String password, String passwordConfirm) {
+        if (!password.equals(passwordConfirm)) {
+            throw new MemberException(PASSWORD_NOT_MATCHED);
+        }
+    }
+
+    /**
+     * OAuth 기존 회원 로그인
+     */
+    @Transactional
+    public LoginTokenDto OAuthLogin(Member member) {
+
+		UserDetailsImpl userDetail = (UserDetailsImpl) UserDetailsImpl.from(member);
+
+		// accessToken, refreshToken 생성
+		String accessToken = jwtProvider.createAccessToken(userDetail);
+		String refreshToken = jwtProvider.createRefreshToken();
+
+		LoginTokenDto loginTokenDto = LoginTokenDto.builder()
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+
+		// redis 토큰 정보 저장 로직 추가해야 함
+
+		return loginTokenDto;
+
 	}
 }
