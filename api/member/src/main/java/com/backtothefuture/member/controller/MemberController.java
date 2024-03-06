@@ -59,7 +59,8 @@ public class MemberController {
 			LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
 			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
 		} else if (OAuthLoginDto.getProviderType() == ProviderType.NAVER) { // 네이버 로그인
-
+			LoginTokenDto loginTokenDto = naverOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
+			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
 		} else { // 구글 로그인
 
 		};
