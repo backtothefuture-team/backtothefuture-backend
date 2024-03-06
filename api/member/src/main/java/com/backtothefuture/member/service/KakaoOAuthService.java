@@ -108,7 +108,7 @@ public class KakaoOAuthService implements OAuthService {
                 }
             }).block();
 
-        Member member = isMember(userInfo.getAuthId());
+        Member member = isMember(String.valueOf(userInfo.getAuthId()));
 
         if(member == null){ // 비회원임으로 회원가입 처리 후 로그인 처리
             // 회원 가입
@@ -127,9 +127,9 @@ public class KakaoOAuthService implements OAuthService {
     }
 
     @Override
-    public Member isMember(Long authId) {
+    public Member isMember(String authId) {
 
-        return memberRepository.findByAuthId(String.valueOf(authId)).orElse(null);
+        return memberRepository.findByAuthId(authId).orElse(null);
 
     }
 }

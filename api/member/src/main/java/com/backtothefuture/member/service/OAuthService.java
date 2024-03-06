@@ -10,5 +10,5 @@ public interface OAuthService {
 
     LoginTokenDto getUserInfoFromResourceServer(OAuthLoginDto OAuthLoginDto);
 
-    Member isMember(Long authId);
+    Member isMember(String authId);
 }
