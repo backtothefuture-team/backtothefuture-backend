@@ -6,7 +6,7 @@ import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
-import com.backtothefuture.member.dto.response.KakaoAccessTokenDto;
+import com.backtothefuture.member.dto.response.KakaoAccessToken;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.OAuthException;
@@ -62,14 +62,14 @@ public class KakaoOAuthService implements OAuthService {
             .build();
 
         //access token 요청
-        KakaoAccessTokenDto responseToken = webclient.post()
+        KakaoAccessToken responseToken = webclient.post()
             .uri(uriBuilder -> uriBuilder
                 .path("/oauth/token")
                 .queryParams(requestBody)
                 .build())
             .exchangeToMono(response -> {
                 if (response.statusCode().equals(HttpStatus.OK)) {
-                    return response.bodyToMono(KakaoAccessTokenDto.class);
+                    return response.bodyToMono(KakaoAccessToken.class);
                 } else if (response.statusCode().is4xxClientError()) { // 4xx 에러 handle
                     throw new OAuthException(OAuthErrorCode.BAD_WEBCLIENT_REQUEST_IN_ACCESS_TOEKN);
                 } else if (response.statusCode().is5xxServerError()) { // 5xx 에러 handle
@@ -78,7 +78,7 @@ public class KakaoOAuthService implements OAuthService {
                     throw new RuntimeException("webclient error"); // 그 외 에러 handle
                 }
             }).block(); // 동기 처리
-        return responseToken.getAccessToken();
+        return responseToken.accessToken();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class KakaoOAuthService implements OAuthService {
                 }
             }).block();
 
-        Member member = isMember(String.valueOf(userInfo.getAuthId()));
+        Member member = isMember(String.valueOf(userInfo.authId()));
 
         if(member == null){ // 비회원임으로 회원가입 처리 후 로그인 처리
             // 회원 가입

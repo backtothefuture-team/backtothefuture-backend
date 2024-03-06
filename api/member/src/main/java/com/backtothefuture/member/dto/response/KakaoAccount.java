@@ -1,23 +1,16 @@
 package com.backtothefuture.member.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class KakaoAccount {
-
+public record KakaoAccount(
     @JsonProperty("name")
-    private String name;
+    String name,
 
     @JsonProperty("email")
-    private String email;
+    String email,
 
     @JsonProperty("phone_number")
-    private String phoneNumber;
-
+    String phoneNumber
+) {
 
 }
