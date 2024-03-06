@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(OAuthException.class)
 	protected ResponseEntity<ErrorResponse> handleWebClientException(OAuthException ex) {
-        log.warn(">>>>> OAuthException : {}", ex);
+        log.error(">>>>> OAuthException : {}", ex);
         BaseErrorCode errorCode = ex.getErrorCode();
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
