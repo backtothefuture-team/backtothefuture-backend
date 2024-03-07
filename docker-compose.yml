@@ -16,6 +16,13 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/~./test # 데이터소스 URL을 덮어쓰는 설정
+      OAUTH_KAKAO_CLIENTID: ${OAUTH_KAKAO_CLIENTID}
+      OAUTH_KAKAO_REDIRECT_URL: ${OAUTH_KAKAO_REDIRECT_URL}
+      OAUTH_KAKAO_CLIENT_SECRET: ${OAUTH_KAKAO_CLIENT_SECRET}
+      OAUTH_NAVER_CLIENTID: ${OAUTH_NAVER_CLIENTID}
+      OAUTH_NAVER_CLIENT_SECRET: ${OAUTH_NAVER_CLIENT_SECRET}
+    volumes:
+      - ./application.yml:/opt/bagtothefuture/config/application.yml
     depends_on:
       - db
 

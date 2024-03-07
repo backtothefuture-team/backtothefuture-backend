@@ -13,3 +13,12 @@ server:
   port: 8080
   servlet:
     context-path: /v1
+
+oauth:
+  kakao:
+    client_id: ${OAUTH_KAKAO_CLIENTID}
+    redirect_url: ${OAUTH_KAKAO_REDIRECT_URL}
+    client_secret: ${OAUTH_KAKAO_CLIENT_SECRET}
+  naver:
+    client_id: ${OAUTH_NAVER_CLIENTID}
+    client_secret: ${OAUTH_NAVER_CLIENT_SECRET}

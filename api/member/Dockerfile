@@ -1,3 +1,4 @@
 FROM openjdk:17
-COPY build/libs/member.jar /member.jar
-ENTRYPOINT ["java","-jar","member.jar"]
+RUN mkdir -p /opt/bagtothefuture/config
+COPY build/libs/member.jar /opt/bagtothefuture/member.jar
+ENTRYPOINT ["java","-jar","/opt/bagtothefuture/member.jar"]
