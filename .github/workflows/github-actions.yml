@@ -7,9 +7,6 @@ on:
       - dev
       - build-config # 테스트용
 
-env:
-  CURRENT_VERSION: '0.1.0'
-
 jobs:
   build-image-and-push:
     runs-on: ubuntu-latest
@@ -45,11 +42,11 @@ jobs:
           context: api/member
           file: api/member/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bagtothefuture-member:${{ env.CURRENT_VERSION }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:latest
       # swagger
       - uses: docker/build-push-action@v2
         with:
           context: docs
           file: docs/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bagtothefuture-swagger:${{ env.CURRENT_VERSION }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:latest
