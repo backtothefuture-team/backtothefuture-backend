@@ -10,7 +10,7 @@ services:
       H2_OPTIONS: -ifNotExists # DB가 이미 존재하면 재생성 X
 
   bagtothefuture-member:
-    image: bagtothefuture-member:0.1.0 # member api 이미지
+    image: ${DOCKER_USERNAME}/bagtothefuture-member:latest # member api 이미지
     ports:
       - "8080:8080"
     environment:
@@ -20,6 +20,6 @@ services:
       - db
 
   swagger-ui:
-    image: bagtothefuture-swagger:0.1.0 # swagger 이미지
+    image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
     ports:
       - "8000:80"
