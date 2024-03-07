@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+<<<<<<< HEAD
   db:
     image: oscarfonts/h2:latest # h2 이미지
     ports:
@@ -30,3 +31,8 @@ services:
     image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
     ports:
       - "8000:80"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"

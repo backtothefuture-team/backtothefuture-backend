@@ -1,0 +1,2 @@
+jwt:
+  refresh-expiration-seconds: 36000 # 리프래쉬 토큰 만료시간: 10시간

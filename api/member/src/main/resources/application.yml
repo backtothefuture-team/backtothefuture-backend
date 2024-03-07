@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: infra, security
+    include: domain, infra, security
     active: dev
   jpa:
     open-in-view: false # view, Controller 단에서 Lazy를 사용하지 않음

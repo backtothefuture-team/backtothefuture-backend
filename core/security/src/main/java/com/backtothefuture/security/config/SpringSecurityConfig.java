@@ -68,10 +68,7 @@ public class SpringSecurityConfig {
 		httpSecuritySetting(http, requestMatchers);
 		http
 			.securityMatchers(matcher -> matcher
-				.requestMatchers(requestMatchers))
-			.authorizeHttpRequests()
-			.anyRequest()
-			.permitAll();
+				.requestMatchers(requestMatchers));
 
 		return http.build();
 	}
@@ -129,7 +126,9 @@ public class SpringSecurityConfig {
 				"http://localhost:8080",
 				"http://127.0.0.1:8080",
 				"http://localhost:3000",
-				"http://127.0.0.1:3000"
+				"http://127.0.0.1:3000",
+				"http://127.0.0.1:8000",
+				"http://localhost:8000"
 			)
 		);
 
@@ -175,6 +174,8 @@ public class SpringSecurityConfig {
 			.logout(AbstractHttpConfigurer::disable) // stateful 하지 않기때문에 필요하지 않음
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성을 하지 않음
+			).authorizeHttpRequests(auth -> auth
+				.requestMatchers(OPTIONS, "/**").permitAll() // OPTION 메서드 프리플라이트 요청 허용
 			);
 	}
 }

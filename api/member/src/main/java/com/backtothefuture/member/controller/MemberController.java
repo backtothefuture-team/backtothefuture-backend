@@ -17,6 +17,7 @@ import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.service.MemberService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,8 @@ public class MemberController {
 
 	@PostMapping("/login")
 	public ResponseEntity<BfResponse<?>> login(
-		@Valid @RequestBody MemberLoginDto memberLoginDto, HttpServletResponse response) {
-		LoginTokenDto loginTokenDto = memberService.login(memberLoginDto);
-
-		return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
+		@Valid @RequestBody MemberLoginDto memberLoginDto) {
+		return ResponseEntity.ok(new BfResponse<>(memberService.login(memberLoginDto)));
 	}
 
 	@PostMapping("/register")
