@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-<<<<<<< HEAD
   db:
     image: oscarfonts/h2:latest # h2 이미지
     ports:

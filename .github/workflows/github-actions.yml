@@ -6,6 +6,9 @@ on:
     branches:
       - dev
       - build-config # 테스트용
+      -
+env:
+  CURRENT_VERSION: '0.1.0'
 
 jobs:
   build-image-and-push:
@@ -49,7 +52,7 @@ jobs:
           file: api/member/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:${{ env.CURRENT_VERSION }}
       # swagger
       - uses: docker/build-push-action@v5
         with:
@@ -57,4 +60,4 @@ jobs:
           file: docs/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:${{ env.CURRENT_VERSION }}
