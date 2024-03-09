@@ -14,7 +14,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -23,10 +26,13 @@ import lombok.Setter;
 	@UniqueConstraint(columnNames = "email"),
 	@UniqueConstraint(columnNames = "phoneNumber")
 })
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class Member extends MutableBaseEntity {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "member_id")
 	private Long id;
+
+	private String authId;			// 소셜 회원 고유 번호
 
 	private String email;			// 이메일
 

@@ -13,3 +13,9 @@ server:
   port: 8080
   servlet:
     context-path: /v1
+
+oauth:
+  kakao:
+    client.id: 임시 id
+    redirect.url: 임시 url
+    client.secret: 임시 secret
