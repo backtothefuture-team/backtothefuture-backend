@@ -1,6 +1,34 @@
 version: '3'
 
 services:
+  db:
+    image: oscarfonts/h2:latest # h2 이미지
+    ports:
+      - "1521:1521" # TCP 포트 : 데이터베이스 연결 포트
+      - "8081:81" # HTTP 포트 : 웹콘솔 연결 포트
+    environment: #h2 설정
+      H2_OPTIONS: -ifNotExists # DB가 이미 존재하면 재생성 X
+
+  bagtothefuture-member:
+    image: ${DOCKER_USERNAME}/bagtothefuture-member:latest # member api 이미지
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/~./test # 데이터소스 URL을 덮어쓰는 설정
+      OAUTH_KAKAO_CLIENTID: ${OAUTH_KAKAO_CLIENTID}
+      OAUTH_KAKAO_REDIRECT_URL: ${OAUTH_KAKAO_REDIRECT_URL}
+      OAUTH_KAKAO_CLIENT_SECRET: ${OAUTH_KAKAO_CLIENT_SECRET}
+      OAUTH_NAVER_CLIENTID: ${OAUTH_NAVER_CLIENTID}
+      OAUTH_NAVER_CLIENT_SECRET: ${OAUTH_NAVER_CLIENT_SECRET}
+    depends_on:
+      - db
+
+  swagger-ui:
+    image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
+    ports:
+      - "8000:80"
+
   redis:
     image: redis:latest
     ports:
