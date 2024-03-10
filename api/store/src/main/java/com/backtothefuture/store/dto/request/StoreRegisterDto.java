@@ -2,6 +2,9 @@ package com.backtothefuture.store.dto.request;
 
 import java.util.List;
 
+import com.backtothefuture.domain.store.Store;
+import com.backtothefuture.store.annotation.NumericStringList;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -18,9 +21,21 @@ public record StoreRegisterDto(
 	@Size(max = 50, message = "가게위치는 최대 50자 이하로 입력해주세요.")
 	String location,
 
+	@Size(max = 3, message = "연락처를 올바르게 입력해 주세요.")
+	@NumericStringList(message = "연락처는 숫자만 입력할 수 있습니다.")
 	List<String> contact,
 
 	String image
 ) {
+	public static Store toEntity(StoreRegisterDto storeRegisterDto){
+		return Store.builder()
+			.name(storeRegisterDto.name())
+			.description(storeRegisterDto.description())
+			.location(storeRegisterDto.location())
+			.contact(String.join("-", storeRegisterDto.contact()))
+			.image(storeRegisterDto.image())
+			.build();
+	}
+
 
 }
