@@ -53,7 +53,7 @@ public class KakaoOAuthService implements OAuthService {
         requestBody.add("grant_type", "authorization_code");
         requestBody.add("client_id", clientId);
         requestBody.add("redirect_uri", redirectUrl);
-        requestBody.add("code", OAuthLoginDto.getAuthorizationCode());
+        requestBody.add("code", OAuthLoginDto.authorizationCode());
         requestBody.add("client_secret", clientSecret);
 
         WebClient webclient = WebClient.builder()

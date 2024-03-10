@@ -23,8 +23,8 @@ public record KakaoUserInfo(
             .phoneNumber(this.kakaoAccount.phoneNumber())
             .name(this.kakaoAccount.name())
             .status(StatusType.ACTIVE)
-            .provider(dto.getProviderType())
-            .roles(dto.getRolesType())
+            .provider(dto.providerType())
+            .roles(dto.rolesType())
             .build();
     }
 }

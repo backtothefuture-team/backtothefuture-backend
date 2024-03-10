@@ -45,8 +45,8 @@ public class NaverOAuthService implements OAuthService {
         requestBody.add("grant_type", "authorization_code");
         requestBody.add("client_id", clientId);
         requestBody.add("client_secret", clientSecret);
-        requestBody.add("code", oAuthLoginDto.getAuthorizationCode());
-        requestBody.add("state", oAuthLoginDto.getState());
+        requestBody.add("code", oAuthLoginDto.authorizationCode());
+        requestBody.add("state", oAuthLoginDto.state());
 
         WebClient webclient = WebClient.builder()
             .baseUrl("https://nid.naver.com")
