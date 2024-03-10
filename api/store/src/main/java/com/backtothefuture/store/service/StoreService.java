@@ -1,5 +1,6 @@
 package com.backtothefuture.store.service;
 
+import static com.backtothefuture.domain.common.enums.GlobalErrorCode.*;
 import static com.backtothefuture.domain.common.enums.StoreErrorCode.*;
 
 import java.util.Optional;
@@ -10,9 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
+import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
 import com.backtothefuture.store.exception.StoreException;
@@ -32,19 +35,22 @@ public class StoreService {
 	 */
 	@Transactional
 	public Long registerStore(StoreRegisterDto storeRegisterDto) {
-		Optional<UserDetails> userDetails = getUserDetails();
+		UserDetailsImpl userDetails = getUserDetails()
+			.filter(UserDetailsImpl.class::isInstance)
+			.map(UserDetailsImpl.class::cast)
+			.orElseThrow(() -> new CustomSecurityException(CHECK_USER));
 
-		return userDetails.flatMap(userDetail -> {
-			if(userDetail instanceof UserDetailsImpl) {
-				UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetail;
-				return memberRepository.findById(userDetailsImpl.getId())
-					.map(member -> {
-						Store store = StoreRegisterDto.toEntity(storeRegisterDto, member);
-						return storeRepository.save(store).getId();
-					});
-			}
-			return Optional.empty();
-		}).orElseThrow(() -> new StoreException(CHECK_MEMBER));
+		// 회원 정보 조회
+		Member member = memberRepository.findById(userDetails.getId())
+			.orElseThrow(() -> new StoreException(CHECK_MEMBER));
+
+		// 가게 중복 체크
+		if(storeRepository.existsByName(storeRegisterDto.name())) {
+			throw new StoreException(DUPLICATED_STORE_NAME);
+		}
+
+		Store store = StoreRegisterDto.toEntity(storeRegisterDto, member);
+		return storeRepository.save(store).getId();
 	}
 
 	/**
