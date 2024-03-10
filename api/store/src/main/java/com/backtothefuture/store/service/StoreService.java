@@ -35,10 +35,7 @@ public class StoreService {
 	 */
 	@Transactional
 	public Long registerStore(StoreRegisterDto storeRegisterDto) {
-		UserDetailsImpl userDetails = getUserDetails()
-			.filter(UserDetailsImpl.class::isInstance)
-			.map(UserDetailsImpl.class::cast)
-			.orElseThrow(() -> new CustomSecurityException(CHECK_USER));
+		UserDetailsImpl userDetails = (UserDetailsImpl) getUserDetails();
 
 		// 회원 정보 조회
 		Member member = memberRepository.findById(userDetails.getId())
@@ -56,16 +53,12 @@ public class StoreService {
 	/**
 	 * 인증된 사용자 정보 조회
 	 */
-	private Optional<UserDetails> getUserDetails() {
+	private UserDetails getUserDetails() {
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
 			.filter(Authentication::isAuthenticated)
 			.map(Authentication::getPrincipal)
-			.map(principal -> {
-				if(principal instanceof UserDetails) {
-					return ((UserDetails) principal);
-				}else {
-					return null;
-				}
-			});
+			.filter(principal -> principal instanceof UserDetails)
+			.map(UserDetailsImpl.class::cast)
+			.orElseThrow(() -> new CustomSecurityException(CHECK_USER));
 	}
 }
