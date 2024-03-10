@@ -8,7 +8,8 @@ import lombok.Getter;
 
 @Getter
 public enum StoreErrorCode implements BaseErrorCode{
-	CHECK_MEMBER(400, "회원의 정보가 정상적이지 않습니다.", HttpStatus.BAD_REQUEST);
+	CHECK_MEMBER(400, "회원의 정보를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
+	DUPLICATED_STORE_NAME(400, "이미 존재하는 가게입니다.", HttpStatus.BAD_REQUEST);
 
 	private final int errorCode;
 	private final String errorMessage;
