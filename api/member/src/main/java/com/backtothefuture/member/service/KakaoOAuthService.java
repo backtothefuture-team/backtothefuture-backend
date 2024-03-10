@@ -10,6 +10,7 @@ import com.backtothefuture.member.dto.response.KakaoAccessToken;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.OAuthException;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,28 +109,30 @@ public class KakaoOAuthService implements OAuthService {
                 }
             }).block();
 
-        Member member = isMember(String.valueOf(userInfo.authId()));
+        Optional<Member> member = isMember(String.valueOf(userInfo.authId()));
 
-        if(member == null){ // 비회원임으로 회원가입 처리 후 로그인 처리
-            // 회원 가입
-            // random password 생성
-            String password = UUID.randomUUID().toString().replace("-", "");
-            Member newMember = userInfo.toEntity(OAuthLoginDto, password);
-            newMember.setPassword(passwordEncoder.encode(password));
-            memberRepository.save(newMember);
-            // 로그인
-            MemberLoginDto memberLoginDto = ConvertUtil.toDtoOrEntity(newMember, MemberLoginDto.class);
-            memberLoginDto.setPassword(password);
-            return memberService.login(memberLoginDto);
-        } else { // 기존회원은 바로 로그인 처리
-            return memberService.OAuthLogin(member);
+        if (member.isPresent()) { // 기존회원은 바로 로그인 처리
+            return memberService.OAuthLogin(member.get());
         }
+
+        // 비회원임으로 회원가입 처리 후 로그인 처리
+        // 회원 가입
+        // random password 생성
+        String password = UUID.randomUUID().toString().replace("-", "");
+        Member newMember = userInfo.toEntity(OAuthLoginDto, password);
+        newMember.setPassword(passwordEncoder.encode(password));
+        memberRepository.save(newMember);
+        // 로그인
+        MemberLoginDto memberLoginDto = ConvertUtil.toDtoOrEntity(newMember, MemberLoginDto.class);
+        memberLoginDto.setPassword(password);
+        return memberService.login(memberLoginDto);
+
     }
 
     @Override
-    public Member isMember(String authId) {
+    public Optional<Member> isMember(String authId) {
 
-        return memberRepository.findByAuthId(authId).orElse(null);
+        return memberRepository.findByAuthId(authId);
 
     }
 }
