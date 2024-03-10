@@ -37,7 +37,7 @@ public class StoreService {
 	public Long registerStore(StoreRegisterDto storeRegisterDto) {
 		UserDetailsImpl userDetails = (UserDetailsImpl) getUserDetails();
 
-		// 회원 정보 조회
+		// 회원 조회
 		Member member = memberRepository.findById(userDetails.getId())
 			.orElseThrow(() -> new StoreException(CHECK_MEMBER));
 
@@ -51,7 +51,7 @@ public class StoreService {
 	}
 
 	/**
-	 * 인증된 사용자 정보 조회
+	 * 인증된 사용자 조회
 	 */
 	private UserDetails getUserDetails() {
 		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
