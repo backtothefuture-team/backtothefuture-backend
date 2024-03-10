@@ -3,6 +3,7 @@ package com.backtothefuture.store.dto.request;
 import java.util.List;
 import java.util.Optional;
 
+import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.store.annotation.NumericStringList;
 
@@ -27,7 +28,7 @@ public record StoreRegisterDto(
 
 	String image
 ) {
-	public static Store toEntity(StoreRegisterDto storeRegisterDto){
+	public static Store toEntity(StoreRegisterDto storeRegisterDto, Member member){
 		String contact = Optional.ofNullable(storeRegisterDto.contact())
 			.map(num ->String.join("-", num))
 			.orElse("");
@@ -40,6 +41,7 @@ public record StoreRegisterDto(
 			.location(storeRegisterDto.location())
 			.contact(contact)
 			.image(image)
+			.member(member)
 			.build();
 	}
 
