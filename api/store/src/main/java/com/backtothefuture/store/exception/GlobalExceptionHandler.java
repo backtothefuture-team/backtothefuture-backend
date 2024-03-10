@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.backtothefuture.domain.common.enums.BaseErrorCode;
 import com.backtothefuture.domain.response.ErrorResponse;
+import com.backtothefuture.security.exception.CustomSecurityException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +28,16 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(StoreException.class)
 	protected ResponseEntity<ErrorResponse> handleSecurityException(StoreException ex) {
 		log.error(">>>>> StoreException : {}", ex);
+		BaseErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
+
+	/**
+	 * Security Exception Handler
+	 */
+	@ExceptionHandler(CustomSecurityException.class)
+	protected ResponseEntity<ErrorResponse> handleSecurityException(CustomSecurityException ex) {
+		log.error(">>>>> SecurityException : {}", ex);
 		BaseErrorCode errorCode = ex.getErrorCode();
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
