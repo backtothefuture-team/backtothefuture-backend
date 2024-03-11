@@ -4,10 +4,7 @@ import com.backtothefuture.domain.member.enums.ProviderType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+
 
 public class ProviderTypeValidator implements
     ConstraintValidator<EnumTypeMisMatch, ProviderType> {
