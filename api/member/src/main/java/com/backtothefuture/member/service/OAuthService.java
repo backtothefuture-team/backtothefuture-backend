@@ -11,5 +11,5 @@ public interface OAuthService {
 
     LoginTokenDto getUserInfoFromResourceServer(OAuthLoginDto OAuthLoginDto);
 
-    Optional<Member> isMember(String authId);
+    Optional<Member> isMember(String name, String phoneNumber);
 }

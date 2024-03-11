@@ -96,7 +96,8 @@ public class NaverOAuthService implements OAuthService {
                 }
             }).block();
 
-        Optional<Member> member = isMember(userInfo.naverResponse().authId());
+        Optional<Member> member = isMember(userInfo.naverResponse().name(),
+            userInfo.naverResponse().phoneNumber());
 
         if (member.isPresent()) {// 기존회원은 바로 로그인 처리
             return memberService.OAuthLogin(member.get());
@@ -118,9 +119,9 @@ public class NaverOAuthService implements OAuthService {
     }
 
     @Override
-    public Optional<Member> isMember(String authId) {
+    public Optional<Member> isMember(String name, String phoneNumber) {
 
-        return memberRepository.findByAuthId(authId);
+        return memberRepository.findByNameAndPhoneNumber(name, phoneNumber);
 
     }
 }

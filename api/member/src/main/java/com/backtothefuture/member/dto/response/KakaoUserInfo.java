@@ -11,6 +11,7 @@ public record KakaoUserInfo(
     @NotNull(message = "authId는 필수입니다.")
     Long authId,
     @JsonProperty("kakao_account")
+    @NotNull(message = "kakaoAccount는 필수입니다.")
     KakaoAccount kakaoAccount
 ) {
 

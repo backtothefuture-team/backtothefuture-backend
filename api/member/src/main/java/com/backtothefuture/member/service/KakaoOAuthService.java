@@ -109,7 +109,8 @@ public class KakaoOAuthService implements OAuthService {
                 }
             }).block();
 
-        Optional<Member> member = isMember(String.valueOf(userInfo.authId()));
+        Optional<Member> member = isMember(userInfo.kakaoAccount().name(),
+            userInfo.kakaoAccount().phoneNumber());
 
         if (member.isPresent()) { // 기존회원은 바로 로그인 처리
             return memberService.OAuthLogin(member.get());
@@ -130,9 +131,9 @@ public class KakaoOAuthService implements OAuthService {
     }
 
     @Override
-    public Optional<Member> isMember(String authId) {
+    public Optional<Member> isMember(String name, String phoneNumber) {
 
-        return memberRepository.findByAuthId(authId);
+        return memberRepository.findByNameAndPhoneNumber(name, phoneNumber);
 
     }
 }
