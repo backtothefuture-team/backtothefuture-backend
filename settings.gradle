@@ -12,6 +12,9 @@ pluginManagement {
 rootProject.name = 'backtothefuture'
 
 include 'api:member'
+include 'api:store'
 include 'core:domain'
 include 'core:infra'
 include 'core:security'
+
+
