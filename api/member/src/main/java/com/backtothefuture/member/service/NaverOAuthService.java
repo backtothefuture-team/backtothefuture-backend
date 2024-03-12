@@ -10,6 +10,7 @@ import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.dto.response.NaverAccessTokenDto;
 import com.backtothefuture.member.dto.response.NaverUserInfo;
 import com.backtothefuture.member.exception.OAuthException;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +46,8 @@ public class NaverOAuthService implements OAuthService {
         requestBody.add("grant_type", "authorization_code");
         requestBody.add("client_id", clientId);
         requestBody.add("client_secret", clientSecret);
-        requestBody.add("code", oAuthLoginDto.getAuthorizationCode());
-        requestBody.add("state", oAuthLoginDto.getState());
+        requestBody.add("code", oAuthLoginDto.authorizationCode());
+        requestBody.add("state", oAuthLoginDto.state());
 
         WebClient webclient = WebClient.builder()
             .baseUrl("https://nid.naver.com")
@@ -95,29 +96,32 @@ public class NaverOAuthService implements OAuthService {
                 }
             }).block();
 
-        Member member = isMember(userInfo.naverResponse().authId());
+        Optional<Member> member = isMember(userInfo.naverResponse().name(),
+            userInfo.naverResponse().phoneNumber());
 
-        if (member == null) { // 비회원임으로 회원가입 처리 후 로그인 처리
-            // 회원 가입
-            // random password 생성
-            String password = UUID.randomUUID().toString().replace("-", "");
-            Member newMember = userInfo.toEntity(OAuthLoginDto, password);
-            newMember.setPassword(passwordEncoder.encode(password));
-            memberRepository.save(newMember);
-            // 로그인
-            MemberLoginDto memberLoginDto = ConvertUtil.toDtoOrEntity(newMember,
-                MemberLoginDto.class);
-            memberLoginDto.setPassword(password);
-            return memberService.login(memberLoginDto);
-        } else { // 기존회원은 바로 로그인 처리
-            return memberService.OAuthLogin(member);
+        if (member.isPresent()) {// 기존회원은 바로 로그인 처리
+            return memberService.OAuthLogin(member.get());
         }
+
+        // 비회원임으로 회원가입 처리 후 로그인 처리
+        // 회원 가입
+        // random password 생성
+        String password = UUID.randomUUID().toString().replace("-", "");
+        Member newMember = userInfo.toEntity(OAuthLoginDto, password);
+        newMember.setPassword(passwordEncoder.encode(password));
+        memberRepository.save(newMember);
+        // 로그인
+        MemberLoginDto memberLoginDto = ConvertUtil.toDtoOrEntity(newMember,
+            MemberLoginDto.class);
+        memberLoginDto.setPassword(password);
+        return memberService.login(memberLoginDto);
+
     }
 
     @Override
-    public Member isMember(String authId) {
+    public Optional<Member> isMember(String name, String phoneNumber) {
 
-        return memberRepository.findByAuthId(authId).orElse(null);
+        return memberRepository.findByNameAndPhoneNumber(name, phoneNumber);
 
     }
 }

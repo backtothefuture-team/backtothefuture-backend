@@ -23,8 +23,6 @@ import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.service.MemberService;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -54,10 +52,10 @@ public class MemberController {
 	public ResponseEntity<BfResponse<?>> oauthLogin(
 		@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
 
-		if(OAuthLoginDto.getProviderType() == ProviderType.KAKAO){ // 카카오 로그인
+		if(OAuthLoginDto.providerType() == ProviderType.KAKAO){ // 카카오 로그인
 			LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
 			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
-		} else if (OAuthLoginDto.getProviderType() == ProviderType.NAVER) { // 네이버 로그인
+		} else if (OAuthLoginDto.providerType() == ProviderType.NAVER) { // 네이버 로그인
 			LoginTokenDto loginTokenDto = naverOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
 			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
 		} else { // 구글 로그인

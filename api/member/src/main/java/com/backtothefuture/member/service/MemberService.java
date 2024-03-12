@@ -108,7 +108,8 @@ public class MemberService {
 			.refreshToken(refreshToken)
 			.build();
 
-		// redis 토큰 정보 저장 로직 추가해야 함
+		// redis 토큰 정보 저장
+		redisRepository.saveToken(userDetail.getId(), refreshToken);
 
 		return loginTokenDto;
 

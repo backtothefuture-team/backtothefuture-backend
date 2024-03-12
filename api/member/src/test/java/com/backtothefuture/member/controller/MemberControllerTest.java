@@ -1,6 +1,12 @@
 package com.backtothefuture.member.controller;
 
+import com.backtothefuture.domain.member.enums.ProviderType;
+import com.backtothefuture.domain.member.enums.RolesType;
+import com.backtothefuture.member.dto.request.OAuthLoginDto;
+import com.backtothefuture.member.dto.response.KakaoAccount;
+import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
+import com.backtothefuture.member.service.KakaoOAuthService;
 import com.backtothefuture.member.service.MemberService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
@@ -41,6 +47,9 @@ class MemberControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private KakaoOAuthService kakaoOAuthService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -128,9 +137,62 @@ class MemberControllerTest {
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token")
+                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token"),
+                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("Refresh Token")
                                 )
                                 .responseSchema(Schema.schema("[response] member-login")).build()
                         )));
     }
+
+    @Test
+    @DisplayName("oauth 회원 가입 테스트")
+    void oauthLoginTest() throws Exception {
+        // resource server에서 받아온 정보로 회원가입 진행
+        // given
+        OAuthLoginDto oauthLoginDto = new OAuthLoginDto("authorizationCode", ProviderType.KAKAO,
+            RolesType.ROLE_USER, "state");
+        KakaoAccount kakaoAccount = new KakaoAccount("이상민", "test@gmail.com", "010-0000-0000");
+        KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(1L, kakaoAccount);
+        // 로그인 성공 시 반환할 토큰 설정
+        LoginTokenDto loginTokenDto = new LoginTokenDto("accessToken", "resfreshToken");
+        // when
+        // kakaoOAuthService의 login 메서드가 호출될 때 loginTokenDto를 반환하도록 설정
+        when(kakaoOAuthService.getUserInfoFromResourceServer(any()))
+            //then
+            .thenReturn(loginTokenDto);
+
+        this.mockMvc.perform(post("/member/login/oauth")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(oauthLoginDto)))
+            .andExpect(status().isOk())
+            .andDo(document("oauth-login",
+                resource(ResourceSnippetParameters.builder()
+                    .description("소셜 로그인 API 입니다.")
+                    .tag("member")
+                    .summary("소셜 로그인 API")
+                    //request
+                    .requestFields(
+                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING)
+                            .description("Authorization Server에서 받은 인증 코드입니다."),
+                        fieldWithPath("providerType").type(JsonFieldType.STRING)
+                            .description("어떤 소셜 로그인인지 입력 값입니다."),
+                        fieldWithPath("rolesType").type(JsonFieldType.STRING)
+                            .description("유저의 자격 값입니다."),
+                        fieldWithPath("state").type(JsonFieldType.STRING).optional()
+                            .description("네이버 소셜 로그인 시 필요한 state 값입니다.")
+                    )
+                    .requestSchema(Schema.schema("OAuthLoginDto"))
+                    //response
+                    .responseFields(
+                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                            .description("Access Token"),
+                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
+                            .description("Refresh Token")
+                    )
+                    .responseSchema(Schema.schema("LoginTokenDto")).build()
+                )));
+    }
+
 }

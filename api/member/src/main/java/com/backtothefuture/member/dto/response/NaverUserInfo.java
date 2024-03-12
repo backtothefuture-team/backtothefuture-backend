@@ -26,8 +26,8 @@ public record NaverUserInfo(
             .phoneNumber(this.naverResponse.phoneNumber())
             .name(this.naverResponse.name())
             .status(StatusType.ACTIVE)
-            .provider(dto.getProviderType())
-            .roles(dto.getRolesType())
+            .provider(dto.providerType())
+            .roles(dto.rolesType())
             .build();
     }
 }

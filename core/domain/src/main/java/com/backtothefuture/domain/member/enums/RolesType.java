@@ -9,13 +9,11 @@ public enum RolesType {
 
 	@JsonCreator
 	public static RolesType fromRequest(String inputString) {
-
 		for (RolesType rolesType : RolesType.values()) {
 			if (rolesType.toString().equals(inputString.toUpperCase())) {
 				return rolesType;
 			}
 		}
 		return null;
-		// throw new OAuthException(); 구조로 개발에 어려움 존재
 	}
 }
