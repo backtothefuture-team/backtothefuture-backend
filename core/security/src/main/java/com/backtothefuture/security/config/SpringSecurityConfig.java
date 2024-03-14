@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -95,6 +96,17 @@ public class SpringSecurityConfig {
 		return http.build();
 	}
 
+	@Bean
+	public SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
+		httpSecuritySetting(http);
+		http
+			.securityMatchers(matcher -> matcher
+				.requestMatchers(OPTIONS, "/**")
+			);
+
+		return http.build();
+	}
+
 	/**
 	 * permitAll endpoint
 	 */
@@ -125,7 +137,7 @@ public class SpringSecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		// 허용할 Origin(출처)
+		// 허용할 Origin(출처)d
 		configuration.setAllowedOrigins(
 			Arrays.asList(
 				"http://localhost:8080",
@@ -134,7 +146,6 @@ public class SpringSecurityConfig {
 				"http://127.0.0.1:3000",
 				"http://localhost:8000",
 				"http://127.0.0.1:8000"
-
 			)
 		);
 
