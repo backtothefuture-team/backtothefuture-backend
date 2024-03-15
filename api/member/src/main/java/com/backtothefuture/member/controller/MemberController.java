@@ -52,15 +52,19 @@ public class MemberController {
 	public ResponseEntity<BfResponse<?>> oauthLogin(
 		@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
 
-		if(OAuthLoginDto.providerType() == ProviderType.KAKAO){ // 카카오 로그인
-			LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
-			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
-		} else if (OAuthLoginDto.providerType() == ProviderType.NAVER) { // 네이버 로그인
-			LoginTokenDto loginTokenDto = naverOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
-			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
-		} else { // 구글 로그인
-
-		};
-		throw new OAuthException(OAuthErrorCode.NOT_MATCH_OAUTH_TYPE);
+		switch(OAuthLoginDto.providerType()){
+			case KAKAO -> {
+				LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
+				return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
+			}
+			case NAVER -> {
+				LoginTokenDto loginTokenDto = naverOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
+				return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
+			}
+			/* google 소셜 로그인 추가 시 사용
+			case GOOGLE -> {
+			} */
+			default -> throw new OAuthException(OAuthErrorCode.NOT_MATCH_OAUTH_TYPE);
+		}
 	}
 }
