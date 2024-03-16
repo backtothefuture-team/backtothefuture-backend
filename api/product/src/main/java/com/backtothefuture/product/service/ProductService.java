@@ -1,10 +1,10 @@
 package com.backtothefuture.product.service;
 
+import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.product.dto.request.ProductRegisterDto;
-import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.product.exception.ProductException;
 import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
@@ -41,6 +41,17 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(Long storeId, Long productId) {
+        // 권한 검사
+        if (!validateIsProductOwner(storeId, productId)) {
+            throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
+        }
+        productRepository.deleteById(productId);
+    }
+
+    /**
+     * 로그인 된 유저와 상품을 소유한 가게의 유저가 일치하는지 검증
+     */
+    boolean validateIsProductOwner(Long storeId, Long productId) {
         // 로그인 된 유저 조회
         UserDetailsImpl userDetails = (UserDetailsImpl) getUserDetails();
         Long requestedMemberId = userDetails.getId();
@@ -51,10 +62,10 @@ public class ProductService {
 
         // 로그인 된 유저, 상품 소유자 memberId 비교
         if (!requestedMemberId.equals(productsOwnerMemberId)) {
-            throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
+            return false;
         }
 
-        productRepository.deleteById(productId);
+        return true;
     }
 
     /**

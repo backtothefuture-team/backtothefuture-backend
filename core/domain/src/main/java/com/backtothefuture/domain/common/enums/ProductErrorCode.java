@@ -13,7 +13,8 @@ public enum ProductErrorCode implements BaseErrorCode {
     NOT_FOUND_STORE_PRODUCT_MATCH(400, "요청한 가게 ID, 상품 ID와 일치하는 정보가 없습니다.", HttpStatus.BAD_REQUEST),
 
     // 403 FORBIDDEN
-    FORBIDDEN_DELETE_PRODUCT(403, "해당 상품을 삭제할 권한이 없습니다.", HttpStatus.FORBIDDEN);
+    FORBIDDEN_DELETE_PRODUCT(403, "해당 상품을 삭제할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+    FORBIDDEN_UPDATE_PRODUCT(403, "해당 상품정보를 수정 할 권한이 없습니다.", HttpStatus.FORBIDDEN);
 
     private final int errorCode;
     private final String errorMessage;
