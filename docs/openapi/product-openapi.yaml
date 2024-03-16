@@ -126,3 +126,10 @@ components:
         description:
           type: string
           description: 상품 상세 설명입니다.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

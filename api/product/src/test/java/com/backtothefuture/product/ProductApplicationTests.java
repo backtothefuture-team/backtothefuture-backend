@@ -69,7 +69,7 @@ class ProductApplicationTests {
         this.mockMvc.perform(post("/products/{storeId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productRegisterDto))
-                        .header("Authorization", "Bearer + ${JWT Token}"))
+                        .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(status().isCreated())
                 .andDo(document("register-product",
                         resource(ResourceSnippetParameters.builder()
@@ -78,7 +78,7 @@ class ProductApplicationTests {
                                 .summary("상품 등록 API")
                                 // request
                                 .requestHeaders(
-                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요.")
+                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰. 'Bearer ${Jwt Token}' 형식으로 입력해 주세요.")
                                 )
                                 .pathParameters(
                                         parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID")
@@ -106,7 +106,7 @@ class ProductApplicationTests {
     @DisplayName("상품 삭제 테스트")
     void deleteProductTest() throws Exception {
         this.mockMvc.perform(delete("/products/{storeId}/{productId}", 1, 1)
-                        .header("Authorization", "Bearer + ${JWT Token}"))
+                        .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(status().isNoContent())
                 .andDo(document("delete-product",
                         resource(ResourceSnippetParameters.builder()
@@ -115,7 +115,7 @@ class ProductApplicationTests {
                                 .summary("상품 삭제 API")
                                 // request
                                 .requestHeaders(
-                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요.")
+                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰. 'Bearer ${Jwt Token}' 형식으로 입력해 주세요.")
                                 )
                                 .pathParameters(
                                         parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID"),
