@@ -49,7 +49,7 @@ public class ProductService {
         Long productsOwnerMemberId = productRepository.findMemberIdByStoreIdAndProductId(storeId, productId)
                 .orElseThrow(() -> new ProductException(NOT_FOUND_STORE_PRODUCT_MATCH));
 
-        // 유저, 상품 소유자 memberId 비교
+        // 로그인 된 유저, 상품 소유자 memberId 비교
         if (!requestedMemberId.equals(productsOwnerMemberId)) {
             throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
         }

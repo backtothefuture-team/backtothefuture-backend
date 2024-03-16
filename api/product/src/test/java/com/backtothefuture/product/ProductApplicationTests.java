@@ -25,9 +25,9 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.ResourceDocumentation.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -54,7 +54,7 @@ class ProductApplicationTests {
     @Test
     @WithMockUser("USER")
     @DisplayName("상품 등록 테스트")
-    void productRegisterTest() throws Exception {
+    void registerProductTest() throws Exception {
         // given
         Long storeId = 1L;
         ProductRegisterDto productRegisterDto = ProductRegisterDto.builder()
@@ -69,7 +69,7 @@ class ProductApplicationTests {
         this.mockMvc.perform(post("/products/{storeId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productRegisterDto))
-                        .header("Authorization", "JWT token"))
+                        .header("Authorization", "Bearer + ${JWT Token}"))
                 .andExpect(status().isCreated())
                 .andDo(document("register-product",
                         resource(ResourceSnippetParameters.builder()
@@ -78,7 +78,7 @@ class ProductApplicationTests {
                                 .summary("상품 등록 API")
                                 // request
                                 .requestHeaders(
-                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰이. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요.")
+                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요.")
                                 )
                                 .pathParameters(
                                         parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID")
@@ -91,12 +91,39 @@ class ProductApplicationTests {
                                         fieldWithPath("thumbnail").type(SimpleType.STRING).description("썸네일 이미지 입니다.").optional()
                                 )
                                 .requestSchema(Schema.schema("[request] product-register"))
+                                // response
                                 .responseFields(
                                         fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
                                         fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
                                         fieldWithPath("data.product_id").type(SimpleType.NUMBER).description("생성된 상품 ID 입니다.")
                                 )
                                 .responseSchema(Schema.schema("[response] product-register")).build()
+                        )));
+    }
+
+    @Test
+    @WithMockUser("USER")
+    @DisplayName("상품 삭제 테스트")
+    void deleteProductTest() throws Exception {
+        this.mockMvc.perform(delete("/products/{storeId}/{productId}", 1, 1)
+                        .header("Authorization", "Bearer + ${JWT Token}"))
+                .andExpect(status().isNoContent())
+                .andDo(document("delete-product",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("상품 삭제 API 입니다.")
+                                .tags("products")
+                                .summary("상품 삭제 API")
+                                // request
+                                .requestHeaders(
+                                        headerWithName("Authorization").type(SimpleType.STRING).description("JWT 인증 토큰. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요.")
+                                )
+                                .pathParameters(
+                                        parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID"),
+                                        parameterWithName("productId").type(SimpleType.NUMBER).description("상품 ID")
+                                )
+                                .requestSchema(Schema.schema("[request] product-delete"))
+                                // no response
+                                .responseSchema(Schema.schema("[response] product-delete")).build()
                         )));
     }
 

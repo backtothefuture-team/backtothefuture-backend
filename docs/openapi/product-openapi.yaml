@@ -23,11 +23,11 @@ paths:
           type: number
       - name: Authorization
         in: header
-        description: "JWT 인증 토큰이. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요."
+        description: "JWT 인증 토큰. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요."
         required: true
         schema:
           type: string
-        example: JWT token
+        example: "Bearer + ${JWT Token}"
       requestBody:
         content:
           application/json:
@@ -48,6 +48,36 @@ paths:
                 register-product:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
                     product_id\":1}}"
+  /products/{storeId}/{productId}:
+    delete:
+      tags:
+      - products
+      summary: 상품 삭제 API
+      description: 상품 삭제 API 입니다.
+      operationId: delete-product
+      parameters:
+      - name: storeId
+        in: path
+        description: 가게 ID
+        required: true
+        schema:
+          type: number
+      - name: productId
+        in: path
+        description: 상품 ID
+        required: true
+        schema:
+          type: number
+      - name: Authorization
+        in: header
+        description: "JWT 인증 토큰. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요."
+        required: true
+        schema:
+          type: string
+        example: "Bearer + ${JWT Token}"
+      responses:
+        "204":
+          description: "204"
 components:
   schemas:
     '[response] product-register':
