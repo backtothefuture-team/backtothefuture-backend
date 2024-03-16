@@ -1,0 +1,98 @@
+openapi: 3.0.1
+info:
+  title: Bag To the Future
+  description: API Documentation
+  version: 0.1.0
+servers:
+- url: http://localhost:8083/v1
+tags: []
+paths:
+  /products/{storeId}:
+    post:
+      tags:
+      - products
+      summary: 상품 등록 API
+      description: 상품 등록 API 입니다.
+      operationId: register-product
+      parameters:
+      - name: storeId
+        in: path
+        description: 가게 ID
+        required: true
+        schema:
+          type: number
+      - name: Authorization
+        in: header
+        description: "JWT 인증 토큰이. 'Bearer + ${Jwt Token}' 형식으로 입력해 주세요."
+        required: true
+        schema:
+          type: string
+        example: JWT token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/[request] product-register"
+            examples:
+              register-product:
+                value: "{\"name\":\"상품 이름\",\"description\":\"상품 설명\",\"price\":10000,\"\
+                  stockQuantity\":1,\"thumbnail\":\"이미지 링크\"}"
+      responses:
+        "201":
+          description: "201"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] product-register"
+              examples:
+                register-product:
+                  value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
+                    product_id\":1}}"
+components:
+  schemas:
+    '[response] product-register':
+      title: "[response] product-register"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: HttpStatusCode 입니다.
+        data:
+          required:
+          - product_id
+          type: object
+          properties:
+            product_id:
+              type: number
+              description: 생성된 상품 ID 입니다.
+        message:
+          type: string
+          description: 응답 메시지 입니다.
+    '[request] product-register':
+      title: "[request] product-register"
+      required:
+      - description
+      - name
+      type: object
+      properties:
+        thumbnail:
+          type: string
+          description: 썸네일 이미지 입니다.
+          nullable: true
+        price:
+          type: number
+          description: 상품 가격입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.
+          nullable: true
+        name:
+          type: string
+          description: 상품 이름입니다.
+        stockQuantity:
+          type: number
+          description: 상품 재고입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.
+          nullable: true
+        description:
+          type: string
+          description: 상품 상세 설명입니다.

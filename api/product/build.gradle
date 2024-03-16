@@ -20,3 +20,12 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-security"
 }
+
+openapi3 {
+    server = 'http://localhost:8083/v1'
+    title = 'Bag To the Future'
+    description = 'API Documentation'
+    version = '0.1.0'
+    outputFileNamePrefix = 'product-openapi'
+    format = 'yaml'
+}

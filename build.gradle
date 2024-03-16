@@ -49,6 +49,7 @@ subprojects {
 		testAnnotationProcessor "org.projectlombok:lombok"
 
 		testImplementation "org.springframework.boot:spring-boot-starter-test"
+		testImplementation 'org.springframework.security:spring-security-test'
 		testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 		testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.19.1'
 	}
@@ -64,9 +65,18 @@ subprojects {
 	}
 }
 
+/**
+ * 각 api의 openapi3 스크립트 호출 :: 결과물을 /docs/openapi 로 복사한다.
+ */
 task copyOpenApiSpecsToDocsDir(type: Copy) {
-	// member 프로젝트의 openapi3 스크립트 호출 :: 결과물을 /docs/openapi 로 복사한다.
 	dependsOn ':api:member:openapi3'
+	dependsOn ':api:product:openapi3'
+
+	// member
 	from "${project(':api:member').buildDir}/api-spec/member-openapi.yaml"
+	into "${project.rootDir}/docs/openapi"
+
+	// product
+	from "${project(':api:product').buildDir}/api-spec/product-openapi.yaml"
 	into "${project.rootDir}/docs/openapi"
 }
