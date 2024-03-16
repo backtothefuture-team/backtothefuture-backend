@@ -29,13 +29,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class KakaoOAuthService implements OAuthService {
 
-    @Value("${oauth.kakao.client_id}")
+    @Value("${classpath:oauth.kakao.client_id}")
     private String clientId;
 
-    @Value("${oauth.kakao.redirect_url}")
+    @Value("${classpath:oauth.kakao.redirect_url}")
     private String redirectUrl;
 
-    @Value("${oauth.kakao.client_secret}")
+    @Value("${classpath:oauth.kakao.client_secret}")
     private String clientSecret;
 
     private final String contentType = "application/x-www-form-urlencoded;charset=utf-8";
