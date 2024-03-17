@@ -2,7 +2,7 @@ package com.backtothefuture.member.controller;
 
 import com.backtothefuture.domain.member.enums.ProviderType;
 import com.backtothefuture.domain.member.enums.RolesType;
-import com.backtothefuture.member.config.BfTestConfig;
+import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.response.KakaoAccount;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
