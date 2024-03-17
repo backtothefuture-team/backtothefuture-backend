@@ -1,3 +1,7 @@
+plugins {
+    id 'java-test-fixtures'
+}
+
 // 실행가능한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 false로 비활성화함
 // 스프링 부트 2.0 이상이라면 bootRepackage.enabled를 사용해야 함
 bootJar { enabled = false }
@@ -7,6 +11,7 @@ jar { enabled = true }
 
 ext {
     queryDslVersion = '5.0.0'
+    testcontainersVersion = "1.19.2"
 }
 
 dependencies {
@@ -20,4 +25,12 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // testContainer
+    testFixturesImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+    testFixturesImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    testFixturesImplementation "com.redis.testcontainers:testcontainers-redis-junit:1.6.4"
+    testFixturesImplementation "org.testcontainers:mysql"
+    testFixturesImplementation 'mysql:mysql-connector-java:8.0.33'
+    testFixturesImplementation "org.springframework.boot:spring-boot-starter-test"
 }
