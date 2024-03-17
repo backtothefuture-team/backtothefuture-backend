@@ -20,3 +20,29 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-security"
 }
+
+openapi3 {
+    server = 'http://localhost:8081/v1'
+    title = 'Bag To the Future'
+    description = 'API Documentation'
+    version = '0.1.0'
+    outputFileNamePrefix = 'store-openapi'
+    format = 'yaml'
+}
+
+task makeOpenapi {
+    dependsOn 'openapi3'
+    doFirst {
+        def swaggerUIFile = file("${openapi3.outputDirectory}/store-openapi.yaml")
+
+        def securitySchemesContent =  "  securitySchemes:\n" +  \
+                                      "    bearerAuth:\n" +  \
+                                      "      type: http\n" +  \
+                                      "      scheme: bearer\n" +  \
+                                      "      bearerFormat: JWT\n" + \
+                                      "security:\n" +
+                "  - bearerAuth: []"
+
+        swaggerUIFile.append securitySchemesContent
+    }
+}
