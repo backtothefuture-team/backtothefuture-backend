@@ -33,6 +33,16 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
+	 * Product Exception Handler
+	 */
+	@ExceptionHandler(ProductException.class)
+	protected ResponseEntity<ErrorResponse> handleSecurityException(ProductException ex) {
+		log.error(">>>>> ProductException : {}", ex);
+		BaseErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
+
+	/**
 	 * Security Exception Handler
 	 */
 	@ExceptionHandler(CustomSecurityException.class)

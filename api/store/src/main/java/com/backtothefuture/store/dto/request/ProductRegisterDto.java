@@ -1,4 +1,4 @@
-package com.backtothefuture.product.dto.request;
+package com.backtothefuture.store.dto.request;
 
 import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.store.Store;
@@ -25,16 +25,13 @@ public record ProductRegisterDto(
         @Max(value = 1000000, message = "최대 100만원까지 입력 가능합니다.")
         int price,
 
-        // TODO: 고민 - 재고 수량은 처음부터 입력 하는것이 맞는가?
         @Min(value = 0, message = "재고는 음수일 수 없습니다.")
         int stockQuantity, // 재고 수량, optional, default 0
 
-        String thumbnail // 썸네일 이미지, optional
+        String thumbnail // 썸네일 이미지, optional, default ""
 ) {
     public static Product toEntity(ProductRegisterDto productRegisterDto, Store store) {
-        // 썸네일 이미지 링크 기본값 ""
         String thumbnail = Optional.ofNullable(productRegisterDto.thumbnail()).orElse("");
-        // 재고 수량 기본값 0
         int stockQuantity = Optional.ofNullable(productRegisterDto.stockQuantity()).orElse(0);
 
         return Product.builder()

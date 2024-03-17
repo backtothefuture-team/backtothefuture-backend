@@ -1,8 +1,8 @@
-package com.backtothefuture.product.controller;
+package com.backtothefuture.store.controller;
 
 import com.backtothefuture.domain.response.BfResponse;
-import com.backtothefuture.product.dto.request.ProductRegisterDto;
-import com.backtothefuture.product.service.ProductService;
+import com.backtothefuture.store.dto.request.ProductRegisterDto;
+import com.backtothefuture.store.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

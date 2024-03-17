@@ -13,7 +13,6 @@ rootProject.name = 'backtothefuture'
 
 include 'api:member'
 include 'api:store'
-include 'api:product'
 include 'core:domain'
 include 'core:infra'
 include 'core:security'

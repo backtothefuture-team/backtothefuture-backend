@@ -1,4 +1,4 @@
-package com.backtothefuture.product.exception;
+package com.backtothefuture.store.exception;
 
 import com.backtothefuture.domain.common.enums.ProductErrorCode;
 import lombok.Getter;

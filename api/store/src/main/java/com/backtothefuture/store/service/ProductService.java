@@ -1,13 +1,13 @@
-package com.backtothefuture.product.service;
+package com.backtothefuture.store.service;
 
 import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
-import com.backtothefuture.product.dto.request.ProductRegisterDto;
-import com.backtothefuture.product.exception.ProductException;
 import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
+import com.backtothefuture.store.dto.request.ProductRegisterDto;
+import com.backtothefuture.store.exception.ProductException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
 [
   { "url": "./openapi/member-openapi.yaml", "name": "member-api" },
-  { "url": "./openapi/product-openapi.yaml", "name": "product-api" }
+  { "url": "./openapi/store-openapi.yaml", "name": "store-api" }
 ]

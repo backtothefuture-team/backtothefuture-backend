@@ -1,7 +1,7 @@
-package com.backtothefuture.product;
+package com.backtothefuture.store.controller;
 
-import com.backtothefuture.product.dto.request.ProductRegisterDto;
-import com.backtothefuture.product.service.ProductService;
+import com.backtothefuture.store.dto.request.ProductRegisterDto;
+import com.backtothefuture.store.service.ProductService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
@@ -32,8 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
-class ProductApplicationTests {
-
+class ProductControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
@@ -126,5 +125,4 @@ class ProductApplicationTests {
                                 .responseSchema(Schema.schema("[response] product-delete")).build()
                         )));
     }
-
 }
