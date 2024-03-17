@@ -85,7 +85,7 @@ class ProductControllerTest {
                                 .requestFields(
                                         fieldWithPath("name").type(SimpleType.STRING).description("상품 이름입니다."),
                                         fieldWithPath("description").type(SimpleType.STRING).description("상품 상세 설명입니다."),
-                                        fieldWithPath("price").type(SimpleType.NUMBER).description("상품 가격입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.").optional(),
+                                        fieldWithPath("price").type(SimpleType.NUMBER).description("상품 가격입니다. 0 이상의 수를 입력해주세요."),
                                         fieldWithPath("stockQuantity").type(SimpleType.NUMBER).description("상품 재고입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.").optional(),
                                         fieldWithPath("thumbnail").type(SimpleType.STRING).description("썸네일 이미지 입니다.").optional()
                                 )

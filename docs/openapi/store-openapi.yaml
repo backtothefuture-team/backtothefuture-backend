@@ -106,6 +106,7 @@ components:
       required:
       - description
       - name
+      - price
       type: object
       properties:
         thumbnail:
@@ -114,8 +115,7 @@ components:
           nullable: true
         price:
           type: number
-          description: 상품 가격입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.
-          nullable: true
+          description: 상품 가격입니다. 0 이상의 수를 입력해주세요.
         name:
           type: string
           description: 상품 이름입니다.
