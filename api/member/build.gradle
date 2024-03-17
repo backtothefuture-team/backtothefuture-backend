@@ -9,27 +9,17 @@ bootJar { enabled = true }
 // 외부에서 의존하기 위한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 true로 비활성화함
 jar { enabled = false }
 
-ext {
-    testcontainersVersion = "1.19.2"
-}
-
 dependencies {
     implementation project(":core:domain")
     implementation project(":core:infra")
     implementation project(":core:security")
+    implementation testFixtures(project(':core:infra'))
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    // testContainer
-    testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
-    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
-    testImplementation "org.testcontainers:mysql"
-    testImplementation 'mysql:mysql-connector-java:8.0.23'
-    testImplementation "com.redis.testcontainers:testcontainers-redis-junit:1.6.4"
 }
 
 openapi3 {
