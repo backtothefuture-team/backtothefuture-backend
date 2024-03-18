@@ -7,11 +7,8 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,7 +21,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -112,8 +108,11 @@ public class SpringSecurityConfig {
 	 */
 	private RequestMatcher[] permitAllRequestMatchers() {
 		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher(POST,"/member/login"),			// 로그인
-			antMatcher(POST, "/member/register")		// 회원가입
+			antMatcher(POST,"/member/login"),			 // 로그인
+			antMatcher(POST, "/member/register"),		 // 회원가입
+			antMatcher(POST, "/member/login/oauth"),   // 소셜 로그인
+			antMatcher(GET,"/certificate/message/**"), // 인증 번호 받기
+			antMatcher(POST,"/certificate/message") // 인증 번호 검증
 		);
 
 		return requestMatchers.toArray(RequestMatcher[]::new);
