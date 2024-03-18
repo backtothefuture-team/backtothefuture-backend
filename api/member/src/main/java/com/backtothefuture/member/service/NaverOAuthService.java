@@ -29,9 +29,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @RequiredArgsConstructor
 public class NaverOAuthService implements OAuthService {
 
-    @Value("${classpath:oauth.naver.client_id}")
+    @Value("${oauth.naver.client_id}")
     private String clientId;
-    @Value("${classpath:oauth.naver.client_secret}")
+    @Value("${oauth.naver.client_secret}")
     private String clientSecret;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
