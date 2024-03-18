@@ -65,7 +65,7 @@ class ProductControllerTest {
                 .build();
         when(productService.registerProduct(storeId, productRegisterDto)).thenReturn(1L);
 
-        this.mockMvc.perform(post("/products/{storeId}", 1)
+        this.mockMvc.perform(post("/store/{storeId}/products", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productRegisterDto))
                         .header("Authorization", "Bearer ${JWT Token}"))
@@ -104,7 +104,7 @@ class ProductControllerTest {
     @WithMockUser("USER")
     @DisplayName("상품 삭제 테스트")
     void deleteProductTest() throws Exception {
-        this.mockMvc.perform(delete("/products/{storeId}/{productId}", 1, 1)
+        this.mockMvc.perform(delete("/store/{storeId}/products/{productId}", 1, 1)
                         .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(status().isNoContent())
                 .andDo(document("delete-product",

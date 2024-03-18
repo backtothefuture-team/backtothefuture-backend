@@ -21,14 +21,14 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/products")
+@RequestMapping("/store")
 public class ProductController {
 
     private final ProductService productService;
 
     // 상품 등록 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
-    @PostMapping("/{storeId}")
+    @PostMapping("/{storeId}/products")
     public ResponseEntity<BfResponse<?>> registerProduct(
             @PathVariable("storeId") Long storeId,
             @Valid @RequestBody ProductRegisterDto productRegisterDto
@@ -39,7 +39,7 @@ public class ProductController {
 
     // 상품 삭제 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
-    @DeleteMapping("/{storeId}/{productId}")
+    @DeleteMapping("/{storeId}/products/{productId}")
     public ResponseEntity<BfResponse<?>> deleteProduct(
             @PathVariable("storeId") Long storeId,
             @PathVariable("productId") Long productId

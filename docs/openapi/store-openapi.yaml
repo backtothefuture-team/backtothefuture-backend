@@ -7,7 +7,7 @@ servers:
 - url: http://localhost:8081/v1
 tags: []
 paths:
-  /products/{storeId}:
+  /store/{storeId}/products:
     post:
       tags:
       - products
@@ -48,7 +48,7 @@ paths:
                 register-product:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
                     product_id\":1}}"
-  /products/{storeId}/{productId}:
+  /store/{storeId}/products/{productId}:
     delete:
       tags:
       - products
