@@ -113,7 +113,9 @@ public class SpringSecurityConfig {
 	private RequestMatcher[] permitAllRequestMatchers() {
 		List<RequestMatcher> requestMatchers = List.of(
 			antMatcher(POST,"/member/login"),			// 로그인
-			antMatcher(POST, "/member/register")		// 회원가입
+			antMatcher(POST, "/member/register"),		// 회원가입
+			antMatcher(GET, "/store/{storeId}/products/{productId}"),		// 상품 단건 조회 API
+			antMatcher(GET, "/products")									// 상품 전체 조회 API
 		);
 
 		return requestMatchers.toArray(RequestMatcher[]::new);
@@ -125,8 +127,8 @@ public class SpringSecurityConfig {
 	private RequestMatcher[] AuthRequestMatchers() {
 		List<RequestMatcher> requestMatchers = List.of(
 			antMatcher(POST, "/store/register"),			// 가게 등록
-			antMatcher(POST, "/products/**"),				// 상품 등록
-			antMatcher(DELETE, "/products/**")			// 상품 삭제
+			antMatcher(POST, "/store/{storeId}/products"),				// 상품 등록
+			antMatcher(DELETE, "/store/{storeId}/products/{productId}")			// 상품 삭제
 		);
 
 		return requestMatchers.toArray(RequestMatcher[]::new);
