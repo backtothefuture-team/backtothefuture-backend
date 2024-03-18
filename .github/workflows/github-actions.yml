@@ -68,7 +68,8 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:latest
       # swagger
-      - uses: docker/build-push-action@v5
+      - name: swagger > Build and Push Docker images
+        uses: docker/build-push-action@v5
         with:
           context: docs
           file: docs/Dockerfile

@@ -30,7 +30,7 @@ services:
   bagtothefuture-store:
     image: ${DOCKER_USERNAME}/bagtothefuture-store:latest # member api 이미지
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/~./test # 데이터소스 URL을 덮어쓰는 설정
