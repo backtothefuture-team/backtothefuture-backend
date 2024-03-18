@@ -33,4 +33,8 @@ dependencies {
     testFixturesImplementation "org.testcontainers:mysql"
     testFixturesImplementation 'mysql:mysql-connector-java:8.0.33'
     testFixturesImplementation "org.springframework.boot:spring-boot-starter-test"
+
+    //coolsms
+    implementation 'net.nurigo:sdk:4.3.0'
+
 }

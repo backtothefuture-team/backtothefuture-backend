@@ -16,5 +16,6 @@ include 'api:store'
 include 'core:domain'
 include 'core:infra'
 include 'core:security'
-
+include 'api:event'
+findProject(':api:event')?.name = 'event'
 
