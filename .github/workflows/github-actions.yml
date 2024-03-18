@@ -31,6 +31,7 @@ jobs:
       - name: Build with Gradle
         run: |
           ./gradlew -p api/member build -x test
+          ./gradlew -p api/store build -x test
       # 멀티플랫폼 이미지 빌드 환경 설정
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
