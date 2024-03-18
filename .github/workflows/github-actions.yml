@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - dev
+      - feature/#67
 
 env:
   CURRENT_VERSION: '0.1.0'
@@ -44,7 +45,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       # docker 이미지 빌드 / dockerhub 에 푸시
       # api/member
-      - name: Build and Push Docker images
+      - name: [member] Build and Push Docker images
         uses: docker/build-push-action@v5
         with:
           context: api/member
@@ -54,6 +55,17 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:latest
+      # api/store
+      - name: [store] Build and Push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: api/store
+          file: api/store/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:${{ env.CURRENT_VERSION }}
+            ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:latest
       # swagger
       - uses: docker/build-push-action@v5
         with:
