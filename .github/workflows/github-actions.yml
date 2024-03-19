@@ -7,7 +7,7 @@ on:
       - dev
 
 env:
-  CURRENT_VERSION: '0.1.0'
+  CURRENT_VERSION: "0.1.0"
 
 jobs:
   build-image-and-push:
@@ -21,8 +21,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
       # gradle 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.1.0
@@ -30,6 +30,7 @@ jobs:
       - name: Build with Gradle
         run: |
           ./gradlew -p api/member build -x test
+          ./gradlew -p api/store build -x test
       # 멀티플랫폼 이미지 빌드 환경 설정
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -44,7 +45,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       # docker 이미지 빌드 / dockerhub 에 푸시
       # api/member
-      - name: Build and Push Docker images
+      - name: member api > Build and Push Docker images
         uses: docker/build-push-action@v5
         with:
           context: api/member
@@ -54,8 +55,20 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-member:latest
+      # api/store
+      - name: store api > Build and Push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: api/store
+          file: api/store/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:${{ env.CURRENT_VERSION }}
+            ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:latest
       # swagger
-      - uses: docker/build-push-action@v5
+      - name: swagger > Build and Push Docker images
+        uses: docker/build-push-action@v5
         with:
           context: docs
           file: docs/Dockerfile
