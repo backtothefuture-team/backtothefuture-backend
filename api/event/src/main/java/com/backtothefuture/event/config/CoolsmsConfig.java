@@ -12,7 +12,7 @@ public class CoolsmsConfig {
     @Value("${spring.certification.coolsms.api-key}")
     private String coolsmsApiKey;
 
-    @Value("${spring.certification.coolsms.api-secret-key}")
+    @Value("${spring.certification.coolsms.secret-key}")
     private String coolsmsApiSecretKey;
 
     private final String coolsmsDomain = "https://api.coolsms.co.kr";

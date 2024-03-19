@@ -23,7 +23,7 @@ public class CertificateController {
     @GetMapping("/message/{phoneNumber}") // 인증 번호 발급
     public ResponseEntity<BfResponse<?>> getCertificateNumber(@PathVariable String phoneNumber) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BfResponse<>(CREATE, Map.of("certification_id",
+                .body(new BfResponse<>(CREATE, Map.of("certification_number",
                         certificationService.getCertificateNumber(phoneNumber))));
     }
 
