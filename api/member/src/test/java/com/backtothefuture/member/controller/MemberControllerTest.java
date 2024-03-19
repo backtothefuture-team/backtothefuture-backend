@@ -195,5 +195,6 @@ class MemberControllerTest extends BfTestConfig {
                     )
                     .responseSchema(Schema.schema("LoginTokenDto")).build()
                 )));
+        // TODO : 문자 인증 test 코드 추ㄱ
     }
 }
