@@ -25,7 +25,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-// @Service("naverOAuthService")
+@Service("naverOAuthService")
 @RequiredArgsConstructor
 public class NaverOAuthService implements OAuthService {
 
