@@ -12,11 +12,12 @@ jar { enabled = true }
 ext {
     queryDslVersion = '5.0.0'
     testcontainersVersion = "1.19.2"
+    mysqlVersion = "8.0.29"
 }
 
 dependencies {
-    // h2
-    runtimeOnly 'com.h2database:h2'
+    // mysql
+    implementation "mysql:mysql-connector-java:${mysqlVersion}"
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
@@ -33,4 +34,6 @@ dependencies {
     testFixturesImplementation "org.testcontainers:mysql"
     testFixturesImplementation 'mysql:mysql-connector-java:8.0.33'
     testFixturesImplementation "org.springframework.boot:spring-boot-starter-test"
+    testFixturesImplementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
 }
