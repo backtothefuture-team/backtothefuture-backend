@@ -30,11 +30,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
-	private final MemberService memberService;
-	@Qualifier("kakaoOAuthService")
-	private final OAuthService kakaoOAuthService;
-	@Qualifier("naverOAuthService")
-	private final OAuthService naverOAuthService;
+
+	 private final MemberService memberService;
+	 @Qualifier("kakaoOAuthService")
+	 private final OAuthService kakaoOAuthService;
+	 @Qualifier("naverOAuthService")
+	 private final OAuthService naverOAuthService;
 	@PostMapping("/login")
 	public ResponseEntity<BfResponse<?>> login(
 		@Valid @RequestBody MemberLoginDto memberLoginDto) {
@@ -48,23 +49,23 @@ public class MemberController {
 			.body(new BfResponse<>(CREATE, Map.of("id", memberService.registerMember(reqMemberDto))));
 	}
 
-	@PostMapping("/login/oauth")
-	public ResponseEntity<BfResponse<?>> oauthLogin(
-		@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
+	 @PostMapping("/login/oauth")
+	 public ResponseEntity<BfResponse<?>> oauthLogin(
+	 	@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
 
-		switch(OAuthLoginDto.providerType()){
-			case KAKAO -> {
-				LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
-				return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
-			}
-			case NAVER -> {
-				LoginTokenDto loginTokenDto = naverOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
-				return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
-			}
-			/* google 소셜 로그인 추가 시 사용
-			case GOOGLE -> {
-			} */
-			default -> throw new OAuthException(OAuthErrorCode.NOT_MATCH_OAUTH_TYPE);
-		}
-	}
+	 	switch(OAuthLoginDto.providerType()){
+	 		case KAKAO -> {
+	 			LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
+	 			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
+	 		}
+	 		case NAVER -> {
+	 			LoginTokenDto loginTokenDto = naverOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
+	 			return ResponseEntity.ok(new BfResponse<>(loginTokenDto));
+	 		}
+	 		/* google 소셜 로그인 추가 시 사용
+	 		case GOOGLE -> {
+	 		} */
+	 		default -> throw new OAuthException(OAuthErrorCode.NOT_MATCH_OAUTH_TYPE);
+	 	}
+	 }
 }

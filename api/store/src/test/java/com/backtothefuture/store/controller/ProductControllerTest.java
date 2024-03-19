@@ -1,6 +1,8 @@
 package com.backtothefuture.store.controller;
 
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
+import com.backtothefuture.store.dto.request.ProductUpdateDto;
+import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.service.ProductService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
@@ -21,12 +23,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.ResourceDocumentation.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,6 +56,74 @@ class ProductControllerTest {
     }
 
     @Test
+    @DisplayName("상품 단건 조회 테스트")
+    void getProductTest() throws Exception {
+        // given
+        Long storeId = 1L;
+        Long productId = 1L;
+        ProductResponseDto productResponseDto = new ProductResponseDto(productId, "상품1", "상품1 설명", 10000, 10, "thumbnail1");
+        when(productService.getProduct(storeId, productId)).thenReturn(productResponseDto);
+
+        // when & then
+        this.mockMvc.perform(get("/store/{storeId}/products/{productId}", storeId, productId)
+                        .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(status().isOk())
+                .andDo(document("get-product-by-store",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("상품 단건 조회 API입니다.")
+                                .tags("products")
+                                .summary("상품 단건 조회 API")
+                                .pathParameters(
+                                        parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID"),
+                                        parameterWithName("productId").type(SimpleType.NUMBER).description("상품 ID")
+                                )
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data.product.id").type(SimpleType.NUMBER).description("상품 ID"),
+                                        fieldWithPath("data.product.name").type(SimpleType.STRING).description("상품 이름"),
+                                        fieldWithPath("data.product.description").type(SimpleType.STRING).description("상품 설명"),
+                                        fieldWithPath("data.product.price").type(SimpleType.NUMBER).description("상품 가격"),
+                                        fieldWithPath("data.product.stockQuantity").type(SimpleType.NUMBER).description("재고 수량"),
+                                        fieldWithPath("data.product.thumbnail").type(SimpleType.STRING).description("썸네일 이미지 URL")
+                                )
+                                .responseSchema(Schema.schema("[response] get-product")).build()
+                        )));
+    }
+
+    @Test
+    @DisplayName("모든 상품 조회 테스트")
+    void getAllProductsTest() throws Exception {
+        // given
+        List<ProductResponseDto> products = List.of(new ProductResponseDto(1L, "상품1", "상품1 설명", 10000, 10, "thumbnail1"),
+                new ProductResponseDto(2L, "상품2", "상품2 설명", 20000, 20, "thumbnail2"));
+        when(productService.getAllProducts()).thenReturn(products);
+
+        // when & then
+        this.mockMvc.perform(get("/products")
+                        .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(status().isOk())
+                .andDo(document("get-all-products",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("모든 상품 조회 API입니다.")
+                                .tags("products")
+                                .summary("모든 상품 조회 API")
+                                // response
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data.products[].id").type(SimpleType.NUMBER).description("상품 ID"),
+                                        fieldWithPath("data.products[].name").type(SimpleType.STRING).description("상품 이름"),
+                                        fieldWithPath("data.products[].description").type(SimpleType.STRING).description("상품 설명"),
+                                        fieldWithPath("data.products[].price").type(SimpleType.NUMBER).description("상품 가격"),
+                                        fieldWithPath("data.products[].stockQuantity").type(SimpleType.NUMBER).description("재고 수량"),
+                                        fieldWithPath("data.products[].thumbnail").type(SimpleType.STRING).description("썸네일 이미지 URL")
+                                )
+                                .responseSchema(Schema.schema("[response] get-all-products")).build()
+                        )));
+    }
+
+    @Test
     @WithMockUser("USER")
     @DisplayName("상품 등록 테스트")
     void registerProductTest() throws Exception {
@@ -65,7 +138,7 @@ class ProductControllerTest {
                 .build();
         when(productService.registerProduct(storeId, productRegisterDto)).thenReturn(1L);
 
-        this.mockMvc.perform(post("/products/{storeId}", 1)
+        this.mockMvc.perform(post("/store/{storeId}/products", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productRegisterDto))
                         .header("Authorization", "Bearer ${JWT Token}"))
@@ -86,8 +159,8 @@ class ProductControllerTest {
                                         fieldWithPath("name").type(SimpleType.STRING).description("상품 이름입니다."),
                                         fieldWithPath("description").type(SimpleType.STRING).description("상품 상세 설명입니다."),
                                         fieldWithPath("price").type(SimpleType.NUMBER).description("상품 가격입니다. 0 이상의 수를 입력해주세요."),
-                                        fieldWithPath("stockQuantity").type(SimpleType.NUMBER).description("상품 재고입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.").optional(),
-                                        fieldWithPath("thumbnail").type(SimpleType.STRING).description("썸네일 이미지 입니다.").optional()
+                                        fieldWithPath("stockQuantity").type(SimpleType.NUMBER).optional().description("상품 재고입니다. 0 이상의 수를 입력해주세요. 기본값은 0입니다.").optional(),
+                                        fieldWithPath("thumbnail").type(SimpleType.STRING).optional().description("썸네일 이미지 입니다.")
                                 )
                                 .requestSchema(Schema.schema("[request] product-register"))
                                 // response
@@ -102,9 +175,75 @@ class ProductControllerTest {
 
     @Test
     @WithMockUser("USER")
+    @DisplayName("상품 업데이트 테스트")
+    void updateProductTest() throws Exception {
+        // given
+        Long storeId = 1L;
+        Long productId = 1L;
+
+        ProductUpdateDto productUpdateDto = ProductUpdateDto.builder()
+                .name("업데이트된 상품 이름")
+                .description("업데이트된 상품 설명")
+                .price(15000)
+                .stockQuantity(5)
+                .thumbnail("업데이트된 이미지 링크")
+                .build();
+
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                .id(productId)
+                .name(productUpdateDto.name())
+                .description(productUpdateDto.description())
+                .price(productUpdateDto.price())
+                .stockQuantity(productUpdateDto.stockQuantity())
+                .thumbnail(productUpdateDto.thumbnail())
+                .build();
+
+        when(productService.partialUpdateProduct(eq(storeId), eq(productId), any(ProductUpdateDto.class))).thenReturn(productResponseDto);
+
+        // when & then
+        this.mockMvc.perform(patch("/store/{storeId}/products/{productId}", storeId, productId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(productUpdateDto))
+                        .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(status().isOk())
+                .andDo(document("update-product",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("상품 업데이트 API 입니다. 업데이트 할 항목만 보내주세요.")
+                                .tags("products")
+                                .summary("상품 업데이트 API")
+                                // request
+                                .pathParameters(
+                                        parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID"),
+                                        parameterWithName("productId").type(SimpleType.NUMBER).description("상품 ID")
+                                )
+                                .requestFields(
+                                        fieldWithPath("name").type(SimpleType.STRING).optional().description("상품 이름입니다."),
+                                        fieldWithPath("description").type(SimpleType.STRING).optional().description("상품 상세 설명입니다."),
+                                        fieldWithPath("price").type(SimpleType.NUMBER).optional().description("상품 가격입니다. 0 이상의 수를 입력해주세요."),
+                                        fieldWithPath("stockQuantity").type(SimpleType.NUMBER).optional().description("상품 재고입니다. 0 이상의 수를 입력해주세요."),
+                                        fieldWithPath("thumbnail").type(SimpleType.STRING).optional().description("썸네일 이미지 입니다.")
+                                )
+                                .requestSchema(Schema.schema("[reqyest] update-product"))
+                                // response
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data.product.id").type(SimpleType.NUMBER).description("상품 ID"),
+                                        fieldWithPath("data.product.name").type(SimpleType.STRING).description("상품 이름"),
+                                        fieldWithPath("data.product.description").type(SimpleType.STRING).description("상품 설명"),
+                                        fieldWithPath("data.product.price").type(SimpleType.NUMBER).description("상품 가격"),
+                                        fieldWithPath("data.product.stockQuantity").type(SimpleType.NUMBER).description("재고 수량"),
+                                        fieldWithPath("data.product.thumbnail").type(SimpleType.STRING).description("썸네일 이미지 URL")
+                                )
+                                .responseSchema(Schema.schema("[response] update-product")).build()
+                        )));
+    }
+
+    @Test
+    @WithMockUser("USER")
     @DisplayName("상품 삭제 테스트")
     void deleteProductTest() throws Exception {
-        this.mockMvc.perform(delete("/products/{storeId}/{productId}", 1, 1)
+        this.mockMvc.perform(delete("/store/{storeId}/products/{productId}", 1, 1)
                         .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(status().isNoContent())
                 .andDo(document("delete-product",
