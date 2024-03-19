@@ -41,161 +41,163 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
-	private final JwtProvider jwtProvider;
-	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtProvider jwtProvider;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-	/**
-	 * 패스워드 인코더
-	 */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
+    /**
+     * 패스워드 인코더
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
-	/**
-	 * 로그인 인증 할때 사용함
-	 */
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-		return authConfig.getAuthenticationManager();
-	}
+    /**
+     * 로그인 인증 할때 사용함
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
-	/**
-	 * public http
-	 */
-	@Bean
-	public SecurityFilterChain permitAllFilterChain(HttpSecurity http) throws Exception {
-		httpSecuritySetting(http);
-		http
-			.securityMatchers(matcher -> matcher
-				.requestMatchers(permitAllRequestMatchers()))
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers(permitAllRequestMatchers()).permitAll()
-				.anyRequest().authenticated()
-			);
-		return http.build();
-	}
+    /**
+     * public http
+     */
+    @Bean
+    public SecurityFilterChain permitAllFilterChain(HttpSecurity http) throws Exception {
+        httpSecuritySetting(http);
+        http
+                .securityMatchers(matcher -> matcher
+                        .requestMatchers(permitAllRequestMatchers()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(permitAllRequestMatchers()).permitAll()
+                        .anyRequest().authenticated()
+                );
+        return http.build();
+    }
 
-	/**
-	 * 토큰 인증 및 권한이 필요한 http
-	 */
-	@Bean
-	public SecurityFilterChain authenticatedFilterChain(HttpSecurity http) throws Exception {
-		httpSecuritySetting(http);
-		http
-			.securityMatchers(matcher -> matcher
-				.requestMatchers(AuthRequestMatchers()))
-			.authorizeHttpRequests(auth -> auth
-					.requestMatchers(AuthRequestMatchers()).hasAuthority(ROLE_USER.name())
-					.anyRequest().authenticated()
-				)
-			.exceptionHandling(exception -> exception
-					.accessDeniedHandler(customAccessDeniedHandler)
-				)
-			.addFilterBefore(new JwtFilter(jwtProvider), ExceptionTranslationFilter.class);
-		return http.build();
-	}
+    /**
+     * 토큰 인증 및 권한이 필요한 http
+     */
+    @Bean
+    public SecurityFilterChain authenticatedFilterChain(HttpSecurity http) throws Exception {
+        httpSecuritySetting(http);
+        http
+                .securityMatchers(matcher -> matcher
+                        .requestMatchers(AuthRequestMatchers()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(AuthRequestMatchers()).hasAuthority(ROLE_USER.name())
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
+                .addFilterBefore(new JwtFilter(jwtProvider), ExceptionTranslationFilter.class);
+        return http.build();
+    }
 
-	@Bean
-	public SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
-		httpSecuritySetting(http);
-		http
-			.securityMatchers(matcher -> matcher
-				.requestMatchers(OPTIONS, "/**")
-			);
+    @Bean
+    public SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
+        httpSecuritySetting(http);
+        http
+                .securityMatchers(matcher -> matcher
+                        .requestMatchers(OPTIONS, "/**")
+                );
 
-		return http.build();
-	}
+        return http.build();
+    }
 
-	/**
-	 * permitAll endpoint
-	 */
-	private RequestMatcher[] permitAllRequestMatchers() {
-		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher(POST,"/member/login"),			// 로그인
-			antMatcher(POST, "/member/register"),		// 회원가입
-			antMatcher(GET, "/store/{storeId}/products/{productId}"),		// 상품 단건 조회 API
-			antMatcher(GET, "/products")									// 상품 전체 조회 API
-		);
+    /**
+     * permitAll endpoint
+     */
+    private RequestMatcher[] permitAllRequestMatchers() {
+        List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(POST, "/member/login"),            // 로그인
+                antMatcher(POST, "/member/register"),        // 회원가입
+                antMatcher(GET, "/store/{storeId}/products/{productId}"),        // 상품 단건 조회 API
+                antMatcher(GET, "/products")                                    // 상품 전체 조회 API
+        );
 
-		return requestMatchers.toArray(RequestMatcher[]::new);
-	}
+        return requestMatchers.toArray(RequestMatcher[]::new);
+    }
 
-	/**
-	 * JWT Authentication, Roles Authorization endpoint
-	 */
-	private RequestMatcher[] AuthRequestMatchers() {
-		List<RequestMatcher> requestMatchers = List.of(
-			antMatcher(POST, "/store/register"),							// 가게 등록
-			antMatcher(POST, "/store/{storeId}/products"),				// 상품 등록
-			antMatcher(DELETE, "/store/{storeId}/products/{productId}"),	// 상품 삭제
-			antMatcher(PATCH, "/store/{storeId}/products/{productId}")    // 상품 수정
-		);
+    /**
+     * JWT Authentication, Roles Authorization endpoint
+     */
+    private RequestMatcher[] AuthRequestMatchers() {
+        List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(POST, "/store/register"),                            // 가게 등록
+                antMatcher(POST, "/store/{storeId}/products"),                // 상품 등록
+                antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
+                antMatcher(PATCH, "/store/{storeId}/products/{productId}"),    // 상품 수정
+                antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
+                antMatcher(POST, "/certificate/message") // 인증 번호 검증
+        );
 
-		return requestMatchers.toArray(RequestMatcher[]::new);
-	}
+        return requestMatchers.toArray(RequestMatcher[]::new);
+    }
 
-	/**
-	 * cors 설정
-	 */
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
+    /**
+     * cors 설정
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
-		// 허용할 Origin(출처)d
-		configuration.setAllowedOrigins(
-			Arrays.asList(
-				"http://localhost:8080",
-				"http://127.0.0.1:8080",
-				"http://localhost:3000",
-				"http://127.0.0.1:3000",
-				"http://localhost:8000",
-				"http://127.0.0.1:8000"
-			)
-		);
+        // 허용할 Origin(출처)d
+        configuration.setAllowedOrigins(
+                Arrays.asList(
+                        "http://localhost:8080",
+                        "http://127.0.0.1:8080",
+                        "http://localhost:3000",
+                        "http://127.0.0.1:3000",
+                        "http://localhost:8000",
+                        "http://127.0.0.1:8000"
+                )
+        );
 
-		// 허용할 HTTP 메서드
-		configuration.setAllowedMethods(
-			Arrays.asList(
-				"GET",
-				"POST",
-				"PUT",
-				"PATCH",
-				"DELETE"
-			)
-		);
+        // 허용할 HTTP 메서드
+        configuration.setAllowedMethods(
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "PATCH",
+                        "DELETE"
+                )
+        );
 
-		// 허용할 헤더
-		configuration.setAllowedHeaders(
-			Arrays.asList(
-				"Authorization",
-				"Cache-Control",
-				"Content-Type"
-			)
-		);
+        // 허용할 헤더
+        configuration.setAllowedHeaders(
+                Arrays.asList(
+                        "Authorization",
+                        "Cache-Control",
+                        "Content-Type"
+                )
+        );
 
-		// 쿠키 및 인증 정보 전송
-		configuration.setAllowCredentials(true);
+        // 쿠키 및 인증 정보 전송
+        configuration.setAllowCredentials(true);
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
-	private void httpSecuritySetting(HttpSecurity http) throws Exception {
-		http
-			// jwt, OAuth 토큰을 사용 -> OAuth의 경우는 이슈가 발생할 수 있음 OAuth 구성할때 체크
-			.csrf(AbstractHttpConfigurer::disable)
-			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // cors 정책
-			.formLogin(AbstractHttpConfigurer::disable) // form 기반 로그인을 사용하지 않음.
-			.httpBasic(AbstractHttpConfigurer::disable) // 기본으로 제공하는 http 사용하지 않음
-			.rememberMe(AbstractHttpConfigurer::disable) // 토큰 기반이므로 세션 기반의 인증 사용하지 않음
-			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // x-Frame-Options 헤더 비활성화, 클릭재킹 공격 관련
-			.logout(AbstractHttpConfigurer::disable) // stateful 하지 않기때문에 필요하지 않음
-			.sessionManagement(session -> session
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성을 하지 않음
-			)
-			.anonymous(AbstractHttpConfigurer::disable); // 익명 사용자 접근 제한, 모든 요청이 인증 필요
+    private void httpSecuritySetting(HttpSecurity http) throws Exception {
+        http
+                // jwt, OAuth 토큰을 사용 -> OAuth의 경우는 이슈가 발생할 수 있음 OAuth 구성할때 체크
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // cors 정책
+                .formLogin(AbstractHttpConfigurer::disable) // form 기반 로그인을 사용하지 않음.
+                .httpBasic(AbstractHttpConfigurer::disable) // 기본으로 제공하는 http 사용하지 않음
+                .rememberMe(AbstractHttpConfigurer::disable) // 토큰 기반이므로 세션 기반의 인증 사용하지 않음
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // x-Frame-Options 헤더 비활성화, 클릭재킹 공격 관련
+                .logout(AbstractHttpConfigurer::disable) // stateful 하지 않기때문에 필요하지 않음
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성을 하지 않음
+                )
+                .anonymous(AbstractHttpConfigurer::disable); // 익명 사용자 접근 제한, 모든 요청이 인증 필요
 
-	}
+    }
 }
