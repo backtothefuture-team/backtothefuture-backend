@@ -34,4 +34,6 @@ dependencies {
     testFixturesImplementation "org.testcontainers:mysql"
     testFixturesImplementation 'mysql:mysql-connector-java:8.0.33'
     testFixturesImplementation "org.springframework.boot:spring-boot-starter-test"
+    testFixturesImplementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
 }

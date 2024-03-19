@@ -1,5 +1,9 @@
 package com.backtothefuture.infra.config;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -7,10 +11,13 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvEntry;
+
 @Testcontainers
 public abstract class BfTestConfig {
 	@Container
-	private static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8")
+	static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8")
 		.withUsername("test_user")
 		.withPassword("1234")
 		.withDatabaseName("");
@@ -20,7 +27,7 @@ public abstract class BfTestConfig {
 		.withExposedPorts(6379);
 
 	@DynamicPropertySource
-	public static void databaseProperties(DynamicPropertyRegistry registry) {
+	static void databaseProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
 		registry.add("spring.datasource.username", mySQLContainer::getUsername);
 		registry.add("spring.datasource.password", mySQLContainer::getPassword);
@@ -31,5 +38,16 @@ public abstract class BfTestConfig {
 	static void redisProperties(DynamicPropertyRegistry registry) {
 		registry.add("spring.redis.host", redisContainer::getHost);
 		registry.add("spring.redis.port", () -> redisContainer.getFirstMappedPort());
+	}
+
+	// .env 환경변수 등록
+	@DynamicPropertySource
+	static void dotenvProperties(DynamicPropertyRegistry registry) {
+		Dotenv dotenv = Dotenv.configure()
+			.directory("./../../")
+			.load();
+		dotenv.entries().forEach(entry -> {
+			registry.add(entry.getKey(), entry::getValue);
+		});
 	}
 }
