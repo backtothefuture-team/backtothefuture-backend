@@ -1,11 +1,7 @@
 package com.backtothefuture.member.controller;
 
-import com.backtothefuture.domain.member.enums.ProviderType;
-import com.backtothefuture.domain.member.enums.RolesType;
+
 import com.backtothefuture.infra.config.BfTestConfig;
-import com.backtothefuture.member.dto.request.OAuthLoginDto;
-import com.backtothefuture.member.dto.response.KakaoAccount;
-import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.service.KakaoOAuthService;
 import com.backtothefuture.member.service.MemberService;
@@ -49,7 +45,7 @@ class MemberControllerTest extends BfTestConfig {
     @MockBean
     private MemberService memberService;
 
-    @MockBean
+    @MockBean(name ="kakaoOAuthService")
     private KakaoOAuthService kakaoOAuthService;
 
     @Autowired

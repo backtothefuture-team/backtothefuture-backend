@@ -25,7 +25,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
-// @Service("kakaoOAuthService")
+@Service("kakaoOAuthService")
 @RequiredArgsConstructor
 public class KakaoOAuthService implements OAuthService {
 
