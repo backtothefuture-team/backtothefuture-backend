@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    include: domain, infra, security
+    active: dev
+  jpa:
+    open-in-view: false # view, Controller 단에서 Lazy를 사용하지 않음
+    properties:
+      hibernate:
+        show_sql: true # sql query console 창에 표시 여부
+        format_sql: true # console 창에 보여줄때 format 여부
+
+  certification:
+    coolsms:
+      fromPhoneNumber: ${COOLSMS_FROM_PHONE_NUMBER}
+      api-key: ${COOLSMS_API_KEY}
+      api-secret-key: ${COOLSMS_API_SECRET_KEY}
+
+server:
+  port: 8084
+  servlet:
+    context-path: /v1
