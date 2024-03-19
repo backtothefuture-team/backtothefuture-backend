@@ -13,7 +13,7 @@ public class RandomNumUtil {
         Random random = new Random(System.currentTimeMillis()); // 시드 설정
 
         return String.valueOf(
-                random.nextInt(9 * (int) Math.pow(10, length)) + (int) Math.pow(10, length));
+                random.nextInt(9 * (int) Math.pow(10, length - 1)) + (int) Math.pow(10, length - 1));
     }
 
 }
