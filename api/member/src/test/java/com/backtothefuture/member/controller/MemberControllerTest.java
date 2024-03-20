@@ -8,8 +8,8 @@ import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.response.KakaoAccount;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
-import com.backtothefuture.member.service.KakaoOAuthService;
 import com.backtothefuture.member.service.MemberService;
+import com.backtothefuture.member.service.OAuthService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +51,7 @@ class MemberControllerTest extends BfTestConfig {
     private MemberService memberService;
 
     @MockBean(name ="kakaoOAuthService")
-    private KakaoOAuthService kakaoOAuthService;
+    private OAuthService kakaoOAuthService;
 
     @Autowired
     private ObjectMapper objectMapper;
