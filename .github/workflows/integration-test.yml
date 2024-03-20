@@ -15,6 +15,14 @@ jobs:
     # jdk 17 설정
     steps:
       - uses: actions/checkout@v4
+      # Github Secret to .env
+      - name: Create .env file
+        run: |
+          echo OAUTH_KAKAO_CLIENTID=${{ secrets.OAUTH_KAKAO_CLIENTID }} >> .env
+          echo OAUTH_KAKAO_REDIRECT_URL=${{ secrets.OAUTH_KAKAO_REDIRECT_URL }} >> .env
+          echo OAUTH_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }} >> .env
+          echo OAUTH_NAVER_CLIENTID=${{ secrets.OAUTH_NAVER_CLIENTID }} >> .env
+          echo OAUTH_NAVER_CLIENT_SECRET=${{ secrets.OAUTH_NAVER_CLIENT_SECRET }} >> .env
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:

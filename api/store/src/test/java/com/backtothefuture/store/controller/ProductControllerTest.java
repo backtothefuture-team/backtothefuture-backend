@@ -1,5 +1,6 @@
 package com.backtothefuture.store.controller;
 
+import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
-class ProductControllerTest {
+class ProductControllerTest extends BfTestConfig {
     private MockMvc mockMvc;
 
     @MockBean
