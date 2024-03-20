@@ -1,7 +1,7 @@
 package com.backtothefuture.event.controller;
 
 import com.backtothefuture.domain.response.BfResponse;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequest;
+import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
 import com.backtothefuture.event.service.CertificateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CertificateController {
     // TODO : 휴대폰 번호와 인증 번호를 pathvariable 형태로 보내도 되는가...?
     @PostMapping("/message") // 인증 번호 검증
     public ResponseEntity<BfResponse<?>> verifyCertificateNumber(
-            @Valid @RequestBody VerifyCertificateRequest request) {
+            @Valid @RequestBody VerifyCertificateRequestDto request) {
         certificationService.verifyCertificateNumber(request);
         return ResponseEntity.ok(new BfResponse<>(null));
     }

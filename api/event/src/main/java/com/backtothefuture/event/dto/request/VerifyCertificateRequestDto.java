@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-public record VerifyCertificateRequest(
+public record VerifyCertificateRequestDto(
         @Size(min = 3, max = 3, message = "핸드폰 번호를 올바르게 입력해 주세요.")
         @NumericStringList(message = "핸드폰 번호는 숫자만 입력할 수 있습니다.")
         List<String> phoneNumber,

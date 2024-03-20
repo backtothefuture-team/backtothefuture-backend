@@ -1,7 +1,7 @@
 package com.backtothefuture.event;
 
 import com.backtothefuture.domain.common.util.RandomNumUtil;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequest;
+import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
 import com.backtothefuture.event.service.CertificateService;
 import com.backtothefuture.infra.config.BfTestConfig;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -94,7 +94,7 @@ class EventApplicationTests extends BfTestConfig {
         verifyMap.put("phoneNumber", List.of("010", "1234", "5678"));
         verifyMap.put("certificationNumber", randomNum);
 
-        VerifyCertificateRequest request = new VerifyCertificateRequest( List.of("010", "1234", "5678"), randomNum);
+        VerifyCertificateRequestDto request = new VerifyCertificateRequestDto( List.of("010", "1234", "5678"), randomNum);
 
         //when,then
         this.mockMvc.perform(post("/certificate/message")

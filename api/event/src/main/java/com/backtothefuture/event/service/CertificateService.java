@@ -3,7 +3,7 @@ package com.backtothefuture.event.service;
 import com.backtothefuture.domain.common.enums.CertificateErrorCode;
 import com.backtothefuture.domain.common.repository.RedisRepository;
 import com.backtothefuture.domain.common.util.RandomNumUtil;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequest;
+import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
 import com.backtothefuture.event.exception.MessageException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class CertificateService {
         return randomNum;
     }
 
-    public void verifyCertificateNumber(VerifyCertificateRequest request) {
+    public void verifyCertificateNumber(VerifyCertificateRequestDto request) {
         // 유효 번호 검증
         if (!validateCertificationNumber(request.getPhoneNumber(), request.certificationNumber()))
             throw new MessageException(CertificateErrorCode.INVALID_CERTIFCATE_NUMBER);
