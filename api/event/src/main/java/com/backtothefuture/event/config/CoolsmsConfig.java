@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CoolsmsConfig {
 
-    @Value("${spring.certification.coolsms.api-key}")
+    @Value("${spring.certification.coolsms.api}")
     private String coolsmsApiKey;
 
-    @Value("${spring.certification.coolsms.secret-key}")
+    @Value("${spring.certification.coolsms.secret}")
     private String coolsmsApiSecretKey;
 
     private final String coolsmsDomain = "https://api.coolsms.co.kr";
