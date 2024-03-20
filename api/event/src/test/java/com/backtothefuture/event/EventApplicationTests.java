@@ -3,6 +3,7 @@ package com.backtothefuture.event;
 import com.backtothefuture.domain.common.util.RandomNumUtil;
 import com.backtothefuture.event.dto.request.VerifyCertificateRequest;
 import com.backtothefuture.event.service.CertificateService;
+import com.backtothefuture.infra.config.BfTestConfig;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
 @Slf4j
-class EventApplicationTests {
+class EventApplicationTests extends BfTestConfig {
 
     private MockMvc mockMvc;
 
@@ -57,7 +58,6 @@ class EventApplicationTests {
                 .apply(documentationConfiguration(restDocumentation))
                 .build();
     }
-
     @Test
     @DisplayName("인증 번호 발급 테스트")
     void getCertificateTest() throws Exception {
@@ -95,8 +95,8 @@ class EventApplicationTests {
         verifyMap.put("certificationNumber", randomNum);
 
         VerifyCertificateRequest request = new VerifyCertificateRequest( List.of("010", "1234", "5678"), randomNum);
-        //when,then
 
+        //when,then
         this.mockMvc.perform(post("/certificate/message")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(verifyMap)))
