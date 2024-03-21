@@ -16,6 +16,8 @@ public class RedisRepository {
 	@Value("${jwt.refresh-expiration-seconds}")
 	private int refreshExp;
 
+	@Value("${certification.message.expiration-seconds}")
+	private int messageExp;
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	/**
@@ -25,5 +27,34 @@ public class RedisRepository {
 		ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 		Duration expireDuration = Duration.ofSeconds(refreshExp);
 		valueOperations.set(String.valueOf(memberId), Map.of("refreshToken", refreshToken), expireDuration);
+	}
+
+	/**
+	 * 인증 번호 저장
+	 */
+	public void saveCertificationNumber(String phoneNumber, String certificationNumber) {
+		ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+		Duration expireDuration = Duration.ofSeconds(refreshExp);
+		valueOperations.set(phoneNumber, certificationNumber, expireDuration);
+	}
+	/**
+	 * 인증 번호 가져 오기
+	 */
+	public String getCertificationNumber(String phoneNumber) {
+		return (String) redisTemplate.opsForValue().get(phoneNumber);
+	}
+
+	/**
+	 * 인증 번호 존재 조회
+	 */
+	public Boolean hasKey(String key){
+		return redisTemplate.hasKey(key);
+	}
+
+	/**
+	 * 인증 번호 삭제
+	 */
+	public void deleteCertificationNumber(String phoneNumber) {
+		redisTemplate.delete(phoneNumber);
 	}
 }

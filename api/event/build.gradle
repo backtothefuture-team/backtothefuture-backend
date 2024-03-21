@@ -1,0 +1,52 @@
+plugins {
+    id 'com.epages.restdocs-api-spec' version '0.19.1'
+}
+
+// 실행가능한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 false로 비활성화함
+// 스프링 부트 2.0 이상이라면 bootRepackage.enabled를 사용해야 함
+bootJar { enabled = true }
+
+// 외부에서 의존하기 위한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 true로 비활성화함
+jar { enabled = false }
+
+dependencies {
+    implementation project(":core:domain")
+    implementation project(":core:infra")
+    implementation project(":core:security")
+    implementation testFixtures(project(':core:infra'))
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+
+    //coolsms
+    implementation 'net.nurigo:sdk:4.3.0'
+}
+
+openapi3 {
+    server = 'http://localhost:8084/v1'
+    title = 'Bag To the Future'
+    description = 'API Documentation'
+    version = '0.1.0'
+    outputFileNamePrefix = 'event-openapi'
+    format = 'yaml'
+}
+
+task makeOpenapi {
+    dependsOn 'openapi3'
+    doFirst {
+        def swaggerUIFile = file("${openapi3.outputDirectory}/event-openapi.yaml")
+
+        def securitySchemesContent =  "  securitySchemes:\n" +  \
+                                      "    bearerAuth:\n" +  \
+                                      "      type: http\n" +  \
+                                      "      scheme: bearer\n" +  \
+                                      "      bearerFormat: JWT\n" + \
+                                      "security:\n" +
+                "  - bearerAuth: []"
+
+        swaggerUIFile.append securitySchemesContent
+    }
+}

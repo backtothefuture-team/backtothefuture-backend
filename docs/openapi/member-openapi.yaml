@@ -33,7 +33,7 @@ paths:
               examples:
                 login-member:
                   value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
-                    :\"access token\"}}"
+                    :\"access token\",\"refreshToken\":\"resfresh token\"}}"
   /member/register:
     post:
       tags:
@@ -62,29 +62,35 @@ paths:
                 register-member:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
                     id\":1}}"
+  /member/login/oauth:
+    post:
+      tags:
+      - member
+      summary: 소셜 로그인 API
+      description: 소셜 로그인 API 입니다.
+      operationId: oauth-login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OAuthLoginDto'
+            examples:
+              oauth-login:
+                value: "{\"authorizationCode\":\"authorizationCode\",\"providerType\"\
+                  :\"KAKAO\",\"rolesType\":\"ROLE_USER\",\"state\":\"state\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginTokenDto'
+              examples:
+                oauth-login:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
+                    :\"accessToken\",\"refreshToken\":\"resfreshToken\"}}"
 components:
   schemas:
-    '[response] member-login':
-      title: "[response] member-login"
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - accessToken
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: Access Token
-        message:
-          type: string
-          description: 응답 메시지
     '[request] member-register':
       title: "[request] member-register"
       required:
@@ -129,6 +135,77 @@ components:
         email:
           type: string
           description: 이메일
+    '[response] member-login':
+      title: "[response] member-login"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - accessToken
+          - refreshToken
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: Access Token
+            refreshToken:
+              type: string
+              description: Refresh Token
+        message:
+          type: string
+          description: 응답 메시지
+    OAuthLoginDto:
+      title: OAuthLoginDto
+      required:
+      - authorizationCode
+      - providerType
+      - rolesType
+      type: object
+      properties:
+        rolesType:
+          type: string
+          description: 유저의 자격 값입니다.
+        authorizationCode:
+          type: string
+          description: Authorization Server에서 받은 인증 코드입니다.
+        state:
+          type: string
+          description: 네이버 소셜 로그인 시 필요한 state 값입니다.
+          nullable: true
+        providerType:
+          type: string
+          description: 어떤 소셜 로그인인지 입력 값입니다.
+    LoginTokenDto:
+      title: LoginTokenDto
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - accessToken
+          - refreshToken
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: Access Token
+            refreshToken:
+              type: string
+              description: Refresh Token
+        message:
+          type: string
+          description: 응답 메시지
     '[response] member-register':
       title: "[response] member-register"
       required:

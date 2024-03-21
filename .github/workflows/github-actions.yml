@@ -31,6 +31,7 @@ jobs:
         run: |
           ./gradlew -p api/member build -x test
           ./gradlew -p api/store build -x test
+          ./gradlew -p api/event build -x test
       # 멀티플랫폼 이미지 빌드 환경 설정
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -66,6 +67,17 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-store:latest
+      # api/event
+      - name: event api > Build and Push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: api/event
+          file: api/event/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-event:${{ env.CURRENT_VERSION }}
+            ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-event:latest
       # swagger
       - name: swagger > Build and Push Docker images
         uses: docker/build-push-action@v5
