@@ -7,7 +7,7 @@ on:
       - dev
 
 jobs:
-  build-image-and-push:
+  integration-test:
     runs-on: ubuntu-latest
     # 권한을 read로 제한
     permissions:
