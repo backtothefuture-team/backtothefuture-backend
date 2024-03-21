@@ -7,6 +7,10 @@ services:
       - "3306:3306" # TCP 포트 : 데이터베이스 연결 포트
     environment:
       MYSQL_ROOT_PASSWORD: 1234
+    healthcheck:
+      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
+      timeout: 3s
+      retries: 5
     volumes:
       - ./initdb.d:/docker-entrypoint-initdb.d
 
@@ -16,7 +20,7 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/~./test # 데이터소스 URL을 덮어쓰는 설정
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
       OAUTH_KAKAO_CLIENTID: ${OAUTH_KAKAO_CLIENTID}
       OAUTH_KAKAO_REDIRECT_URL: ${OAUTH_KAKAO_REDIRECT_URL}
       OAUTH_KAKAO_CLIENT_SECRET: ${OAUTH_KAKAO_CLIENT_SECRET}
@@ -25,21 +29,25 @@ services:
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   bagtothefuture-store:
-    image: ${DOCKER_USERNAME}/bagtothefuture-store:latest # member api 이미지
+    image: ${DOCKER_USERNAME}/bagtothefuture-store:latest # store api 이미지
     ports:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://db:1521/~./test # 데이터소스 URL을 덮어쓰는 설정
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   swagger-ui:
     image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
@@ -50,3 +58,5 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
