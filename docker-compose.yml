@@ -49,6 +49,21 @@ services:
       redis:
         condition: service_healthy
 
+  bagtothefuture-event:
+    image: ${DOCKER_USERNAME}/bagtothefuture-event:latest # event api 이미지
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   swagger-ui:
     image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
     ports:
