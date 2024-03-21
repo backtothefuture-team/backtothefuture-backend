@@ -67,7 +67,7 @@ class EventApplicationTests extends BfTestConfig {
         //when,then
         when(certificateService.getCertificateNumber(phoneNumber)).thenReturn(randomNum);
 
-        this.mockMvc.perform(get("/certificate/message/{phoneNumber}", phoneNumber)
+        this.mockMvc.perform(post("/certificate/message/{phoneNumber}", phoneNumber)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andDo(document("get-certificate-number",
@@ -86,7 +86,7 @@ class EventApplicationTests extends BfTestConfig {
     }
 
     @Test
-    @DisplayName("인증 번호 발급 테스트")
+    @DisplayName("인증 번호 검증 테스트")
     void verifyCertificateTest() throws Exception {
         //given
         String randomNum = RandomNumUtil.createRandomNum(6);
