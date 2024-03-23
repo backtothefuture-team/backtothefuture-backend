@@ -9,7 +9,9 @@ import com.backtothefuture.store.annotation.NumericStringList;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public record StoreRegisterDto(
 	@NotBlank(message = "가게이름은 필수 항목입니다.")
 	@Size(max = 20, message = "가게이름은 최대 20자 이하로 입력해주세요.")

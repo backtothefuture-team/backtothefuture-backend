@@ -66,7 +66,7 @@ class ProductControllerTest extends BfTestConfig {
         when(productService.getProduct(storeId, productId)).thenReturn(productResponseDto);
 
         // when & then
-        this.mockMvc.perform(get("/store/{storeId}/products/{productId}", storeId, productId)
+        this.mockMvc.perform(get("/stores/{storeId}/products/{productId}", storeId, productId)
                         .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(status().isOk())
                 .andDo(document("get-product-by-store",
@@ -139,7 +139,7 @@ class ProductControllerTest extends BfTestConfig {
                 .build();
         when(productService.registerProduct(storeId, productRegisterDto)).thenReturn(1L);
 
-        this.mockMvc.perform(post("/store/{storeId}/products", 1)
+        this.mockMvc.perform(post("/stores/{storeId}/products", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productRegisterDto))
                         .header("Authorization", "Bearer ${JWT Token}"))
@@ -202,7 +202,7 @@ class ProductControllerTest extends BfTestConfig {
         when(productService.partialUpdateProduct(eq(storeId), eq(productId), any(ProductUpdateDto.class))).thenReturn(productResponseDto);
 
         // when & then
-        this.mockMvc.perform(patch("/store/{storeId}/products/{productId}", storeId, productId)
+        this.mockMvc.perform(patch("/stores/{storeId}/products/{productId}", storeId, productId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productUpdateDto))
                         .header("Authorization", "Bearer ${JWT Token}"))
@@ -244,7 +244,7 @@ class ProductControllerTest extends BfTestConfig {
     @WithMockUser("USER")
     @DisplayName("상품 삭제 테스트")
     void deleteProductTest() throws Exception {
-        this.mockMvc.perform(delete("/store/{storeId}/products/{productId}", 1, 1)
+        this.mockMvc.perform(delete("/stores/{storeId}/products/{productId}", 1, 1)
                         .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(status().isNoContent())
                 .andDo(document("delete-product",

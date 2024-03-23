@@ -20,11 +20,11 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/store")
+@RequestMapping("/stores")
 public class StoreController {
 	private final StoreService storeService;
 
-	@PostMapping("/register")
+	@PostMapping("")
 	public ResponseEntity<BfResponse<?>> registerStore(
 		@Valid @RequestBody StoreRegisterDto storeRegisterDto) {
 		return ResponseEntity.status(HttpStatus.CREATED)
