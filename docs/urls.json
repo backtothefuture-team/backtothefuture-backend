@@ -1,4 +1,5 @@
 [
   { "url": "./openapi/member-openapi.yaml", "name": "member-api" },
-  { "url": "./openapi/store-openapi.yaml", "name": "store-api" }
+  { "url": "./openapi/store-openapi.yaml", "name": "store-api" },
+  { "url": "./openapi/event-openapi.yaml", "name": "event-api" }
 ]
