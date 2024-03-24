@@ -18,6 +18,10 @@ public class RedisRepository {
 
 	@Value("${certification.message.expiration-seconds}")
 	private int messageExp;
+
+	@Value("${certification.mail.expiration-seconds}")
+	private int mailExp;
+
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	/**
@@ -37,6 +41,23 @@ public class RedisRepository {
 		Duration expireDuration = Duration.ofSeconds(refreshExp);
 		valueOperations.set(phoneNumber, certificationNumber, expireDuration);
 	}
+
+	/**
+	 * 이메일 인증 번호 저장
+	 */
+	public void saveCertificationEmailNumber(String email, String certificationNumber) {
+		ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+		Duration expireDuration = Duration.ofSeconds(mailExp);
+		valueOperations.set(email, certificationNumber, expireDuration);
+	}
+
+	/**
+	 * 이메일 인증 유효시간 반환
+	 */
+	public int getMailExp() {
+		return mailExp;
+	}
+
 	/**
 	 * 인증 번호 가져 오기
 	 */

@@ -117,7 +117,9 @@ public class SpringSecurityConfig {
                 antMatcher(GET, "/store/{storeId}/products/{productId}"),        // 상품 단건 조회 API
                 antMatcher(GET, "/products"),                           // 상품 전체 조회 API
                 antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
-                antMatcher(POST, "/certificate/message") // 인증 번호 검증
+                antMatcher(POST, "/certificate/message"), // 인증 번호 검증
+                antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
+                antMatcher(GET, "/certificate/email") // 인증 번호 검증
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);

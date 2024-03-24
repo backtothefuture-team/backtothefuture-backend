@@ -14,6 +14,19 @@ spring:
       fromPhoneNumber: ${COOLSMS_FROM_PHONE_NUMBER}
       api: ${COOLSMS_API_KEY}
       secret: ${COOLSMS_API_SECRET_KEY}
+    mail:
+      baseurl: "http://localhost:8084/v1"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        debug: true
+        smtp.auth: true
+        smtp.timeout: 50000 # SMTP 서버 연결 시도 timeout
+        smtp.starttls.enable: true
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
 
 server:
   port: 8084
