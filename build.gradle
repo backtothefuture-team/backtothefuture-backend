@@ -76,7 +76,7 @@ subprojects {
 task copyOpenApiSpecsToDocsDir(type: Copy) {
 	dependsOn ':api:member:openapi3'
 	dependsOn ':api:store:makeOpenapi'
-	dependsOn ':api:event:makeOpenapi'
+	dependsOn ':api:event:openapi3'
 
 	// member
 	from "${project(':api:member').buildDir}/api-spec/member-openapi.yaml"
