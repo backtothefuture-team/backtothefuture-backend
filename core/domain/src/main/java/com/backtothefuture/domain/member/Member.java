@@ -45,12 +45,15 @@ public class Member extends MutableBaseEntity {
 	private String phoneNumber;		// 연락처
 
 	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "VARCHAR(255)")
 	private StatusType status = StatusType.PENDING; // 상태
 
 	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "VARCHAR(255)")
 	private ProviderType provider;	// 계정정보 공급 서비스
 
 	@Setter
 	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "VARCHAR(255)")
 	private RolesType roles = RolesType.ROLE_USER;		// 권한
 }

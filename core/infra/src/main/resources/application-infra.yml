@@ -10,7 +10,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     defer-datasource-initialization: true
     properties:
       dialect: org.hibernate.dialect.MySQLDialect
