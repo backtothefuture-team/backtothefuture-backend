@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
 
@@ -51,5 +52,16 @@ public class CertificateController {
 
         return ResponseEntity.ok()
                 .body(new BfResponse<>(SUCCESS, Map.of("mail_expiration_seconds", mailExp)));
+    }
+
+    @GetMapping("/email")
+    public ModelAndView verifyCertificateMail(
+            @RequestParam String email,
+            @RequestParam String certificationNumber
+    ) {
+        certificationService.verifyCertificateEmailNumber(email, certificationNumber);
+        // 인증 성공 시 성공 페이지를 반환
+        ModelAndView successModelAndView = new ModelAndView("mail/verify-success");
+        return successModelAndView;
     }
 }

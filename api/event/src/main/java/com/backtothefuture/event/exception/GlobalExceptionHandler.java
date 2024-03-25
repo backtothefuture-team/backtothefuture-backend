@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.ModelAndView;
 
 import static com.backtothefuture.domain.common.enums.GlobalErrorCode.INTERNAL_SERVER_ERROR;
 import static com.backtothefuture.domain.common.enums.GlobalErrorCode.VALIDATION_FAILED;
@@ -41,5 +42,14 @@ public class GlobalExceptionHandler {
         });
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    /**
+     * 메일 인증 실패 html error 페이지 반환
+     */
+    @ExceptionHandler(VerifyMailFailException.class)
+    public ModelAndView handleCertificateException(VerifyMailFailException e) {
+        ModelAndView modelAndView = new ModelAndView("mail/verify-fail");
+        return modelAndView;
     }
 }

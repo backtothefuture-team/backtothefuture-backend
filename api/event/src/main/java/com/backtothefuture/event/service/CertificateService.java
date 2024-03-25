@@ -6,6 +6,7 @@ import com.backtothefuture.domain.common.util.RandomNumUtil;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
 import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
 import com.backtothefuture.event.exception.CertificateException;
+import com.backtothefuture.event.exception.VerifyMailFailException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +81,6 @@ public class CertificateService {
         try {
             mailService.sendMail(email, content);
         } catch (MessagingException e) {
-            log.error("fail to send mail", e);
             throw new CertificateException(CertificateErrorCode.MAIL_SEND_ERROR);
         }
 
@@ -88,5 +88,21 @@ public class CertificateService {
         redisRepository.saveCertificationEmailNumber(email, randomNumber);
 
         return redisRepository.getMailExp();
+    }
+
+    public void verifyCertificateEmailNumber(String email, String certificationNumber) {
+        // 유효 번호 검증
+        if (!validateCertificationNumber(email, certificationNumber))
+            throw new VerifyMailFailException(CertificateErrorCode.INVALID_CERTIFCATE_NUMBER);
+
+        // 임시 인증 번호 삭제
+        redisRepository.deleteCertificationNumber(email);
+
+        // 검증 여부 저장
+        redisRepository.setMailCertificationFlag(email);
+    }
+
+    public String getServerUrl() {
+        return baseUrl + "/certificate/email";
     }
 }
