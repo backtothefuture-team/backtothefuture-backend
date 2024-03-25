@@ -33,20 +33,3 @@ openapi3 {
     outputFileNamePrefix = 'event-openapi'
     format = 'yaml'
 }
-
-task makeOpenapi {
-    dependsOn 'openapi3'
-    doFirst {
-        def swaggerUIFile = file("${openapi3.outputDirectory}/event-openapi.yaml")
-
-        def securitySchemesContent =  "  securitySchemes:\n" +  \
-                                      "    bearerAuth:\n" +  \
-                                      "      type: http\n" +  \
-                                      "      scheme: bearer\n" +  \
-                                      "      bearerFormat: JWT\n" + \
-                                      "security:\n" +
-                "  - bearerAuth: []"
-
-        swaggerUIFile.append securitySchemesContent
-    }
-}
