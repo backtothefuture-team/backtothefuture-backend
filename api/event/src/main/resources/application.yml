@@ -11,9 +11,9 @@ spring:
 
   certification:
     coolsms:
-      fromPhoneNumber: ${COOLSMS_FROM_PHONE_NUMBER}
-      api: ${COOLSMS_API_KEY}
-      secret: ${COOLSMS_API_SECRET_KEY}
+      fromPhoneNumber: 01000000000
+      api: test
+      secret: test
 
 server:
   port: 8084
