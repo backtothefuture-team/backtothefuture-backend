@@ -73,9 +73,7 @@ public class CertificateService {
                 getServerUrl(), randomNumber, email);
 
         // 메일 내용 설정
-        HashMap<String, String> content = new HashMap<>();
-        content.put("subject", "메일 제목");
-        content.put("text", "메일 내용, 인증 url = " + certificateUrl);
+        HashMap<String, String> content = getCertificationMailContent(certificateUrl);
 
         // 메일 전송
         try {
@@ -104,6 +102,13 @@ public class CertificateService {
 
     public boolean getCertificateEmailStatus(String email) {
         return redisRepository.getMailCertificationFlag(email);
+    }
+
+    public HashMap<String, String> getCertificationMailContent(String certificateUrl) {
+        return new HashMap<>(){{
+            put("subject", "메일 제목");
+            put("text", "메일 내용, 인증 url = " + certificateUrl);
+        }};
     }
 
     public String getServerUrl() {
