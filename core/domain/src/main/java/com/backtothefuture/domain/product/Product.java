@@ -32,6 +32,7 @@ public class Product extends MutableBaseEntity {
     private String name;            // 상품 이름
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;     // 상품 설명
 
     private int price;              // 상품 가격
