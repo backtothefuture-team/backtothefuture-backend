@@ -31,6 +31,7 @@ public class Store extends MutableBaseEntity {
 	private String name; 		// 가게 이름
 
 	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String description; // 가게 설명
 
 	private String location;	// 가게 위치

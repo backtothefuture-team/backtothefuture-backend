@@ -52,7 +52,7 @@ services:
   bagtothefuture-event:
     image: ${DOCKER_USERNAME}/bagtothefuture-event:latest # event api 이미지
     ports:
-      - "8081:8081"
+      - "8084:8084"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test

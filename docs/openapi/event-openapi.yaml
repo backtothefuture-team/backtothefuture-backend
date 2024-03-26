@@ -22,7 +22,7 @@ paths:
             examples:
               verify-certificate-number:
                 value: "{\"phoneNumber\":[\"010\",\"1234\",\"5678\"],\"certificationNumber\"\
-                  :\"185479\"}"
+                  :\"158745\"}"
       responses:
         "200":
           description: "200"
@@ -34,7 +34,7 @@ paths:
                 verify-certificate-number:
                   value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\"}"
   /certificate/message/{phoneNumber}:
-    get:
+    post:
       tags:
       - certificate
       summary: 인증 번호 발급 API
@@ -57,7 +57,7 @@ paths:
               examples:
                 get-certificate-number:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
-                    certification_number\":\"731014\"}}"
+                    certification_number\":\"402195\"}}"
 components:
   schemas:
     '[response] verify-certificate-number':
@@ -113,10 +113,3 @@ components:
         certificationNumber:
           type: string
           description: 인증번호
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-security:
-  - bearerAuth: []

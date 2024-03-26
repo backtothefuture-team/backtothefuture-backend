@@ -30,7 +30,7 @@ public class ProductController {
 
     // 상품 등록 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
-    @PostMapping("/store/{storeId}/products")
+    @PostMapping("/stores/{storeId}/products")
     public ResponseEntity<BfResponse<?>> registerProduct(
             @PathVariable("storeId") Long storeId,
             @Valid @RequestBody ProductRegisterDto productRegisterDto
@@ -40,7 +40,7 @@ public class ProductController {
     }
 
     // 상품 단건 조회 API
-    @GetMapping("/store/{storeId}/products/{productId}")
+    @GetMapping("/stores/{storeId}/products/{productId}")
     public ResponseEntity<BfResponse<?>> getProduct(
             @PathVariable Long storeId,
             @PathVariable Long productId
@@ -59,7 +59,7 @@ public class ProductController {
 
     // 상품 수정 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
-    @PatchMapping("/store/{storeId}/products/{productId}")
+    @PatchMapping("/stores/{storeId}/products/{productId}")
     public ResponseEntity<BfResponse<?>> updateProduct(
             @PathVariable Long storeId,
             @PathVariable Long productId,
@@ -71,7 +71,7 @@ public class ProductController {
 
     // 상품 삭제 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
-    @DeleteMapping("/store/{storeId}/products/{productId}")
+    @DeleteMapping("/stores/{storeId}/products/{productId}")
     public ResponseEntity<BfResponse<?>> deleteProduct(
             @PathVariable("storeId") Long storeId,
             @PathVariable("productId") Long productId
