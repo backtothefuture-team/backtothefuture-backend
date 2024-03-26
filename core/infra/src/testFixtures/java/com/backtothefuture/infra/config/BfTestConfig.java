@@ -18,7 +18,7 @@ import io.github.cdimascio.dotenv.DotenvEntry;
 public abstract class BfTestConfig {
 	@Container
 	static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8")
-		.withUsername("test_user")
+		.withUsername("root")
 		.withPassword("1234")
 		.withDatabaseName("");
 
@@ -31,7 +31,7 @@ public abstract class BfTestConfig {
 		registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
 		registry.add("spring.datasource.username", mySQLContainer::getUsername);
 		registry.add("spring.datasource.password", mySQLContainer::getPassword);
-		registry.add("spring.jpa.hibernate.ddl-auto", () -> "create");
+		registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
 	}
 
 	@DynamicPropertySource
