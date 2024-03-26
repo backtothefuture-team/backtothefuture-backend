@@ -54,6 +54,7 @@ public class CertificateController {
                 .body(new BfResponse<>(SUCCESS, Map.of("mail_expiration_seconds", mailExp)));
     }
 
+    // TODO: html 버튼, form 전송으로 변경할것
     @GetMapping("/email")
     public ModelAndView verifyCertificateMail(
             @RequestParam String email,
@@ -63,5 +64,11 @@ public class CertificateController {
         // 인증 성공 시 성공 페이지를 반환
         ModelAndView successModelAndView = new ModelAndView("mail/verify-success");
         return successModelAndView;
+    }
+
+    @GetMapping("/email/{email}/status")
+    public ResponseEntity<BfResponse<?>> checkCertificateEmailStatus(@PathVariable String email) {
+        return ResponseEntity.ok()
+                .body(new BfResponse<>(SUCCESS, Map.of("is_certificated", certificationService.getCertificateEmailStatus(email))));
     }
 }

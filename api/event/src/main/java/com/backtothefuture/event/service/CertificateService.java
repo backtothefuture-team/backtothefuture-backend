@@ -102,6 +102,10 @@ public class CertificateService {
         redisRepository.setMailCertificationFlag(email);
     }
 
+    public boolean getCertificateEmailStatus(String email) {
+        return redisRepository.getMailCertificationFlag(email);
+    }
+
     public String getServerUrl() {
         return baseUrl + "/certificate/email";
     }
