@@ -16,6 +16,7 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
+    @Async
     public void sendMail(String mail, HashMap<String, String> content) throws MessagingException {
         // set mail
         MimeMessage mimeMessage = mailSender.createMimeMessage();
