@@ -38,6 +38,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -130,7 +131,7 @@ class EventApplicationTests extends BfTestConfig {
         MailCertificateRequestDto requestDto = new MailCertificateRequestDto("test@example.com");
         when(certificateService.sendEmailCertificateNumber(any(MailCertificateRequestDto.class))).thenReturn(600);
 
-        this.mockMvc.perform(post("/email")
+        this.mockMvc.perform(post("/certificate/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
@@ -146,7 +147,7 @@ class EventApplicationTests extends BfTestConfig {
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.mail_expiration_seconds").type(SimpleType.INTEGER).description("인증 만료 시간(초)")
+                                        fieldWithPath("data.mail_expiration_seconds").type(JsonFieldType.NUMBER).description("인증 만료 시간(초)")
                                 )
                                 .responseSchema(Schema.schema("[response] send-certificate-email")).build())));
     }
@@ -154,20 +155,15 @@ class EventApplicationTests extends BfTestConfig {
     @Test
     @DisplayName("인증 메일 검증 테스트")
     void verifyCertificateMailTest() throws Exception {
-        this.mockMvc.perform(get("/email")
+        this.mockMvc.perform(get("/certificate/email")
                         .param("email", "test@example.com")
                         .param("certificationNumber", "123456"))
-                .andExpect(status().isOk())
+                .andExpect(view().name("mail/verify-success"))
                 .andDo(document("verify-certificate-email",
                         resource(ResourceSnippetParameters.builder()
-                                .description("인증 메일 검증 API입니다. 메일 수신자가 클릭하는 링크가 됩니다.")
+                                .description("인증 메일 검증 API입니다. 메일 수신자가 링크를 클릭하고, 이 API를 통해 인증하게 됩니다.")
                                 .tag("certificate")
                                 .summary("인증 메일 검증")
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지")
-                                )
-                                .responseSchema(Schema.schema("[response] verify-certificate-email"))
                                 .build())));
     }
 
@@ -176,7 +172,7 @@ class EventApplicationTests extends BfTestConfig {
     void checkCertificateEmailStatusTest() throws Exception {
         when(certificateService.getCertificateEmailStatus("test@example.com")).thenReturn(true);
 
-        this.mockMvc.perform(get("/email/{email}/status", "test@example.com"))
+        this.mockMvc.perform(get("/certificate/email/{email}/status", "test@example.com"))
                 .andExpect(status().isOk())
                 .andDo(document("check-certificate-email-status",
                         resource(ResourceSnippetParameters.builder()
