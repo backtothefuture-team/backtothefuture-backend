@@ -21,8 +21,14 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    //coolsms
+    // coolsms
     implementation 'net.nurigo:sdk:4.3.0'
+
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.4'
+
+    // timeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 openapi3 {

@@ -4,11 +4,11 @@ import com.backtothefuture.domain.common.enums.CertificateErrorCode;
 import lombok.Getter;
 
 @Getter
-public class MessageException extends RuntimeException{
+public class CertificateException extends RuntimeException{
 
     private final CertificateErrorCode errorCode;
 
-    public MessageException(CertificateErrorCode errorCode) {
+    public CertificateException(CertificateErrorCode errorCode) {
         super(errorCode.getErrorMessage());
         this.errorCode = errorCode;
     }

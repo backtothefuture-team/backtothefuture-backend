@@ -7,6 +7,56 @@ servers:
 - url: http://localhost:8084/v1
 tags: []
 paths:
+  /certificate/email:
+    get:
+      tags:
+      - certificate
+      summary: 인증 메일 검증
+      description: "인증 메일 검증 API입니다. 메일 수신자가 링크를 클릭하고, 이 API를 통해 인증하게 됩니다."
+      operationId: verify-certificate-email
+      responses:
+        "200":
+          description: "200"
+          content:
+            text/html;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/certificate-email486549215'
+              examples:
+                verify-certificate-email:
+                  value: |-
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>인증 결과</title>
+                        <meta charset="utf-8">
+                    </head>
+                        <h1>성공적으로 인증되었습니다. 앱 화면으로 돌아가 주세요.</h1>
+                    </html>
+    post:
+      tags:
+      - certificate
+      summary: 인증 메일 전송 API
+      description: 인증 메일 전송 API 입니다.
+      operationId: send-certificate-email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/certificate-email486549215'
+            examples:
+              send-certificate-email:
+                value: "{\"email\":\"test@example.com\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] send-certificate-email"
+              examples:
+                send-certificate-email:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"mail_expiration_seconds\"\
+                    :600}}"
   /certificate/message:
     post:
       tags:
@@ -22,7 +72,7 @@ paths:
             examples:
               verify-certificate-number:
                 value: "{\"phoneNumber\":[\"010\",\"1234\",\"5678\"],\"certificationNumber\"\
-                  :\"158745\"}"
+                  :\"418790\"}"
       responses:
         "200":
           description: "200"
@@ -57,11 +107,36 @@ paths:
               examples:
                 get-certificate-number:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
-                    certification_number\":\"402195\"}}"
+                    certification_number\":\"374645\"}}"
+  /certificate/email/{email}/status:
+    get:
+      tags:
+      - certificate
+      summary: 이메일 인증 상태 확인
+      description: 이메일 인증 상태 확인 API입니다.
+      operationId: check-certificate-email-status
+      parameters:
+      - name: email
+        in: path
+        description: ""
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] check-certificate-email-status"
+              examples:
+                check-certificate-email-status:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"is_certificated\"\
+                    :true}}"
 components:
   schemas:
-    '[response] verify-certificate-number':
-      title: "[response] verify-certificate-number"
+    '[response] send-certificate-email':
+      title: "[response] send-certificate-email"
       required:
       - code
       - message
@@ -70,6 +145,35 @@ components:
         code:
           type: number
           description: 응답 코드
+        data:
+          required:
+          - mail_expiration_seconds
+          type: object
+          properties:
+            mail_expiration_seconds:
+              type: number
+              description: 인증 만료 시간(초)
+        message:
+          type: string
+          description: 응답 메시지
+    '[response] check-certificate-email-status':
+      title: "[response] check-certificate-email-status"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - is_certificated
+          type: object
+          properties:
+            is_certificated:
+              type: boolean
+              description: "인증 여부. true: 인증 / false: 미인증"
         message:
           type: string
           description: 응답 메시지
@@ -94,6 +198,21 @@ components:
         message:
           type: string
           description: 응답 메시지
+    '[response] verify-certificate-number':
+      title: "[response] verify-certificate-number"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        message:
+          type: string
+          description: 응답 메시지
+    certificate-email486549215:
+      type: object
     '[request] verify-certificate-number':
       title: "[request] verify-certificate-number"
       required:

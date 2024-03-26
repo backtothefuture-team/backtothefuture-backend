@@ -2,7 +2,7 @@ package com.backtothefuture.event.service;
 
 import com.backtothefuture.domain.common.enums.CertificateErrorCode;
 import com.backtothefuture.domain.common.repository.RedisRepository;
-import com.backtothefuture.event.exception.MessageException;
+import com.backtothefuture.event.exception.CertificateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.message.exception.NurigoEmptyResponseException;
@@ -40,7 +40,7 @@ public class CoolsmsService {
             MultipleDetailMessageSentResponse response = defaultMessageService.send(message); // 메시지 전송
         } catch (NurigoEmptyResponseException | NurigoMessageNotReceivedException |
                  NurigoUnknownException ex) {
-            throw new MessageException(CertificateErrorCode.MESSAGE_SEND_ERROR);
+            throw new CertificateException(CertificateErrorCode.MESSAGE_SEND_ERROR);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
