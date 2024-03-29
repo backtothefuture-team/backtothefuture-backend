@@ -28,6 +28,33 @@ paths:
                     :10000,\"stockQuantity\":10,\"thumbnail\":\"thumbnail1\"},{\"\
                     id\":2,\"name\":\"상품2\",\"description\":\"상품2 설명\",\"price\":20000,\"\
                     stockQuantity\":20,\"thumbnail\":\"thumbnail2\"}]}}"
+  /reservations:
+    post:
+      tags:
+      - reservations
+      summary: 구매자 예약 API
+      description: 구매자 예약하기 API입니다.
+      operationId: make-reservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/[request] make-reservation"
+            examples:
+              make-reservation:
+                value: "{\"storeId\":1,\"orderRequestItems\":[{\"productId\":1,\"\
+                  quantity\":1},{\"productId\":2,\"quantity\":1}]}"
+      responses:
+        "201":
+          description: "201"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] make-reservation"
+              examples:
+                make-reservation:
+                  value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
+                    reservation_id\":1}}"
   /stores:
     post:
       tags:
@@ -278,6 +305,9 @@ components:
           type: string
           description: 상품 상세 설명입니다.
           nullable: true
+    '[request] make-reservation':
+      title: "[request] make-reservation"
+      type: object
     '[response] get-all-products':
       title: "[response] get-all-products"
       required:
@@ -442,6 +472,27 @@ components:
                 id:
                   type: number
                   description: 상품 ID
+        message:
+          type: string
+          description: 응답 메시지 입니다.
+    '[response] make-reservation':
+      title: "[response] make-reservation"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: HttpStatusCode 입니다.
+        data:
+          required:
+          - reservation_id
+          type: object
+          properties:
+            reservation_id:
+              type: number
+              description: 생성된 주문 ID 입니다.
         message:
           type: string
           description: 응답 메시지 입니다.
