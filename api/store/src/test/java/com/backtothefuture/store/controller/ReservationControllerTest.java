@@ -1,0 +1,114 @@
+package com.backtothefuture.store.controller;
+
+import com.backtothefuture.domain.member.repository.MemberRepository;
+import com.backtothefuture.security.annotation.WithMockCustomUser;
+import com.backtothefuture.security.service.UserDetailsImpl;
+import com.backtothefuture.store.dto.request.ReservationRequestDto;
+import com.backtothefuture.store.dto.request.ReservationRequestItemDto;
+import com.backtothefuture.store.service.ReservationService;
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
+import com.epages.restdocs.apispec.SimpleType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import java.util.List;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
+
+@ExtendWith(RestDocumentationExtension.class)
+@SpringBootTest
+@ContextConfiguration
+class ReservationControllerTest {
+
+
+    private MockMvc mockMvc;
+
+    @MockBean
+    private ReservationService mockReservationService;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(documentationConfiguration(restDocumentation))
+                // TODO: JWT 토큰 인증 처리 -> 실제 토큰을 발급받아 사용 or mocking(현재적용됨)
+                //.apply(springSecurity()) // Spring Security 설정 적용
+                .build();
+    }
+
+    @Test
+    @DisplayName("상품 예약하기")
+    @WithMockCustomUser
+    void makeReservation() throws Exception {
+
+        Long storeId = 1L;
+        Long product1Id = 1L;
+        Long product2Id = 2L;
+
+        UserDetailsImpl userDetailsImpl = UserDetailsImpl
+                .builder()
+                .id(1L)
+                .build();
+
+        ReservationRequestDto reservationRequestDto = ReservationRequestDto.builder()
+                .storeId(storeId)
+                .orderRequestItems(List.of(new ReservationRequestItemDto(product1Id, 1),
+                        new ReservationRequestItemDto(product2Id, 1)))
+                .build();
+
+        // TODO: 아래 코드가 테스트의 효과가 있는지 궁금합니다!
+        when(mockReservationService.makeReservation(anyLong(), eq(reservationRequestDto))).thenReturn(1L);
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.post("/reservations")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservationRequestDto))
+                        .header("Authorization", "Bearer ${JWT Token}")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andDo(document("make-reservation",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("구매자 예약하기 API입니다.")
+                                .tags("reservations")
+                                .summary("구매자 예약 API")
+                                .responseFields(
+                                        fieldWithPath("storeId").type(SimpleType.NUMBER).description("가게 ID 값입니다."),
+                                        fieldWithPath("orderRequestItems.productId").type(SimpleType.NUMBER).description("상품 ID 값입니다."),
+                                        fieldWithPath("orderRequestItems.quantity").type(SimpleType.NUMBER).description("주문한 수량 값입니다.")
+                                )
+                                .requestSchema(Schema.schema("[request] make-reservation"))
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data.reservation_id").type(SimpleType.NUMBER).description("생성된 주문 ID 입니다.")
+                                )
+                                .responseSchema(Schema.schema("[response] make-reservation")).build()
+                        )));
+
+    }
+}
