@@ -1,8 +1,7 @@
 package com.backtothefuture.store.controller;
 
-import com.backtothefuture.domain.member.repository.MemberRepository;
+import com.backtothefuture.domain.reservation.dto.ReservationResponseDto;
 import com.backtothefuture.security.annotation.WithMockCustomUser;
-import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.request.ReservationRequestItemDto;
 import com.backtothefuture.store.service.ReservationService;
@@ -23,11 +22,16 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
 import java.util.List;
+
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -46,9 +50,6 @@ class ReservationControllerTest {
 
     @MockBean
     private ReservationService mockReservationService;
-
-    @Autowired
-    private MemberRepository memberRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -71,11 +72,6 @@ class ReservationControllerTest {
         Long product1Id = 1L;
         Long product2Id = 2L;
 
-        UserDetailsImpl userDetailsImpl = UserDetailsImpl
-                .builder()
-                .id(1L)
-                .build();
-
         ReservationRequestDto reservationRequestDto = ReservationRequestDto.builder()
                 .storeId(storeId)
                 .orderRequestItems(List.of(new ReservationRequestItemDto(product1Id, 1),
@@ -96,7 +92,7 @@ class ReservationControllerTest {
                                 .description("구매자 예약하기 API입니다.")
                                 .tags("reservations")
                                 .summary("구매자 예약 API")
-                                .responseFields(
+                                .requestFields(
                                         fieldWithPath("storeId").type(SimpleType.NUMBER).description("가게 ID 값입니다."),
                                         fieldWithPath("orderRequestItems.productId").type(SimpleType.NUMBER).description("상품 ID 값입니다."),
                                         fieldWithPath("orderRequestItems.quantity").type(SimpleType.NUMBER).description("주문한 수량 값입니다.")
@@ -110,5 +106,43 @@ class ReservationControllerTest {
                                 .responseSchema(Schema.schema("[response] make-reservation")).build()
                         )));
 
+    }
+
+    @Test
+    @DisplayName("예약 조회하기")
+    @WithMockCustomUser
+    void getReservation() throws Exception {
+
+        Long reservationId = 1L;
+
+        List<ReservationResponseDto> reservationResponseDto = List.of(
+                new ReservationResponseDto("product1", 1, 1000),
+                new ReservationResponseDto("product2", 2, 2000)
+        );
+
+        when(mockReservationService.getReservation(any(), eq(reservationId))).thenReturn(reservationResponseDto);
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/reservations/{reservationId}", reservationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservationResponseDto))
+                        .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(document("get-reservation",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("구매자 예약 조회 API입니다.")
+                                .tags("reservations")
+                                .summary("구매자 예약 조회 API")
+                                .pathParameters(
+                                        parameterWithName("reservationId").type(SimpleType.NUMBER).description("예약 ID")
+                                )
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data[].name").type(SimpleType.STRING).description("상품 이름입니다."),
+                                        fieldWithPath("data[].count").type(SimpleType.STRING).description("주문된 각 상품의 수량입니다."),
+                                        fieldWithPath("data[].price").type(SimpleType.STRING).description("주문된 각 상품의 금액입니다.")
+                                )
+                                .responseSchema(Schema.schema("[response] make-reservation")).build()
+                        )));
     }
 }
