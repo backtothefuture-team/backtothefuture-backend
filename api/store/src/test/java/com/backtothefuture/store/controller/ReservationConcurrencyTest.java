@@ -39,7 +39,7 @@ public class ReservationConcurrencyTest {
     private ProductRepository productRepository;
 
     @Test
-    @DisplayName("판매자 예약 동시성 테스트")
+    @DisplayName("구매자 예약 동시성 테스트")
     void ReservationConcurrencyTest() throws InterruptedException {
         //given
         Member customer1 = Member.builder() // 고객1 생성
