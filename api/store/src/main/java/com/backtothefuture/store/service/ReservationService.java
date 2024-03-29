@@ -49,7 +49,7 @@ public class ReservationService {
     @Transactional
     public Long makeReservation(Long memberId, ReservationRequestDto dto) {
 
-        Member member = memberRepository.findById(1L)  // 현재 회원 조회 //TODO 1L 수정하기
+        Member member = memberRepository.findById(memberId)  // 현재 회원 조회
                 .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
 
         Store store = storeRepository.findById(dto.storeId())  // 주문하고자 하는 가게 조회
@@ -70,7 +70,7 @@ public class ReservationService {
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservation(UserDetailsImpl userDetails, Long reservationId) {
 
-        Member member = memberRepository.findById(1L)
+        Member member = memberRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
 
         List<ReservationResponseDto> reservationResponseDto =
