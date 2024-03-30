@@ -69,12 +69,9 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservation(UserDetailsImpl userDetails, Long reservationId) {
-
-        Member member = memberRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
-
+        //TODO: memberId 비교해서 권한 체크
         List<ReservationResponseDto> reservationResponseDto =
-                customReservationRepository.getReservation(1L, reservationId);
+                customReservationRepository.getReservation(userDetails.getId(), reservationId);
 
         reservationResponseDto.forEach(ReservationResponseDto::calculateTotalPrice);
 

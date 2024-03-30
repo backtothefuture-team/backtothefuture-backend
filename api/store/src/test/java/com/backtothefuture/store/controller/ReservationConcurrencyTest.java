@@ -45,7 +45,7 @@ public class ReservationConcurrencyTest {
         Member customer1 = Member.builder() // 고객1 생성
                 .name("이상민")
                 .authId(null)
-                .email("email@naver.com")
+                .email("leesangmin@naver.com")
                 .status(StatusType.ACTIVE)
                 .provider(null)
                 .roles(RolesType.ROLE_USER)

@@ -35,10 +35,10 @@ public class ReservationController {
 
     @GetMapping("/{reservationId}")
     public ResponseEntity<BfResponse<?>> getReservation(
-            // @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable("reservationId") Long reservationId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new BfResponse<>(SUCCESS, reservationService.getReservation(null, reservationId)));
+                .body(new BfResponse<>(SUCCESS, reservationService.getReservation(userDetails, reservationId)));
     }
 
     @DeleteMapping("/{reservationId}")
