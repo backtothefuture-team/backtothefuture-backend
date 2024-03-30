@@ -55,6 +55,65 @@ paths:
                 make-reservation:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
                     reservation_id\":1}}"
+  /reservations/{reservationId}:
+    get:
+      tags:
+      - reservations
+      summary: 구매자 예약 조회 API
+      description: 구매자 예약 조회 API입니다.
+      operationId: get-reservation
+      parameters:
+      - name: reservationId
+        in: path
+        description: 예약 ID
+        required: true
+        schema:
+          type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/reservations-reservationId486549215'
+            examples:
+              get-reservation:
+                value: "[{\"name\":\"product1\",\"count\":1,\"price\":1000},{\"name\"\
+                  :\"product2\",\"count\":2,\"price\":2000}]"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] make-reservation"
+              examples:
+                get-reservation:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":[{\"\
+                    name\":\"product1\",\"count\":1,\"price\":1000},{\"name\":\"product2\"\
+                    ,\"count\":2,\"price\":2000}]}"
+    delete:
+      tags:
+      - reservations
+      summary: 구매자 예약 취소 API
+      description: 구매자 예약 취소 API입니다.
+      operationId: cancel-reservation
+      parameters:
+      - name: reservationId
+        in: path
+        description: 예약 ID
+        required: true
+        schema:
+          type: number
+      responses:
+        "204":
+          description: "204"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] cancel-reservation"
+              examples:
+                cancel-reservation:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":\"NO_CONTENT\"\
+                    }"
   /stores:
     post:
       tags:
@@ -237,50 +296,6 @@ paths:
                     트된 이미지 링크\"}}}"
 components:
   schemas:
-    '[response] update-product':
-      title: "[response] update-product"
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: number
-          description: HttpStatusCode 입니다.
-        data:
-          type: object
-          properties:
-            product:
-              required:
-              - description
-              - id
-              - name
-              - price
-              - stockQuantity
-              - thumbnail
-              type: object
-              properties:
-                thumbnail:
-                  type: string
-                  description: 썸네일 이미지 URL
-                price:
-                  type: number
-                  description: 상품 가격
-                name:
-                  type: string
-                  description: 상품 이름
-                stockQuantity:
-                  type: number
-                  description: 재고 수량
-                description:
-                  type: string
-                  description: 상품 설명
-                id:
-                  type: number
-                  description: 상품 ID
-        message:
-          type: string
-          description: 응답 메시지 입니다.
     '[reqyest] update-product':
       title: "[reqyest] update-product"
       type: object
@@ -305,9 +320,23 @@ components:
           type: string
           description: 상품 상세 설명입니다.
           nullable: true
-    '[request] make-reservation':
-      title: "[request] make-reservation"
+    '[response] cancel-reservation':
+      title: "[response] cancel-reservation"
+      required:
+      - code
+      - data
+      - message
       type: object
+      properties:
+        code:
+          type: number
+          description: HttpStatusCode 입니다.
+        data:
+          type: string
+          description: NO_CONTENT
+        message:
+          type: string
+          description: 응답 메시지 입니다.
     '[response] get-all-products':
       title: "[response] get-all-products"
       required:
@@ -351,27 +380,6 @@ components:
                   id:
                     type: number
                     description: 상품 ID
-        message:
-          type: string
-          description: 응답 메시지 입니다.
-    '[response] product-register':
-      title: "[response] product-register"
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: number
-          description: HttpStatusCode 입니다.
-        data:
-          required:
-          - product_id
-          type: object
-          properties:
-            product_id:
-              type: number
-              description: 생성된 상품 ID 입니다.
         message:
           type: string
           description: 응답 메시지 입니다.
@@ -486,13 +494,23 @@ components:
           type: number
           description: HttpStatusCode 입니다.
         data:
-          required:
-          - reservation_id
-          type: object
-          properties:
-            reservation_id:
-              type: number
-              description: 생성된 주문 ID 입니다.
+          type: array
+          items:
+            required:
+            - count
+            - name
+            - price
+            type: object
+            properties:
+              price:
+                type: string
+                description: 주문된 각 상품의 금액입니다.
+              count:
+                type: string
+                description: 주문된 각 상품의 수량입니다.
+              name:
+                type: string
+                description: 상품 이름입니다.
         message:
           type: string
           description: 응답 메시지 입니다.
@@ -517,6 +535,96 @@ components:
         message:
           type: string
           description: 응답 메시지 입니다.
+    '[response] update-product':
+      title: "[response] update-product"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: HttpStatusCode 입니다.
+        data:
+          type: object
+          properties:
+            product:
+              required:
+              - description
+              - id
+              - name
+              - price
+              - stockQuantity
+              - thumbnail
+              type: object
+              properties:
+                thumbnail:
+                  type: string
+                  description: 썸네일 이미지 URL
+                price:
+                  type: number
+                  description: 상품 가격
+                name:
+                  type: string
+                  description: 상품 이름
+                stockQuantity:
+                  type: number
+                  description: 재고 수량
+                description:
+                  type: string
+                  description: 상품 설명
+                id:
+                  type: number
+                  description: 상품 ID
+        message:
+          type: string
+          description: 응답 메시지 입니다.
+    '[response] product-register':
+      title: "[response] product-register"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: HttpStatusCode 입니다.
+        data:
+          required:
+          - product_id
+          type: object
+          properties:
+            product_id:
+              type: number
+              description: 생성된 상품 ID 입니다.
+        message:
+          type: string
+          description: 응답 메시지 입니다.
+    '[request] make-reservation':
+      title: "[request] make-reservation"
+      required:
+      - storeId
+      type: object
+      properties:
+        orderRequestItems:
+          type: array
+          items:
+            required:
+            - productId
+            - quantity
+            type: object
+            properties:
+              quantity:
+                type: number
+                description: 주문한 수량 값입니다.
+              productId:
+                type: number
+                description: 상품 ID 값입니다.
+        storeId:
+          type: number
+          description: 가게 ID 값입니다.
+    reservations-reservationId486549215:
+      type: object
   securitySchemes:
     bearerAuth:
       type: http
