@@ -1,6 +1,6 @@
 package com.backtothefuture.store.controller;
 
-import com.backtothefuture.domain.reservation.dto.ReservationResponseDto;
+import com.backtothefuture.store.dto.response.ReservationResponseDto;
 import com.backtothefuture.security.annotation.WithMockCustomUser;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.request.ReservationRequestItemDto;

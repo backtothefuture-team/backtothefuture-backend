@@ -2,8 +2,8 @@ package com.backtothefuture.store.service;
 
 import com.backtothefuture.domain.reservation.Reservation;
 import com.backtothefuture.domain.reservation.ReservationProduct;
-import com.backtothefuture.domain.reservation.dto.ReservationResponseDto;
-import com.backtothefuture.domain.reservation.repository.CustomReservationRepository;
+import com.backtothefuture.store.dto.response.ReservationResponseDto;
+import com.backtothefuture.store.repository.CustomReservationRepository;
 import com.backtothefuture.domain.reservation.repository.ReservationProductRepository;
 import com.backtothefuture.domain.reservation.repository.ReservationRepository;
 import com.backtothefuture.domain.member.Member;
