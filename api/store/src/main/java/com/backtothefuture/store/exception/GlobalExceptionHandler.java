@@ -51,4 +51,14 @@ public class GlobalExceptionHandler {
 		BaseErrorCode errorCode = ex.getErrorCode();
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
+
+	/**
+	 * Order Exception Handler
+	 */
+	@ExceptionHandler(ReservationException.class)
+	protected ResponseEntity<ErrorResponse> handleSecurityException(ReservationException ex) {
+		log.error(">>>>> ReservationException : {}", ex);
+		BaseErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
 }
