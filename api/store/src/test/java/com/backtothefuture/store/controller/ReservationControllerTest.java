@@ -94,8 +94,8 @@ class ReservationControllerTest {
                                 .summary("구매자 예약 API")
                                 .requestFields(
                                         fieldWithPath("storeId").type(SimpleType.NUMBER).description("가게 ID 값입니다."),
-                                        fieldWithPath("orderRequestItems.productId").type(SimpleType.NUMBER).description("상품 ID 값입니다."),
-                                        fieldWithPath("orderRequestItems.quantity").type(SimpleType.NUMBER).description("주문한 수량 값입니다.")
+                                        fieldWithPath("orderRequestItems[].productId").type(SimpleType.NUMBER).description("상품 ID 값입니다."),
+                                        fieldWithPath("orderRequestItems[].quantity").type(SimpleType.NUMBER).description("주문한 수량 값입니다.")
                                 )
                                 .requestSchema(Schema.schema("[request] make-reservation"))
                                 .responseFields(
