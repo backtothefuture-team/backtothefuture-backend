@@ -28,8 +28,8 @@ public class ReservationController {
     public ResponseEntity<BfResponse<?>> makeReservation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody ReservationRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED)                        //TODO : userDetials.getId()로 수정하기
-                .body(new BfResponse<>(CREATE, Map.of("reservation_id", reservationService.makeReservation(null, dto))));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new BfResponse<>(CREATE, Map.of("reservation_id", reservationService.makeReservation(userDetails.getId(), dto))));
     }
 
     @GetMapping("/{reservationId}")
