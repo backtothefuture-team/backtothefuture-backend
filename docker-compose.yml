@@ -60,6 +60,9 @@ services:
       SPRING_REDIS_PORT: 6379
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      COOL_SMS_FROM_PHONE_NUMBER: ${COOL_SMS_FROM_PHONE_NUMBER}
+      COOL_SMS_API_KEY: ${COOL_SMS_API_KEY}
+      COOL_SMS_API_SECRET_KEY: ${COOL_SMS_API_SECRET_KEY}
     depends_on:
       db:
         condition: service_healthy
