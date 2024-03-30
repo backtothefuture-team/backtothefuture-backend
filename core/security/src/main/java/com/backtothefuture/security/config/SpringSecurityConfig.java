@@ -121,6 +121,7 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
                 antMatcher(GET, "/email/{email}/status") // 메일 인증 여부 확인
+
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
@@ -134,7 +135,9 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/store/register"),                            // 가게 등록
                 antMatcher(POST, "/store/{storeId}/products"),                // 상품 등록
                 antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
-                antMatcher(PATCH, "/store/{storeId}/products/{productId}")   // 상품 수정
+                antMatcher(PATCH, "/store/{storeId}/products/{productId}"),  // 상품 수정
+                antMatcher(POST,"/reservations"), // 상품 주문
+                antMatcher(GET,"/reservations/**")
 
         );
 
