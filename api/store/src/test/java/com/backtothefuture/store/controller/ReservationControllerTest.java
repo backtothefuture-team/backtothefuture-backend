@@ -34,8 +34,8 @@ import java.util.List;
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
@@ -144,5 +144,35 @@ class ReservationControllerTest {
                                 )
                                 .responseSchema(Schema.schema("[response] make-reservation")).build()
                         )));
+    }
+
+    @Test
+    @DisplayName("구매자 예약 취소하기")
+    @WithMockCustomUser
+    void cancelReservation() throws Exception {
+
+        Long reservationId = 1L;
+        doNothing().when(mockReservationService).cancelReservation(any(), eq(reservationId));
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/reservations/{reservationId}", reservationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(document("cancel-reservation",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("구매자 예약 취소 API입니다.")
+                                .tags("reservations")
+                                .summary("구매자 예약 취소 API")
+                                .pathParameters(
+                                        parameterWithName("reservationId").type(SimpleType.NUMBER).description("예약 ID")
+                                )
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER).description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data").type(SimpleType.STRING).description("NO_CONTENT")
+                                )
+                                .responseSchema(Schema.schema("[response] cancel-reservation")).build()
+                        )));
+
     }
 }

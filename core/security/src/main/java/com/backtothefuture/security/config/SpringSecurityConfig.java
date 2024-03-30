@@ -137,7 +137,8 @@ public class SpringSecurityConfig {
                 antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
                 antMatcher(PATCH, "/store/{storeId}/products/{productId}"),  // 상품 수정
                 antMatcher(POST,"/reservations"), // 상품 주문
-                antMatcher(GET,"/reservations/**")
+                antMatcher(GET,"/reservations/**"), // 주문 조회
+                antMatcher(DELETE,"/reservations/**") // 주문 삭제
 
         );
 

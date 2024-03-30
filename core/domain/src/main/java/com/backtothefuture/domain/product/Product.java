@@ -69,4 +69,8 @@ public class Product extends MutableBaseEntity {
         this.stockQuantity-=stockQuantity;
         return stockQuantity * price; // 상품에 대한 총 주문 금액 반환
     }
+
+    public void updateStockWhenCancel(int stockQuantity) {
+        this.stockQuantity+=stockQuantity;
+    }
 }

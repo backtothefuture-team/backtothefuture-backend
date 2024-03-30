@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +39,16 @@ public class ReservationController {
             @PathVariable("reservationId") Long reservationId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new BfResponse<>(SUCCESS, reservationService.getReservation(null, reservationId)));
+    }
+
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<BfResponse<?>> cancelReservation(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable("reservationId") Long reservationId
+    ) {
+        reservationService.cancelReservation(userDetails, reservationId);
+        return ResponseEntity.status(NO_CONTENT)
+                .body(new BfResponse<>(NO_CONTENT));
     }
 
 }

@@ -81,6 +81,24 @@ public class ReservationService {
         return reservationResponseDto;
     }
 
+    @Transactional
+    public void cancelReservation(UserDetailsImpl userDetails, Long reservationId) {
+        //TODO: memberId 비교해서 권한 체크
+        List<ReservationProduct> reservationProducts = reservationProductRepository.findAllByReservation(reservationId);
+
+        if(reservationProducts.size() == 0)
+            throw new ReservationException(NOT_FOUND_RESERVATION_PRODUCT);
+
+        reservationProducts.forEach((reservationProduct)->{
+            Product product = productRepository.findById(reservationProduct.getProduct().getId())
+                    .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
+            product.updateStockWhenCancel(reservationProduct.getQuantity()); // 취소된 상품에 대해서 재고 증가
+            reservationProductRepository.delete(reservationProduct); // 주문 상품 엔티티 삭제
+        });
+
+        reservationRepository.deleteById(reservationId);
+    }
+
     /**
      * 1. 상품 조회
      * 2. 재고, 주문 수량 비교
