@@ -32,7 +32,7 @@ jobs:
         with:
           host port: 3306
           container port: 3306
-          mysql database: test
+          mysql database: 'test'
           mysql root password: 1234
       # 테스트 없이 빌드
       - name: Build with Gradle
