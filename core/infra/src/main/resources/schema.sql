@@ -84,18 +84,3 @@ CREATE TABLE reservation_product
 );
 
 
-INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
-                    updated_by, created_at, created_by)
-VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
-        null,
-        null, null);
-
-INSERT INTO store (store_id, name, description, location, contact, image, member_id, updated_at, updated_by, created_at,
-                   created_by)
-VALUES (1, 'test', 'test', null, null, null, 1, null, null, null, null);
-
-INSERT INTO product (product_id, name, description, price, stock_quantity, thumbnail, store_id, updated_at, updated_by,
-                     created_at, created_by)
-VALUES (1, 'test', 'test', 1000, 10, null, 1, null, null, null, null),
-       (2, 'test', 'test', 2000, 10, null, 1, null, null, null, null);
-
