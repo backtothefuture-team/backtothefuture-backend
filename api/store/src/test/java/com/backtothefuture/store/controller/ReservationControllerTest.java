@@ -58,8 +58,6 @@ class ReservationControllerTest {
     void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(documentationConfiguration(restDocumentation))
-                // TODO: JWT 토큰 인증 처리 -> 실제 토큰을 발급받아 사용 or mocking(현재적용됨)
-                //.apply(springSecurity()) // Spring Security 설정 적용
                 .build();
     }
 
