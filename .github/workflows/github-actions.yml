@@ -28,12 +28,16 @@ jobs:
         uses: gradle/actions/setup-gradle@v3.1.0
 
       - name: Setup MySQL
-      - uses: mirromutth/mysql-action@v1.1
+      - uses: samin/mysql-action@v1
         with:
           host port: 3306
           container port: 3306
+          character set server: 'utf8'
+          mysql version: '8.0'
           mysql database: 'test'
           mysql root password: 1234
+          mysql user: 'root'
+          mysql password: 1234
       # 테스트 없이 빌드
       - name: Build with Gradle
         run: |
