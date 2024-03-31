@@ -20,7 +20,7 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class CertificateService {
 
-    private final CoolsmsService coolsmsService;
+//    private final CoolsmsService coolsmsService;
 
     private final RedisRepository redisRepository;
 
