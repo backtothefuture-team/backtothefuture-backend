@@ -50,7 +50,7 @@ class MemberControllerTest extends BfTestConfig {
     @MockBean
     private MemberService memberService;
 
-    @MockBean(name ="kakaoOAuthService")
+    @MockBean(name = "kakaoOAuthService")
     private OAuthService kakaoOAuthService;
 
     @Autowired
@@ -152,7 +152,7 @@ class MemberControllerTest extends BfTestConfig {
         // resource server에서 받아온 정보로 회원가입 진행
         // given
         OAuthLoginDto oauthLoginDto = new OAuthLoginDto("authorizationCode", ProviderType.KAKAO,
-            RolesType.ROLE_USER, "state");
+                RolesType.ROLE_USER, "state", "accessToken");
         KakaoAccount kakaoAccount = new KakaoAccount("이상민", "test@gmail.com", "010-0000-0000");
         KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(1L, kakaoAccount);
         // 로그인 성공 시 반환할 토큰 설정
@@ -160,40 +160,42 @@ class MemberControllerTest extends BfTestConfig {
         // when
         // kakaoOAuthService의 login 메서드가 호출될 때 loginTokenDto를 반환하도록 설정
         when(kakaoOAuthService.getUserInfoFromResourceServer(any()))
-            //then
-            .thenReturn(loginTokenDto);
+                //then
+                .thenReturn(loginTokenDto);
 
         this.mockMvc.perform(post("/member/login/oauth")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(oauthLoginDto)))
-            .andExpect(status().isOk())
-            .andDo(document("oauth-login",
-                resource(ResourceSnippetParameters.builder()
-                    .description("소셜 로그인 API 입니다.")
-                    .tag("member")
-                    .summary("소셜 로그인 API")
-                    //request
-                    .requestFields(
-                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING)
-                            .description("Authorization Server에서 받은 인증 코드입니다."),
-                        fieldWithPath("providerType").type(JsonFieldType.STRING)
-                            .description("어떤 소셜 로그인인지 입력 값입니다."),
-                        fieldWithPath("rolesType").type(JsonFieldType.STRING)
-                            .description("유저의 자격 값입니다."),
-                        fieldWithPath("state").type(JsonFieldType.STRING).optional()
-                            .description("네이버 소셜 로그인 시 필요한 state 값입니다.")
-                    )
-                    .requestSchema(Schema.schema("OAuthLoginDto"))
-                    //response
-                    .responseFields(
-                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
-                            .description("Access Token"),
-                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
-                            .description("Refresh Token")
-                    )
-                    .responseSchema(Schema.schema("LoginTokenDto")).build()
-                )));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(oauthLoginDto)))
+                .andExpect(status().isOk())
+                .andDo(document("oauth-login",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("소셜 로그인 API 입니다.")
+                                .tag("member")
+                                .summary("소셜 로그인 API")
+                                //request
+                                .requestFields(
+                                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING)
+                                                .description("Authorization Server에서 받은 인증 코드입니다."),
+                                        fieldWithPath("providerType").type(JsonFieldType.STRING)
+                                                .description("어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"),
+                                        fieldWithPath("rolesType").type(JsonFieldType.STRING)
+                                                .description("유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원 : ROLE_STORE_OWNER )"),
+                                        fieldWithPath("state").type(JsonFieldType.STRING).optional()
+                                                .description("네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO 로그인 시 null )"),
+                                        fieldWithPath("token").type(JsonFieldType.STRING).optional()
+                                                .description("소셜 인증 서버에서 발급받은 접근 토큰 값입니다.")
+                                )
+                                .requestSchema(Schema.schema("OAuthLoginDto"))
+                                //response
+                                .responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                                                .description("Access Token"),
+                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
+                                                .description("Refresh Token")
+                                )
+                                .responseSchema(Schema.schema("LoginTokenDto")).build()
+                        )));
     }
 }

@@ -16,7 +16,9 @@ public record OAuthLoginDto(
     @EnumTypeMisMatch(message = "요청된 값이 존재하지 않거나 일치하는 roles type이 없습니다.")
     RolesType rolesType,
     @Nullable
-    String state
+    String state,
+    @NotBlank(message = "접근 토큰 값은 필수입니다.")
+    String token
 ) {
 
 }

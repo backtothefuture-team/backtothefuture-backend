@@ -39,7 +39,7 @@ public class NaverOAuthService implements OAuthService {
     private final String contentType = "application/x-www-form-urlencoded;charset=utf-8";
 
     @Override
-    public String getAccessToken(OAuthLoginDto oAuthLoginDto) {
+    public String getAccessToken(OAuthLoginDto oAuthLoginDto) {   // token 받아옴 ( 네이티브 앱에서는 필요 x )
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
 
@@ -78,12 +78,10 @@ public class NaverOAuthService implements OAuthService {
     @Transactional
     public LoginTokenDto getUserInfoFromResourceServer(OAuthLoginDto OAuthLoginDto) {
 
-        String token = getAccessToken(OAuthLoginDto); // naver server에서 access token 발급
-
         WebClient webclient = WebClient.builder()
             .baseUrl("https://openapi.naver.com/v1/nid/me")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + OAuthLoginDto.token())
             .build();
 
         NaverUserInfo userInfo = webclient.get()

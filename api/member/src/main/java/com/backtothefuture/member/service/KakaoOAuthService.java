@@ -47,7 +47,7 @@ public class KakaoOAuthService implements OAuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String getAccessToken(OAuthLoginDto OAuthLoginDto) {  // token 받아옴
+    public String getAccessToken(OAuthLoginDto OAuthLoginDto) {  // token 받아옴 ( 네이티브 앱에서는 필요 x )
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
 
@@ -86,12 +86,11 @@ public class KakaoOAuthService implements OAuthService {
     @Transactional
     public LoginTokenDto getUserInfoFromResourceServer(OAuthLoginDto OAuthLoginDto) {  // 사용자 정보 받아옴
 
-        String token = getAccessToken(OAuthLoginDto);
 
         WebClient webclient = WebClient.builder()
             .baseUrl("https://kapi.kakao.com/v2/user/me")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, contentType)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + OAuthLoginDto.token())
             .build();
 
         //kakao resource server로 사용자 정보 요청
