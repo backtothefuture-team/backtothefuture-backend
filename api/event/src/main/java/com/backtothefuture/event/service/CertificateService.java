@@ -29,22 +29,22 @@ public class CertificateService {
     @Value("${spring.certification.mail.baseurl}")
     private String baseUrl;
 
-    public String getCertificateNumber(String phoneNumber) {
-        String parsePhoneNum = parsePhoneNumber(phoneNumber); // 전화번호 parse
-        String randomNum = RandomNumUtil.createRandomNum(6); // 6자리 임의의 숫자 생성
+//    public String getCertificateNumber(String phoneNumber) {
+//        String parsePhoneNum = parsePhoneNumber(phoneNumber); // 전화번호 parse
+//        String randomNum = RandomNumUtil.createRandomNum(6); // 6자리 임의의 숫자 생성
+//        log.error("service error 발생");
+//        coolsmsService.sendCertificationMessage(parsePhoneNum, randomNum);
+//
+//        return randomNum;
+//    }
 
-        coolsmsService.sendCertificationMessage(parsePhoneNum, randomNum);
-
-        return randomNum;
-    }
-
-    public void verifyCertificateNumber(VerifyCertificateRequestDto request) {
-        // 유효 번호 검증
-        if (!validateCertificationNumber(request.getPhoneNumber(), request.certificationNumber()))
-            throw new CertificateException(CertificateErrorCode.INVALID_CERTIFCATE_NUMBER);
-
-        redisRepository.deleteCertificationNumber(request.getPhoneNumber());
-    }
+//    public void verifyCertificateNumber(VerifyCertificateRequestDto request) {
+//        // 유효 번호 검증
+//        if (!validateCertificationNumber(request.getPhoneNumber(), request.certificationNumber()))
+//            throw new CertificateException(CertificateErrorCode.INVALID_CERTIFCATE_NUMBER);
+//
+//        redisRepository.deleteCertificationNumber(request.getPhoneNumber());
+//    }
 
     private String parsePhoneNumber(String phoneNumber) {
         String parseNum = phoneNumber.replace("-", "");
