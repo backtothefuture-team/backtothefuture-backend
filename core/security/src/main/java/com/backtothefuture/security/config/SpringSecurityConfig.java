@@ -120,7 +120,7 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/certificate/message"), // 인증 번호 검증
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
-                antMatcher(GET, "/email/{email}/status") // 메일 인증 여부 확인
+                antMatcher(GET, "/certificate/email/{email}/status") // 메일 인증 여부 확인
 
         );
 
