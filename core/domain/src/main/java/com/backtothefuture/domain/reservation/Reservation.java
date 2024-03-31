@@ -28,7 +28,7 @@ public class Reservation extends MutableBaseEntity {
 
     private Integer totalPrice; // 주문 총 금액
 
-    public void updatePrice(int price) {
+    public void increaseTotalPrice(int price) {
         this.totalPrice += price;
     }
 

@@ -112,7 +112,7 @@ public class ReservationService {
                 throw new ReservationException(NOT_ENOUGH_STOCK_QUANTITY);
 
             int price = product.updateStockWhenReserve(itemDto.quantity()); // 재고 차감하고 상품에 대한 주문 금액 반환
-            reservation.updatePrice(price); // 주문 금액 반영
+            reservation.increaseTotalPrice(price); // 주문 금액 반영
 
             reservationProductRepository.save(
                     ReservationProduct.builder()
