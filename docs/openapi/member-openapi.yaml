@@ -77,7 +77,8 @@ paths:
             examples:
               oauth-login:
                 value: "{\"authorizationCode\":\"authorizationCode\",\"providerType\"\
-                  :\"KAKAO\",\"rolesType\":\"ROLE_USER\",\"state\":\"state\"}"
+                  :\"KAKAO\",\"rolesType\":\"ROLE_USER\",\"state\":\"state\",\"token\"\
+                  :\"accessToken\"}"
       responses:
         "200":
           description: "200"
@@ -122,6 +123,33 @@ components:
         email:
           type: string
           description: 이메일
+    OAuthLoginDto:
+      title: OAuthLoginDto
+      required:
+      - authorizationCode
+      - providerType
+      - rolesType
+      type: object
+      properties:
+        rolesType:
+          type: string
+          description: "유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원\
+            \ : ROLE_STORE_OWNER )"
+        authorizationCode:
+          type: string
+          description: Authorization Server에서 받은 인증 코드입니다.
+        state:
+          type: string
+          description: 네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO
+            로그인 시 null )
+          nullable: true
+        providerType:
+          type: string
+          description: "어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"
+        token:
+          type: string
+          description: 소셜 인증 서버에서 발급받은 접근 토큰 값입니다.
+          nullable: true
     '[request] member-login':
       title: "[request] member-login"
       required:
@@ -160,27 +188,6 @@ components:
         message:
           type: string
           description: 응답 메시지
-    OAuthLoginDto:
-      title: OAuthLoginDto
-      required:
-      - authorizationCode
-      - providerType
-      - rolesType
-      type: object
-      properties:
-        rolesType:
-          type: string
-          description: 유저의 자격 값입니다.
-        authorizationCode:
-          type: string
-          description: Authorization Server에서 받은 인증 코드입니다.
-        state:
-          type: string
-          description: 네이버 소셜 로그인 시 필요한 state 값입니다.
-          nullable: true
-        providerType:
-          type: string
-          description: 어떤 소셜 로그인인지 입력 값입니다.
     LoginTokenDto:
       title: LoginTokenDto
       required:
