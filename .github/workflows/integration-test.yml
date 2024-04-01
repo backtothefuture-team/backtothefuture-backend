@@ -33,6 +33,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Set up Mysql
+      - uses: samin/mysql-action@v1
+        with:
+          host port: 3306
+          container port: 3306
+          character set server: 'utf8'
+          mysql version: '8.0'
+          mysql database: 'test'
+          mysql root password: 1234
+          mysql user: 'root'
+          mysql password: 1234
       # gradle 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.1.0
