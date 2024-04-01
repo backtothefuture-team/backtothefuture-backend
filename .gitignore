@@ -38,3 +38,6 @@ out/
 
 ### etc ###
 .env
+
+### tmp
+core/infra/src/main/resources/schema.sql
