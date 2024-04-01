@@ -10,10 +10,10 @@ spring:
         format_sql: true # console 창에 보여줄때 format 여부
 
   certification:
-    coolsms:
-      fromPhoneNumber: 01000000000
-      api: test
-      secret: test
+#    coolsms:
+#      fromPhoneNumber: ${COOL_SMS_FROM_PHONE_NUMBER}
+#      api: ${COOL_SMS_API_KEY}
+#      secret: ${COOL_SMS_API_SECRET_KEY}
     mail:
       baseurl: "http://localhost:8084/v1"
   mail:

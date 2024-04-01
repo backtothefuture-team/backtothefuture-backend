@@ -33,6 +33,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Set up Mysql
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          host port: 3306
+          container port: 3306
+          mysql database: 'test'
+          mysql root password: '1234'
       # gradle 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.1.0
@@ -41,3 +48,4 @@ jobs:
         run: |
           ./gradlew -p api/member test
           ./gradlew -p api/event test
+          ./gradlew -p api/store test
