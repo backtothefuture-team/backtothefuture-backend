@@ -43,7 +43,8 @@ paths:
             examples:
               make-reservation:
                 value: "{\"storeId\":1,\"orderRequestItems\":[{\"productId\":1,\"\
-                  quantity\":1},{\"productId\":2,\"quantity\":1}]}"
+                  quantity\":1},{\"productId\":2,\"quantity\":1}],\"reservationTime\"\
+                  :\"12:00:00\"}"
       responses:
         "201":
           description: "201"
@@ -138,7 +139,7 @@ paths:
               register-store:
                 value: "{\"name\":\"가게 이름\",\"description\":\"가게 설명\",\"location\"\
                   :\"가게 위치\",\"contact\":[\"010\",\"0000\",\"0000\"],\"image\":\"이\
-                  미지 url\"}"
+                  미지 url\",\"startTime\":\"10:00:00\",\"endTime\":\"21:00:00\"}"
       responses:
         "201":
           description: "201"
@@ -296,6 +297,33 @@ paths:
                     트된 이미지 링크\"}}}"
 components:
   schemas:
+    '[request] make-reservation':
+      title: "[request] make-reservation"
+      required:
+      - reservationTime
+      - storeId
+      type: object
+      properties:
+        orderRequestItems:
+          type: array
+          items:
+            required:
+            - productId
+            - quantity
+            type: object
+            properties:
+              quantity:
+                type: number
+                description: 주문한 수량 값입니다.
+              productId:
+                type: number
+                description: 상품 ID 값입니다.
+        reservationTime:
+          type: string
+          description: 예약 시간입니다. 'HH:mm' 형태입니다.
+        storeId:
+          type: number
+          description: 가게 ID 값입니다.
     '[reqyest] update-product':
       title: "[reqyest] update-product"
       type: object
@@ -383,37 +411,6 @@ components:
         message:
           type: string
           description: 응답 메시지 입니다.
-    '[request] store-register':
-      title: "[request] store-register"
-      required:
-      - description
-      - location
-      - name
-      type: object
-      properties:
-        image:
-          type: string
-          description: 썸네일 이미지 입니다.
-          nullable: true
-        contact:
-          type: array
-          description: 연락처입니다. 문자열 배열로 입력해주세요.
-          nullable: true
-          items:
-            oneOf:
-            - type: object
-            - type: boolean
-            - type: string
-            - type: number
-        name:
-          type: string
-          description: 가게 이름입니다.
-        description:
-          type: string
-          description: 가게 상세 설명입니다.
-        location:
-          type: number
-          description: 가게 위치입니다.
     '[request] product-register':
       title: "[request] product-register"
       required:
@@ -483,6 +480,27 @@ components:
         message:
           type: string
           description: 응답 메시지 입니다.
+    '[response] store-register':
+      title: "[response] store-register"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: HttpStatusCode 입니다.
+        data:
+          required:
+          - store_id
+          type: object
+          properties:
+            store_id:
+              type: number
+              description: 생성된 가게 ID 입니다.
+        message:
+          type: string
+          description: 응답 메시지 입니다.
     '[response] make-reservation':
       title: "[response] make-reservation"
       required:
@@ -514,27 +532,45 @@ components:
         message:
           type: string
           description: 응답 메시지 입니다.
-    '[response] store-register':
-      title: "[response] store-register"
+    '[request] store-register':
+      title: "[request] store-register"
       required:
-      - code
-      - message
+      - description
+      - location
+      - name
       type: object
       properties:
-        code:
-          type: number
-          description: HttpStatusCode 입니다.
-        data:
-          required:
-          - store_id
-          type: object
-          properties:
-            store_id:
-              type: number
-              description: 생성된 가게 ID 입니다.
-        message:
+        image:
           type: string
-          description: 응답 메시지 입니다.
+          description: 썸네일 이미지 입니다.
+          nullable: true
+        contact:
+          type: array
+          description: 연락처입니다. 문자열 배열로 입력해주세요.
+          nullable: true
+          items:
+            oneOf:
+            - type: object
+            - type: boolean
+            - type: string
+            - type: number
+        name:
+          type: string
+          description: 가게 이름입니다.
+        description:
+          type: string
+          description: 가게 상세 설명입니다.
+        startTime:
+          type: string
+          description: 오픈시간입니다. HH:mm 형태
+          nullable: true
+        location:
+          type: number
+          description: 가게 위치입니다.
+        endTime:
+          type: string
+          description: 마감시간입니다. HH:mm 형태
+          nullable: true
     '[response] update-product':
       title: "[response] update-product"
       required:
@@ -600,29 +636,6 @@ components:
         message:
           type: string
           description: 응답 메시지 입니다.
-    '[request] make-reservation':
-      title: "[request] make-reservation"
-      required:
-      - storeId
-      type: object
-      properties:
-        orderRequestItems:
-          type: array
-          items:
-            required:
-            - productId
-            - quantity
-            type: object
-            properties:
-              quantity:
-                type: number
-                description: 주문한 수량 값입니다.
-              productId:
-                type: number
-                description: 상품 ID 값입니다.
-        storeId:
-          type: number
-          description: 가게 ID 값입니다.
     reservations-reservationId486549215:
       type: object
   securitySchemes:
