@@ -20,7 +20,7 @@ public abstract class BfTestConfig {
 	static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8")
 		.withUsername("root")
 		.withPassword("1234")
-		.withDatabaseName("");
+		.withDatabaseName("test");
 
 	@Container
 	static GenericContainer<?> redisContainer = new GenericContainer<>("redis:5.0.3-alpine")

@@ -18,29 +18,37 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
+
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Store extends MutableBaseEntity {
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "store_id")
-	private Long id;
 
-	private String name; 		// 가게 이름
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "store_id")
+    private Long id;
 
-	@Lob
-	@Column(columnDefinition = "TEXT")
-	private String description; // 가게 설명
+    private String name;        // 가게 이름
 
-	private String location;	// 가게 위치
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String description; // 가게 설명
 
-	private String contact;		// 연락처
+    private String location;    // 가게 위치
 
-	private String image;		// 가게 이미지
+    private String contact;        // 연락처
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;		// 회원
+    private String image;        // 가게 이미지
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;        // 회원
+
+    private LocalTime startTime; // 영업 시작 시간
+
+    private LocalTime endTime; // 영업 종료 시간
 }
