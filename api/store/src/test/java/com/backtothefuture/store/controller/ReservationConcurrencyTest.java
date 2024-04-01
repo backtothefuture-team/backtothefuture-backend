@@ -8,6 +8,7 @@ import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
+import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.request.ReservationRequestItemDto;
 import com.backtothefuture.store.exception.ProductException;
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_PRODUCT_ID;
 
 @SpringBootTest
-public class ReservationConcurrencyTest {
+public class ReservationConcurrencyTest extends BfTestConfig {
 
     @Autowired
     private ReservationService reservationService;
@@ -43,49 +46,52 @@ public class ReservationConcurrencyTest {
     void ReservationConcurrencyTest() throws InterruptedException {
         //given
         Member customer1 = Member.builder() // 고객1 생성
-                .name("이상민")
-                .authId(null)
-                .email("leesangmin@naver.com")
-                .status(StatusType.ACTIVE)
-                .provider(null)
-                .roles(RolesType.ROLE_USER)
-                .build();
+            .name("이상민")
+            .authId(null)
+            .email("leesangmin@naver.com")
+            .status(StatusType.ACTIVE)
+            .provider(null)
+            .roles(RolesType.ROLE_USER)
+            .build();
         memberRepository.save(customer1);
 
         Member owner = Member.builder()  // 가게 주인 생성
-                .name("owner")
-                .authId(null)
-                .email("email3@naver.com")
-                .status(StatusType.ACTIVE)
-                .provider(null)
-                .roles(RolesType.ROLE_STORE_OWNER)
-                .build();
+            .name("owner")
+            .authId(null)
+            .email("email3@naver.com")
+            .status(StatusType.ACTIVE)
+            .provider(null)
+            .roles(RolesType.ROLE_STORE_OWNER)
+            .build();
         memberRepository.save(owner);
 
         Store store = Store.builder()  // 가게 생성
-                .name("gs25")
-                .description("편의점입니다.")
-                .image("이미지 url")
-                .contact("010-0000-0000")
-                .location("서울")
-                .member(owner)
-                .build();
+            .name("gs25")
+            .description("편의점입니다.")
+            .image("이미지 url")
+            .contact("010-0000-0000")
+            .location("서울")
+            .member(owner)
+            .startTime(LocalTime.of(10, 00))
+            .endTime(LocalTime.of(21, 00))
+            .build();
         storeRepository.save(store);
 
         Product product = Product.builder()
-                .name("삼각김밥")
-                .description("삼각김밥입니다.")
-                .price(1000)
-                .stockQuantity(1000)
-                .thumbnail("nail test")
-                .store(store)
-                .build();
+            .name("삼각김밥")
+            .description("삼각김밥입니다.")
+            .price(1000)
+            .stockQuantity(1000)
+            .thumbnail("nail test")
+            .store(store)
+            .build();
         productRepository.save(product);
 
         ReservationRequestDto reservationRequestDto = ReservationRequestDto.builder()
-                .storeId(store.getId())
-                .orderRequestItems(List.of(new ReservationRequestItemDto(product.getId(), 6)))
-                .build();
+            .storeId(store.getId())
+            .orderRequestItems(List.of(new ReservationRequestItemDto(product.getId(), 6)))
+            .reservationTime(LocalTime.of(12, 00))
+            .build();
 
         //when
         int threadCount = 200; // thread pool 속 thread 갯수
@@ -103,7 +109,8 @@ public class ReservationConcurrencyTest {
             executorService.submit(() -> {
                 try {
                     // 예약 실시
-                    Long reservationId = reservationService.makeReservation(customer1.getId(), reservationRequestDto);
+                    Long reservationId = reservationService.makeReservation(customer1.getId(),
+                        reservationRequestDto);
                     // 성공 횟수 증가
                     successCount.getAndIncrement();
                 } catch (Exception e) {
@@ -118,7 +125,7 @@ public class ReservationConcurrencyTest {
         productRepository.flush();
         //then
         Product findProduct = productRepository.findById(product.getId())
-                .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
+            .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
         Assertions.assertEquals(4, findProduct.getStockQuantity());
         Assertions.assertEquals(34, failureCount.get());
         Assertions.assertEquals(166, successCount.get());
