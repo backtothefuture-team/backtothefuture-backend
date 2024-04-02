@@ -25,10 +25,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import org.springframework.test.context.ActiveProfiles;
 import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_PRODUCT_ID;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class ReservationConcurrencyTest extends BfTestConfig {
 
     @Autowired

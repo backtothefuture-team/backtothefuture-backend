@@ -1,7 +1,7 @@
 spring:
   profiles:
-    include: domain, infra, security
-    active: dev
+    include: domain, infra, security, testContainers
+    active: dev, test
   jpa:
     open-in-view: false # view, Controller 단에서 Lazy를 사용하지 않음
     properties:
