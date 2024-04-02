@@ -1,5 +1,8 @@
-DROP DATABASE IF EXISTS test;
-CREATE DATABASE IF NOT EXISTS test;
+DROP
+    DATABASE IF EXISTS test;
+CREATE
+    DATABASE IF NOT EXISTS test;
+
 USE test;
 
 CREATE TABLE member
@@ -33,6 +36,8 @@ CREATE TABLE store
     updated_by  varchar(255),
     created_at  datetime(6),
     created_by  varchar(255),
+    start_time  time,
+    end_time    time,
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 
@@ -52,40 +57,44 @@ CREATE TABLE product
     FOREIGN KEY (store_id) REFERENCES store (store_id)
 );
 
-CREATE TABLE reservation(
-    reservation_id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    member_id bigint NOT NULL,
-    store_id bigint NOT NULL,
-    total_price int,
-    updated_at     datetime(6),
-    updated_by     varchar(255),
-    created_at     datetime(6),
-    created_by     varchar(255),
+CREATE TABLE reservation
+(
+    reservation_id   bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    member_id        bigint NOT NULL,
+    store_id         bigint NOT NULL,
+    total_price      int,
+    updated_at       datetime(6),
+    updated_by       varchar(255),
+    created_at       datetime(6),
+    created_by       varchar(255),
+    reservation_time time,
     FOREIGN KEY (store_id) REFERENCES store (store_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 
-CREATE TABLE reservation_product(
+CREATE TABLE reservation_product
+(
     reservation_product_id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    quantity int,
-    reservation_id bigint NOT NULL,
-    product_id bigint NOT NULL,
-    updated_at     datetime(6),
-    updated_by     varchar(255),
-    created_at     datetime(6),
-    created_by     varchar(255),
+    quantity               int,
+    reservation_id         bigint NOT NULL,
+    product_id             bigint NOT NULL,
+    updated_at             datetime(6),
+    updated_by             varchar(255),
+    created_at             datetime(6),
+    created_by             varchar(255),
     FOREIGN KEY (reservation_id) REFERENCES reservation (reservation_id),
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)
-VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null, null,
+VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
+        null,
         null, null);
 
 INSERT INTO store (store_id, name, description, location, contact, image, member_id, updated_at, updated_by, created_at,
-                   created_by)
-VALUES (1, 'test', 'test', null, null, null, 1, null, null, null,null);
+                   created_by, start_time, end_time)
+VALUES (1, 'test', 'test', null, null, null, 1, null, null, null, null, '10:00', '21:00');
 
 INSERT INTO product (product_id, name, description, price, stock_quantity, thumbnail, store_id, updated_at, updated_by,
                      created_at, created_by)
