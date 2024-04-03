@@ -95,7 +95,6 @@ public class MemberBusinessService {
                     throw new MemberException(BUSINESS_STATUS_ERROR);
                 })
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
-                    log.error(clientResponse.);
                     throw new MemberException(BUSINESS_STATUS_ERROR);
                 })
                 .bodyToMono(BusinessStatusResponseDto.class)

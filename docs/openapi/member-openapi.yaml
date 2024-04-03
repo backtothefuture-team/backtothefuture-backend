@@ -67,7 +67,7 @@ paths:
       tags:
       - business
       summary: 사업자 정보 유효성 검증
-      description: 사업자 정보 유효성 검증 API입니다.
+      description: 사업자 정보 유효성 검증 API입니다. (지금은 사용하지 않습니다.)
       operationId: validate-business-info
       requestBody:
         content:
@@ -91,6 +91,7 @@ paths:
                 validate-business-info:
                   value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"isValid\"\
                     :true}}"
+      deprecated: true
   /member/business/validate-status:
     post:
       tags:

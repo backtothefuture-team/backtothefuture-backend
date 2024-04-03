@@ -235,9 +235,10 @@ class MemberControllerTest extends BfTestConfig {
                 .andExpect(status().isOk())
                 .andDo(document("validate-business-info",
                         resource(ResourceSnippetParameters.builder()
-                                .description("사업자 정보 유효성 검증 API입니다.")
+                                .description("사업자 정보 유효성 검증 API입니다. (지금은 사용하지 않습니다.)")
                                 .tags("business")
                                 .summary("사업자 정보 유효성 검증")
+                                .deprecated(true)
                                 // request
                                 .requestFields(
                                         fieldWithPath("businessNumber").type(JsonFieldType.STRING).description("사업자번호"),
