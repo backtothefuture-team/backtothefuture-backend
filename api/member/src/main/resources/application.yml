@@ -22,3 +22,8 @@ oauth:
   naver:
     client_id: ${OAUTH_NAVER_CLIENTID}
     client_secret: ${OAUTH_NAVER_CLIENT_SECRET}
+
+validate:
+  business:
+    api_key: ${BUSINESS_VALIDATE_API_KEY}
+    baseurl: https://api.odcloud.kr/api/nts-businessman/v1
