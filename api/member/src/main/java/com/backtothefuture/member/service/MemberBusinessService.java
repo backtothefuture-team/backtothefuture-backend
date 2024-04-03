@@ -1,5 +1,6 @@
 package com.backtothefuture.member.service;
 
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.BUSINESS_STATUS_ERROR;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.BUSINESS_VALIDATE_ERROR;
 
 import com.backtothefuture.member.dto.request.BusinessInfoRequestDto;
@@ -13,6 +14,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -55,6 +57,12 @@ public class MemberBusinessService {
                 .uri(uri)
                 .bodyValue(requestBody)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    throw new MemberException(BUSINESS_VALIDATE_ERROR);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                    throw new MemberException(BUSINESS_VALIDATE_ERROR);
+                })
                 .bodyToMono(BusinessValidationResponseDto.class)
                 .block(); // 동기적
 
@@ -83,6 +91,13 @@ public class MemberBusinessService {
                 .uri(uri)
                 .bodyValue(Map.of("b_no", List.of(businessNumber)))
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    throw new MemberException(BUSINESS_STATUS_ERROR);
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
+                    log.error(clientResponse.);
+                    throw new MemberException(BUSINESS_STATUS_ERROR);
+                })
                 .bodyToMono(BusinessStatusResponseDto.class)
                 .block(); // 동기적
 
@@ -102,7 +117,7 @@ public class MemberBusinessService {
             return businessStatusCode.equals("01");
         } else {
             // 알 수 없는 요인에 의해 실패한 요청
-            throw new MemberException(BUSINESS_VALIDATE_ERROR);
+            throw new MemberException(BUSINESS_STATUS_ERROR);
         }
     }
 }

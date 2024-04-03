@@ -118,7 +118,8 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
                 antMatcher(GET, "/certificate/email/{email}/status"), // 메일 인증 여부 확인
-                antMatcher(GET, "member/business/validate-info") // 사업자등록정보 진위여부 확인
+                antMatcher(POST, "/member/business/validate-info"), // 사업자등록정보 진위여부 확인
+                antMatcher(POST, "/member/business/validate-status") // 사업자등록번호 상태조회
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);

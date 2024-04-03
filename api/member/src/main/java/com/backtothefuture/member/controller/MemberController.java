@@ -75,7 +75,7 @@ public class MemberController {
                 Map.of("isValid", memberBusinessService.validateBusinessInfo(businessNumberValidateRequestDto))));
     }
 
-    @PostMapping("/business/status")
+    @PostMapping("/business/validate-status")
     public ResponseEntity<BfResponse<?>> businessNumberStatus(@RequestBody Map<String, String> requestbody) {
         return ResponseEntity.ok().body(new BfResponse<>(SUCCESS,
                 Map.of("isValid", memberBusinessService.validateBusinessNumber(requestbody.get("businessNumber")))));
