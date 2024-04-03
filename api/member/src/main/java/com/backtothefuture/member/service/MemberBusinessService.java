@@ -3,8 +3,8 @@ package com.backtothefuture.member.service;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.BUSINESS_STATUS_ERROR;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.BUSINESS_VALIDATE_ERROR;
 
-import com.backtothefuture.member.dto.request.BusinessInfoRequestDto;
 import com.backtothefuture.member.dto.request.BusinessInfoValidateRequestDto;
+import com.backtothefuture.member.dto.request.BusinessRequestInfo;
 import com.backtothefuture.member.dto.response.BusinessStatusResponseDto;
 import com.backtothefuture.member.dto.response.BusinessValidationResponseDto;
 import com.backtothefuture.member.exception.MemberException;
@@ -47,15 +47,12 @@ public class MemberBusinessService {
                 .queryParam("serviceKey", businessValidateApiKey)
                 .build(true).toUri(); // encoded:true -> 이중 인코딩 방지
 
-        BusinessInfoRequestDto.Business business = new BusinessInfoRequestDto.Business(validateRequestDto);
-
-        // 요청 body 설정
-        BusinessInfoRequestDto requestBody = new BusinessInfoRequestDto(List.of(business));
+        BusinessRequestInfo businessRequestInfo = BusinessRequestInfo.from(validateRequestDto);
 
         //사업자등록정보 진위확인 API 요청
         BusinessValidationResponseDto response = getWebClient().post()
                 .uri(uri)
-                .bodyValue(requestBody)
+                .bodyValue(Map.of("businesses", List.of(businessRequestInfo)))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
                     throw new MemberException(BUSINESS_VALIDATE_ERROR);
