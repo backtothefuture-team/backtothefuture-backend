@@ -91,7 +91,6 @@ paths:
                 validate-business-info:
                   value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"isValid\"\
                     :true}}"
-      deprecated: true
   /member/business/validate-status:
     post:
       tags:
