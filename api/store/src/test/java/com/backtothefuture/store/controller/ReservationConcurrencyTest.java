@@ -8,6 +8,7 @@ import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
+import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.request.ReservationRequestItemDto;
 import com.backtothefuture.store.exception.ProductException;
@@ -17,16 +18,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import org.springframework.test.context.ActiveProfiles;
 import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_PRODUCT_ID;
 
 @SpringBootTest
-public class ReservationConcurrencyTest {
+@ActiveProfiles("test")
+public class ReservationConcurrencyTest extends BfTestConfig {
 
     @Autowired
     private ReservationService reservationService;
@@ -69,6 +73,8 @@ public class ReservationConcurrencyTest {
                 .contact("010-0000-0000")
                 .location("서울")
                 .member(owner)
+                .startTime(LocalTime.of(10, 00))
+                .endTime(LocalTime.of(21, 00))
                 .build();
         storeRepository.save(store);
 
@@ -85,6 +91,7 @@ public class ReservationConcurrencyTest {
         ReservationRequestDto reservationRequestDto = ReservationRequestDto.builder()
                 .storeId(store.getId())
                 .orderRequestItems(List.of(new ReservationRequestItemDto(product.getId(), 6)))
+                .reservationTime(LocalTime.of(12, 00))
                 .build();
 
         //when
@@ -103,7 +110,8 @@ public class ReservationConcurrencyTest {
             executorService.submit(() -> {
                 try {
                     // 예약 실시
-                    Long reservationId = reservationService.makeReservation(customer1.getId(), reservationRequestDto);
+                    Long reservationId = reservationService.makeReservation(customer1.getId(),
+                            reservationRequestDto);
                     // 성공 횟수 증가
                     successCount.getAndIncrement();
                 } catch (Exception e) {

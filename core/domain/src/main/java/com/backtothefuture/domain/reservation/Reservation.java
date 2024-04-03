@@ -5,6 +5,9 @@ import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.store.Store;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -27,6 +30,9 @@ public class Reservation extends MutableBaseEntity {
     private Store store;
 
     private Integer totalPrice; // 주문 총 금액
+
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime reservationTime;
 
     public void increaseTotalPrice(int price) {
         this.totalPrice += price;
