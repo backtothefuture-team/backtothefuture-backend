@@ -14,10 +14,21 @@ services:
     volumes:
       - ./initdb.d:/docker-entrypoint-initdb.d
 
+  bagtothefuture-nginx:
+    image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest #swagger + reverse proxy 이미지
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - bagtothefuture-member
+      - bagtothefuture-store
+      - bagtothefuture-event
+
   bagtothefuture-member:
     image: ${DOCKER_USERNAME}/bagtothefuture-member:latest # member api 이미지
     ports:
       - "8080:8080"
+    container_name: member
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
@@ -38,6 +49,7 @@ services:
     image: ${DOCKER_USERNAME}/bagtothefuture-store:latest # store api 이미지
     ports:
       - "8081:8081"
+    container_name: stores
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
@@ -53,6 +65,7 @@ services:
     image: ${DOCKER_USERNAME}/bagtothefuture-event:latest # event api 이미지
     ports:
       - "8084:8084"
+    container_name: event
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
@@ -60,19 +73,14 @@ services:
       SPRING_REDIS_PORT: 6379
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
-#      COOL_SMS_FROM_PHONE_NUMBER: ${COOL_SMS_FROM_PHONE_NUMBER}
-#      COOL_SMS_API_KEY: ${COOL_SMS_API_KEY}
-#      COOL_SMS_API_SECRET_KEY: ${COOL_SMS_API_SECRET_KEY}
+    #      COOL_SMS_FROM_PHONE_NUMBER: ${COOL_SMS_FROM_PHONE_NUMBER}
+    #      COOL_SMS_API_KEY: ${COOL_SMS_API_KEY}
+    #      COOL_SMS_API_SECRET_KEY: ${COOL_SMS_API_SECRET_KEY}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-
-  swagger-ui:
-    image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
-    ports:
-      - "8000:80"
 
   redis:
     image: redis:latest

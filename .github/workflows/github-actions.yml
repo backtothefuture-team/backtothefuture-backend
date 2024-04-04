@@ -78,14 +78,26 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-event:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-event:latest
-      # swagger
+      # swagger + reverse proxy
       - name: swagger > Build and Push Docker images
         uses: docker/build-push-action@v5
         with:
-          context: docs
-          file: docs/Dockerfile
+          context: proxy
+          file: proxy/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:latest
+#        TODO: CD적용
+#      - name: Deploy to Elastic Beanstalk
+#        uses: einaregilsson/beanstalk-deploy@v21
+#        with:
+#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          application_name: ${{ secrets.APPLICATION_NAME }}
+#          environment_name: ${{ secrets.ENVIRONMENT_NAME }}
+#          version_label: 1238
+#          region: ${{ secrets.AWS_REGION }}
+#          deployment_package: docker-compose.yml
+#          wait_for_environment_recovery: 60
