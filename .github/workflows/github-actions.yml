@@ -89,15 +89,56 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:latest
-#        TODO: CD적용
-#      - name: Deploy to Elastic Beanstalk
-#        uses: einaregilsson/beanstalk-deploy@v21
-#        with:
-#          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          application_name: ${{ secrets.APPLICATION_NAME }}
-#          environment_name: ${{ secrets.ENVIRONMENT_NAME }}
-#          version_label: 1238
-#          region: ${{ secrets.AWS_REGION }}
-#          deployment_package: docker-compose.yml
-#          wait_for_environment_recovery: 60
+
+      #    TODO: workflow에서 .env 생성하고 ec2로 copy
+      #      - name: Create .env file
+      #        run: |
+      #          echo OAUTH_KAKAO_CLIENTID=${{ secrets.OAUTH_KAKAO_CLIENTID }} >> .env
+      #          echo OAUTH_KAKAO_REDIRECT_URL=${{ secrets.OAUTH_KAKAO_REDIRECT_URL }} >> .env
+      #          echo OAUTH_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }} >> .env
+      #          echo OAUTH_NAVER_CLIENTID=${{ secrets.OAUTH_NAVER_CLIENTID }} >> .env
+      #          echo OAUTH_NAVER_CLIENT_SECRET=${{ secrets.OAUTH_NAVER_CLIENT_SECRET }} >> .env
+      #          echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env
+      #          echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env
+      #          echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env
+      #          echo MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} >> .env
+      #          echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env
+      #          echo MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} >> .env
+      #
+      #      - uses: actions/checkout@v4
+      #      - name: copy .env file via ssh password
+      #        uses: appleboy/scp-action@v0.1.7
+      #        with:
+      #          host: ${{ secrets.EC2_SERVER_HOST }}
+      #          username: ${{ secrets.EC2_USERNAME }}
+      #          key: ${{ secrets.PRIVATE_KEY }}
+      #          port: ${{ secrets.SSH_PORT }}
+      #          source: ".env"
+      #          target: "/home/ec2-user/.env"
+
+      - uses: actions/checkout@v4
+      - name: copy docker-compose file via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "./docker-compose.yml"
+          target: "/home/ec2-user/"
+
+      - name: depoly to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~
+            docker stop $(docker ps -a -q) 
+            docker rm -f $(docker ps -qa)
+            chmod +x docker-compose.yml
+            docker-compose pull
+            docker-compose up -d
+            docker image prune -f
