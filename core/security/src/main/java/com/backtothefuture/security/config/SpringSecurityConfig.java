@@ -64,6 +64,7 @@ public class SpringSecurityConfig {
      * public http
      */
     @Bean
+    @Order(1)
     public SecurityFilterChain permitAllFilterChain(HttpSecurity http) throws Exception {
         httpSecuritySetting(http);
         http
@@ -80,13 +81,15 @@ public class SpringSecurityConfig {
      * 토큰 인증 및 권한이 필요한 http
      */
     @Bean
+    @Order(2)
     public SecurityFilterChain authenticatedFilterChain(HttpSecurity http) throws Exception {
         httpSecuritySetting(http);
         http
                 .securityMatchers(matcher -> matcher
                         .requestMatchers(AuthRequestMatchers()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AuthRequestMatchers()).hasAuthority(ROLE_USER.name())
+                        .requestMatchers(AuthRequestMatchers())
+                        .hasAnyAuthority(ROLE_USER.name(), ROLE_ADMIN.name(), ROLE_STORE_OWNER.name())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
@@ -96,7 +99,7 @@ public class SpringSecurityConfig {
         return http.build();
     }
 
-    @Bean
+    @Bean    // no @Order defaults to last
     public SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
         httpSecuritySetting(http);
         http
@@ -116,8 +119,8 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/member/register"),        // 회원가입
                 antMatcher(GET, "/store/{storeId}/products/{productId}"),        // 상품 단건 조회 API
                 antMatcher(GET, "/products"),                           // 상품 전체 조회 API
-            //    antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
-            //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
+                //    antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
+                //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
                 antMatcher(GET, "/certificate/email/{email}/status") // 메일 인증 여부 확인
@@ -136,9 +139,11 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/store/{storeId}/products"),                // 상품 등록
                 antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
                 antMatcher(PATCH, "/store/{storeId}/products/{productId}"),  // 상품 수정
-                antMatcher(POST,"/reservations"), // 상품 주문
-                antMatcher(GET,"/reservations/**"), // 주문 조회
-                antMatcher(DELETE,"/reservations/**") // 주문 삭제
+                antMatcher(POST, "/reservations"), // 상품 주문
+                antMatcher(GET, "/reservations/**"), // 주문 조회
+                antMatcher(DELETE, "/reservations/**"), // 주문 삭제
+                antMatcher(POST, "/member/refresh") // 엑세스 토큰 갱신
+
 
         );
 
@@ -200,7 +205,8 @@ public class SpringSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // form 기반 로그인을 사용하지 않음.
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본으로 제공하는 http 사용하지 않음
                 .rememberMe(AbstractHttpConfigurer::disable) // 토큰 기반이므로 세션 기반의 인증 사용하지 않음
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // x-Frame-Options 헤더 비활성화, 클릭재킹 공격 관련
+                .headers(headers -> headers.frameOptions(
+                        HeadersConfigurer.FrameOptionsConfig::disable)) // x-Frame-Options 헤더 비활성화, 클릭재킹 공격 관련
                 .logout(AbstractHttpConfigurer::disable) // stateful 하지 않기때문에 필요하지 않음
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성을 하지 않음

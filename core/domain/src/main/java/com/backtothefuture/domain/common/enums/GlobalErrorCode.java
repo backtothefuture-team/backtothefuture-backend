@@ -13,7 +13,7 @@ public enum GlobalErrorCode implements BaseErrorCode {
 
 	//jwt
 	VALIDATION_TOKEN_FAILED(400, "정상적인 토큰이 아닙니다. 확인 후 다시 시도해주세요.", HttpStatus.BAD_REQUEST),
-	VALIDATION_TOKEN_EXPIRED(400, "토큰의 유효기한이 만료되었습니다.", HttpStatus.BAD_REQUEST),
+	VALIDATION_TOKEN_EXPIRED(401, "토큰의 유효기한이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
 	VALIDATION_TOKEN_NOT_AUTHORIZATION(401, "접근 권한이 없습니다.", HttpStatus.UNAUTHORIZED),
 
 	CHECK_USER(400, "사용자 정보를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);

@@ -3,15 +3,18 @@ package com.backtothefuture.member.controller;
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.*;
 
 import com.backtothefuture.domain.common.enums.OAuthErrorCode;
-import com.backtothefuture.domain.member.enums.ProviderType;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
+import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
 import com.backtothefuture.member.exception.OAuthException;
 import com.backtothefuture.member.service.OAuthService;
+import com.backtothefuture.security.service.UserDetailsImpl;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,12 +45,12 @@ public class MemberController {
 		return ResponseEntity.ok(new BfResponse<>(memberService.login(memberLoginDto)));
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<BfResponse<?>> registerMember(
-		@Valid @RequestBody MemberRegisterDto reqMemberDto) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new BfResponse<>(CREATE, Map.of("id", memberService.registerMember(reqMemberDto))));
-	}
+    @PostMapping("/register")
+    public ResponseEntity<BfResponse<?>> registerMember(
+            @Valid @RequestBody MemberRegisterDto reqMemberDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new BfResponse<>(CREATE, Map.of("id", memberService.registerMember(reqMemberDto))));
+    }
 
 	 @PostMapping("/login/oauth")
 	 public ResponseEntity<BfResponse<?>> oauthLogin(
@@ -68,4 +71,12 @@ public class MemberController {
 	 		default -> throw new OAuthException(OAuthErrorCode.NOT_MATCH_OAUTH_TYPE);
 	 	}
 	 }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<BfResponse<?>> refreshAccessToken(
+            @Valid @RequestBody RefreshTokenRequestDto dto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails)));
+    }
+
 }

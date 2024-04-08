@@ -50,7 +50,7 @@ public class MemberService {
 
 		// accessToken, refreshToken 생성
 		String accessToken = jwtProvider.createAccessToken(userDetail);
-		String refreshToken = jwtProvider.createRefreshToken();
+		String refreshToken = jwtProvider.createRfreshToken(userDetail);
 
 		LoginTokenDto loginTokenDto = new LoginTokenDto(accessToken, refreshToken);
 
@@ -101,7 +101,7 @@ public class MemberService {
 
 		// accessToken, refreshToken 생성
 		String accessToken = jwtProvider.createAccessToken(userDetail);
-		String refreshToken = jwtProvider.createRefreshToken();
+		String refreshToken = jwtProvider.createRfreshToken(userDetail);
 
 		LoginTokenDto loginTokenDto = LoginTokenDto.builder()
 			.accessToken(accessToken)
@@ -110,6 +110,39 @@ public class MemberService {
 
 		// redis 토큰 정보 저장
 		redisRepository.saveToken(userDetail.getId(), refreshToken);
+
+		return loginTokenDto;
+
+	}
+
+	@Transactional
+	public LoginTokenDto refreshToken(String oldRefreshToken, UserDetailsImpl userDetails){
+
+		Member member = memberRepository.findById(userDetails.getId())
+				.orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
+
+		// redis 갱신된 refresh token 유효성 검증
+		if(!redisRepository.hasKey(member.getId()))
+			throw new MemberException(NOT_FIND_REFRESH_TOKEN);
+
+		// redis에 저장된 토큰과 비교
+		if(!redisRepository.getRefreshToken(member.getId()).get("refreshToken").equals(oldRefreshToken))
+			throw new MemberException(NOT_MATCH_REFRESH_TOKEN);
+
+		UserDetailsImpl userDetail = (UserDetailsImpl) UserDetailsImpl.from(member);
+
+		// accessToken, refreshToken 생성
+		String accessToken = jwtProvider.createAccessToken(userDetail);
+		String newRefreshToken = jwtProvider.createRfreshToken(userDetail);
+
+
+		LoginTokenDto loginTokenDto = LoginTokenDto.builder()
+				.accessToken(accessToken)
+				.refreshToken(newRefreshToken)
+				.build();
+
+		// redis 토큰 정보 저장
+		redisRepository.saveToken(userDetail.getId(), newRefreshToken);
 
 		return loginTokenDto;
 
