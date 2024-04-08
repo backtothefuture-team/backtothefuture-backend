@@ -1,64 +1,61 @@
 package com.backtothefuture.store.service;
 
-import static com.backtothefuture.domain.common.enums.GlobalErrorCode.*;
-import static com.backtothefuture.domain.common.enums.StoreErrorCode.*;
+import static com.backtothefuture.domain.common.enums.StoreErrorCode.CHECK_MEMBER;
+import static com.backtothefuture.domain.common.enums.StoreErrorCode.DUPLICATED_STORE_NAME;
+import static com.backtothefuture.domain.common.enums.StoreErrorCode.IMAGE_UPLOAD_FAIL;
+import static com.backtothefuture.domain.common.enums.StoreErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
 
-import java.util.Optional;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.backtothefuture.domain.common.util.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
-import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
 import com.backtothefuture.store.exception.StoreException;
-
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreService {
-	private final MemberRepository memberRepository;
-	private final StoreRepository storeRepository;
+    private final MemberRepository memberRepository;
+    private final StoreRepository storeRepository;
+    private final S3Util s3Util;
 
-	/**
-	 * 가게 등록
-	 */
-	@Transactional
-	public Long registerStore(StoreRegisterDto storeRegisterDto) {
-		UserDetailsImpl userDetails = (UserDetailsImpl) getUserDetails();
+    /**
+     * 가게 등록
+     */
+    @Transactional
+    public Long registerStore(UserDetailsImpl userDetails, StoreRegisterDto storeRegisterDto, MultipartFile thumbnail) {
+        // 회원 조회
+        Member member = memberRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new StoreException(CHECK_MEMBER));
 
-		// 회원 조회
-		Member member = memberRepository.findById(userDetails.getId())
-			.orElseThrow(() -> new StoreException(CHECK_MEMBER));
+        // 가게 중복 체크
+        if (storeRepository.existsByName(storeRegisterDto.name())) {
+            throw new StoreException(DUPLICATED_STORE_NAME);
+        }
 
-		// 가게 중복 체크
-		if(storeRepository.existsByName(storeRegisterDto.name())) {
-			throw new StoreException(DUPLICATED_STORE_NAME);
-		}
+        // store 저장
+        Store store = StoreRegisterDto.toEntity(storeRegisterDto, member);
+        Long id = storeRepository.save(store).getId();
 
-		Store store = StoreRegisterDto.toEntity(storeRegisterDto, member);
-		return storeRepository.save(store).getId();
-	}
+        // 이미지 업로드
+        try {
+            String imageUrl = s3Util.uploadStoreThumbnail(String.valueOf(id), thumbnail);
+            store.setThumbnailUrl(imageUrl);
+        } catch (IllegalArgumentException e) {
+            throw new StoreException(UNSUPPORTED_IMAGE_EXTENSION);
+        } catch (IOException e) {
+            throw new StoreException(IMAGE_UPLOAD_FAIL);
+        }
 
-	/**
-	 * 인증된 사용자 조회
-	 */
-	private UserDetails getUserDetails() {
-		return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-			.filter(Authentication::isAuthenticated)
-			.map(Authentication::getPrincipal)
-			.filter(principal -> principal instanceof UserDetails)
-			.map(UserDetailsImpl.class::cast)
-			.orElseThrow(() -> new CustomSecurityException(CHECK_USER));
-	}
+        return id;
+    }
 }
