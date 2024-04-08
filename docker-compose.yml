@@ -32,6 +32,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
+#      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:3306/${MYSQL_DATABASE}
+#      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       OAUTH_KAKAO_CLIENTID: ${OAUTH_KAKAO_CLIENTID}
       OAUTH_KAKAO_REDIRECT_URL: ${OAUTH_KAKAO_REDIRECT_URL}
       OAUTH_KAKAO_CLIENT_SECRET: ${OAUTH_KAKAO_CLIENT_SECRET}
@@ -41,7 +44,7 @@ services:
       SPRING_REDIS_PORT: 6379
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy        // rds 사용시 주석 처리 필요
       redis:
         condition: service_healthy
 
@@ -53,11 +56,14 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
+#      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:3306/${MYSQL_DATABASE}
+#      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy    // rds 사용시 주석 처리 필요
       redis:
         condition: service_healthy
 
@@ -69,13 +75,16 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
+#      SPRING_DATASOURCE_URL: jdbc:mysql://${MYSQL_HOST}:3306/${MYSQL_DATABASE}
+#      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+#      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy    // rds 사용시 주석 처리 필요
       redis:
         condition: service_healthy
 
