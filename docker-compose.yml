@@ -15,7 +15,7 @@ services:
       - ./initdb.d:/docker-entrypoint-initdb.d
 
   bagtothefuture-nginx:
-    image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest #swagger + reverse proxy 이미지
+    image: ${DOCKER_USERNAME}/bagtothefuture-nginx:latest #swagger(index.html + reverse proxy) 역할
     ports:
       - "80:80"
     restart: always
