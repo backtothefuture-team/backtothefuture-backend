@@ -1,17 +1,21 @@
 package com.backtothefuture.security.config;
 
-import static com.backtothefuture.domain.member.enums.RolesType.*;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
+import static com.backtothefuture.domain.member.enums.RolesType.ROLE_USER;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.OPTIONS;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import com.backtothefuture.security.exception.CustomAccessDeniedHandler;
+import com.backtothefuture.security.jwt.JwtFilter;
+import com.backtothefuture.security.jwt.JwtProvider;
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,17 +28,10 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.backtothefuture.security.exception.CustomAccessDeniedHandler;
-import com.backtothefuture.security.jwt.JwtFilter;
-import com.backtothefuture.security.jwt.JwtProvider;
-
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -116,8 +113,8 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/member/register"),        // 회원가입
                 antMatcher(GET, "/store/{storeId}/products/{productId}"),        // 상품 단건 조회 API
                 antMatcher(GET, "/products"),                           // 상품 전체 조회 API
-            //    antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
-            //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
+                //    antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
+                //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
                 antMatcher(GET, "/certificate/email/{email}/status") // 메일 인증 여부 확인
@@ -132,13 +129,13 @@ public class SpringSecurityConfig {
      */
     private RequestMatcher[] AuthRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
-                antMatcher(POST, "/store/register"),                            // 가게 등록
-                antMatcher(POST, "/store/{storeId}/products"),                // 상품 등록
-                antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
-                antMatcher(PATCH, "/store/{storeId}/products/{productId}"),  // 상품 수정
-                antMatcher(POST,"/reservations"), // 상품 주문
-                antMatcher(GET,"/reservations/**"), // 주문 조회
-                antMatcher(DELETE,"/reservations/**") // 주문 삭제
+                antMatcher(POST, "/stores"),                            // 가게 등록
+                antMatcher(POST, "/stores/{storeId}/products"),                // 상품 등록
+                antMatcher(DELETE, "/stores/{storeId}/products/{productId}"),    // 상품 삭제
+                antMatcher(PATCH, "/stores/{storeId}/products/{productId}"),  // 상품 수정
+                antMatcher(POST, "/reservations"), // 상품 주문
+                antMatcher(GET, "/reservations/**"), // 주문 조회
+                antMatcher(DELETE, "/reservations/**") // 주문 삭제
 
         );
 
@@ -200,7 +197,8 @@ public class SpringSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // form 기반 로그인을 사용하지 않음.
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본으로 제공하는 http 사용하지 않음
                 .rememberMe(AbstractHttpConfigurer::disable) // 토큰 기반이므로 세션 기반의 인증 사용하지 않음
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // x-Frame-Options 헤더 비활성화, 클릭재킹 공격 관련
+                .headers(headers -> headers.frameOptions(
+                        HeadersConfigurer.FrameOptionsConfig::disable)) // x-Frame-Options 헤더 비활성화, 클릭재킹 공격 관련
                 .logout(AbstractHttpConfigurer::disable) // stateful 하지 않기때문에 필요하지 않음
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성을 하지 않음
