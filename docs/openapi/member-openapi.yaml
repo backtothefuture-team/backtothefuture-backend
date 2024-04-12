@@ -34,6 +34,32 @@ paths:
                 login-member:
                   value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
                     :\"access token\",\"refreshToken\":\"resfresh token\"}}"
+  /member/refresh:
+    post:
+      tags:
+      - member
+      summary: 토큰 갱신 API
+      description: "refresh token을 이용하여 access,refresh token 갱신하는  API입니다."
+      operationId: refresh-access-and-refresh-token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/member-refresh1564428056'
+            examples:
+              refresh-access-and-refresh-token:
+                value: "{\"refreshToken\":\"5324fdswqe13dew\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/member-refresh223414243'
+              examples:
+                refresh-access-and-refresh-token:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
+                    :\"access token\",\"refreshToken\":\"resfresh token\"}}"
   /member/register:
     post:
       tags:
@@ -62,6 +88,61 @@ paths:
                 register-member:
                   value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
                     id\":1}}"
+  /member/business/validate-info:
+    post:
+      tags:
+      - business
+      summary: 사업자 정보 유효성 검증
+      description: 사업자 정보 유효성 검증 API입니다. (지금은 사용하지 않습니다.)
+      operationId: validate-business-info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/[request] validate-business-info"
+            examples:
+              validate-business-info:
+                value: "{\"businessNumber\":\"0000000000\",\"startDate\":\"20000101\"\
+                  ,\"name\":\"홍길동\",\"name2\":\"홍길순\",\"businessName\":\"(주)테스트\"\
+                  ,\"corporationNumber\":\"0000000000000\",\"businessSector\":\"\"\
+                  ,\"businessType\":\"\",\"businessAddress\":\"\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] validate-business-info"
+              examples:
+                validate-business-info:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"isValid\"\
+                    :true}}"
+  /member/business/validate-status:
+    post:
+      tags:
+      - business
+      summary: 사업자 번호 상태 검증
+      description: 사업자 번호 상태 검증 API입니다.
+      operationId: business-number-status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/[request] business-number-status"
+            examples:
+              business-number-status:
+                value: "{\"businessNumber\":\"0000000000\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/[response] business-number-status"
+              examples:
+                business-number-status:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"isValid\"\
+                    :true}}"
   /member/login/oauth:
     post:
       tags:
@@ -92,6 +173,68 @@ paths:
                     :\"accessToken\",\"refreshToken\":\"resfreshToken\"}}"
 components:
   schemas:
+    member-refresh223414243:
+    '[response] validate-business-info':
+      title: "[response] validate-business-info"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - accessToken
+          - refreshToken
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: 갱신된 Access Token
+            refreshToken:
+              type: string
+              description: 갱신된 Refresh Token
+          - isValid
+          type: object
+          properties:
+            isValid:
+              type: boolean
+              description: 유효성 검사 결과
+        message:
+          type: string
+          description: 응답 메시지
+    '[request] business-number-status':
+      title: "[request] business-number-status"
+      required:
+      - businessNumber
+      type: object
+      properties:
+        businessNumber:
+          type: string
+          description: 사업자번호
+    '[response] business-number-status':
+      title: "[response] business-number-status"
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - isValid
+          type: object
+          properties:
+            isValid:
+              type: boolean
+              description: 상태 검증 결과
+        message:
+          type: string
+          description: 응답 메시지
     '[request] member-register':
       title: "[request] member-register"
       required:
@@ -188,6 +331,14 @@ components:
         message:
           type: string
           description: 응답 메시지
+    member-refresh1564428056:
+      required:
+      - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: refresh token 값입니다.
     LoginTokenDto:
       title: LoginTokenDto
       required:
@@ -234,3 +385,44 @@ components:
         message:
           type: string
           description: 응답 메시지
+    '[request] validate-business-info':
+      title: "[request] validate-business-info"
+      required:
+      - businessAddress
+      - businessName
+      - businessNumber
+      - businessSector
+      - businessType
+      - name
+      - startDate
+      type: object
+      properties:
+        businessSector:
+          type: string
+          description: 주업태명
+        corporationNumber:
+          type: string
+          description: 법인등록번호
+          nullable: true
+        businessName:
+          type: string
+          description: 상호
+        name:
+          type: string
+          description: 대표자 성명
+        businessNumber:
+          type: string
+          description: 사업자번호
+        businessAddress:
+          type: string
+          description: 사업장주소
+        businessType:
+          type: string
+          description: 주종목명
+        name2:
+          type: string
+          description: 대표자 성명2
+          nullable: true
+        startDate:
+          type: string
+          description: 개업일자

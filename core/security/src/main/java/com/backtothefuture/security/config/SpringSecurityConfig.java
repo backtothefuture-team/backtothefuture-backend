@@ -1,5 +1,7 @@
 package com.backtothefuture.security.config;
 
+import static com.backtothefuture.domain.member.enums.RolesType.ROLE_ADMIN;
+import static com.backtothefuture.domain.member.enums.RolesType.ROLE_STORE_OWNER;
 import static com.backtothefuture.domain.member.enums.RolesType.ROLE_USER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
@@ -16,6 +18,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -61,6 +64,7 @@ public class SpringSecurityConfig {
      * public http
      */
     @Bean
+    @Order(1)
     public SecurityFilterChain permitAllFilterChain(HttpSecurity http) throws Exception {
         httpSecuritySetting(http);
         http
@@ -77,13 +81,15 @@ public class SpringSecurityConfig {
      * 토큰 인증 및 권한이 필요한 http
      */
     @Bean
+    @Order(2)
     public SecurityFilterChain authenticatedFilterChain(HttpSecurity http) throws Exception {
         httpSecuritySetting(http);
         http
                 .securityMatchers(matcher -> matcher
                         .requestMatchers(AuthRequestMatchers()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AuthRequestMatchers()).hasAuthority(ROLE_USER.name())
+                        .requestMatchers(AuthRequestMatchers())
+                        .hasAnyAuthority(ROLE_USER.name(), ROLE_ADMIN.name(), ROLE_STORE_OWNER.name())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
@@ -93,7 +99,7 @@ public class SpringSecurityConfig {
         return http.build();
     }
 
-    @Bean
+    @Bean    // no @Order defaults to last
     public SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
         httpSecuritySetting(http);
         http
@@ -117,8 +123,9 @@ public class SpringSecurityConfig {
                 //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
-                antMatcher(GET, "/certificate/email/{email}/status") // 메일 인증 여부 확인
-
+                antMatcher(GET, "/certificate/email/{email}/status"), // 메일 인증 여부 확인
+                antMatcher(POST, "/member/business/validate-info"), // 사업자등록정보 진위여부 확인
+                antMatcher(POST, "/member/business/validate-status") // 사업자등록번호 상태조회
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
@@ -135,8 +142,9 @@ public class SpringSecurityConfig {
                 antMatcher(PATCH, "/stores/{storeId}/products/{productId}"),  // 상품 수정
                 antMatcher(POST, "/reservations"), // 상품 주문
                 antMatcher(GET, "/reservations/**"), // 주문 조회
+                antMatcher(DELETE, "/reservations/**"), // 주문 삭제
+                antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
                 antMatcher(DELETE, "/reservations/**") // 주문 삭제
-
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
