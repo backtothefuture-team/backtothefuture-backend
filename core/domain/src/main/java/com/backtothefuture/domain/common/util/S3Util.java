@@ -48,8 +48,7 @@ public class S3Util {
     }
 
     /**
-     * Product thumbnail
-     * <storeId>/<productId>/<timestamp>
+     * Product thumbnail store/<storeId>/product/<productId>/<timestamp>
      *
      * @param storeId   가게아이디
      * @param productId 상품아이디
@@ -60,7 +59,7 @@ public class S3Util {
     public String uploadProductThumbnail(String storeId, String productId, MultipartFile file) throws IOException {
         // 경로 및 파일명 설정
         StringBuilder sb = new StringBuilder();
-        String key = sb.append(String.join("/", List.of(storeId, productId, getCurrentTimestamp())))
+        String key = sb.append(String.join("/", List.of("store", storeId, "product", productId, getCurrentTimestamp())))
                 .append(".")
                 .append(getImageExtension(file)) // 확장자 설정
                 .toString();
@@ -70,8 +69,7 @@ public class S3Util {
     }
 
     /**
-     * Store thumbnail
-     * <storeId>/<timestamp>
+     * Store thumbnail store/<storeId>/<timestamp>
      *
      * @param storeId 가게아이디
      * @param file    업로드 할 이미지 파일
@@ -80,7 +78,25 @@ public class S3Util {
      */
     public String uploadStoreThumbnail(String storeId, MultipartFile file) throws IOException {
         StringBuilder sb = new StringBuilder();
-        String key = sb.append(String.join("/", List.of(storeId, getCurrentTimestamp())))
+        String key = sb.append(String.join("/", List.of("store", storeId, getCurrentTimestamp())))
+                .append(".")
+                .append(getImageExtension(file)) // 확장자 설정
+                .toString();
+        // 업로드
+        return uploadImageToS3(imageBucketName, key, file);
+    }
+
+    /**
+     * Member profile member/<memberId>/<timestamp>
+     *
+     * @param memberId 회원아이디
+     * @param file     업로드 할 이미지 파일
+     * @return 업로드 한 s3 이미지 url
+     * @throws IOException
+     */
+    public String uploadMemberProfile(String memberId, MultipartFile file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        String key = sb.append(String.join("/", List.of("member", memberId, getCurrentTimestamp())))
                 .append(".")
                 .append(getImageExtension(file)) // 확장자 설정
                 .toString();
@@ -102,7 +118,7 @@ public class S3Util {
             switch (contentType) {
                 case "image/jpeg" -> extension = "jpg";
                 case "image/png" -> extension = "png";
-                case "image/gif" -> extension = "gif";
+                //case "image/gif" -> extension = "gif";
             }
         } else {
             throw new IllegalArgumentException();
