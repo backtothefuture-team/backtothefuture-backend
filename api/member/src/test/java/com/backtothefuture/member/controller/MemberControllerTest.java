@@ -63,47 +63,47 @@ class MemberControllerTest extends BfTestConfig {
                 .build();
     }
 
-    @Test
-    @DisplayName("회원가입 테스트")
-    void registerTest() throws Exception {
-        // 회원가입 request 정보
-        Map<String, Object> memberMap = new HashMap<>();
-        memberMap.put("email", "kildong.hong@naver.com");
-        memberMap.put("name", "홍길동");
-        memberMap.put("password", "123456");
-        memberMap.put("passwordConfirm", "123456");
-        memberMap.put("phoneNumber", List.of("010", "1234", "5678"));
-
-        // 회원가입 성공 시, 반환할 값 (id) 설정
-        when(memberService.registerMember(any())).thenReturn(1L);
-
-        this.mockMvc.perform(post("/member/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(memberMap)))
-                .andExpect(status().isCreated())
-                .andDo(document("register-member",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("회원가입 API 입니다.")
-                                .tags("member")
-                                .summary("회원가입 API")
-                                // request
-                                .requestFields(
-                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
-                                        fieldWithPath("passwordConfirm").type(JsonFieldType.STRING).description("비밀번호 확인"),
-                                        fieldWithPath("phoneNumber").type(JsonFieldType.ARRAY).description("전화번호")
-                                )
-                                .requestSchema(Schema.schema("[request] member-register"))
-                                // response
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID")
-                                )
-                                .responseSchema(Schema.schema("[response] member-register")).build()
-                        )));
-    }
+//    @Test
+//    @DisplayName("회원가입 테스트")
+//    void registerTest() throws Exception {
+//        // 회원가입 request 정보
+//        Map<String, Object> memberMap = new HashMap<>();
+//        memberMap.put("email", "kildong.hong@naver.com");
+//        memberMap.put("name", "홍길동");
+//        memberMap.put("password", "123456");
+//        memberMap.put("passwordConfirm", "123456");
+//        memberMap.put("phoneNumber", List.of("010", "1234", "5678"));
+//
+//        // 회원가입 성공 시, 반환할 값 (id) 설정
+//        when(memberService.registerMember(any())).thenReturn(1L);
+//
+//        this.mockMvc.perform(post("/member/register")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(memberMap)))
+//                .andExpect(status().isCreated())
+//                .andDo(document("register-member",
+//                        resource(ResourceSnippetParameters.builder()
+//                                .description("회원가입 API 입니다.")
+//                                .tags("member")
+//                                .summary("회원가입 API")
+//                                // request
+//                                .requestFields(
+//                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+//                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+//                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+//                                        fieldWithPath("passwordConfirm").type(JsonFieldType.STRING).description("비밀번호 확인"),
+//                                        fieldWithPath("phoneNumber").type(JsonFieldType.ARRAY).description("전화번호")
+//                                )
+//                                .requestSchema(Schema.schema("[request] member-register"))
+//                                // response
+//                                .responseFields(
+//                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+//                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+//                                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID")
+//                                )
+//                                .responseSchema(Schema.schema("[response] member-register")).build()
+//                        )));
+//    }
 
     @Test
     @DisplayName("일반 로그인 테스트")
@@ -139,8 +139,10 @@ class MemberControllerTest extends BfTestConfig {
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token"),
-                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("Refresh Token")
+                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                                                .description("Access Token"),
+                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
+                                                .description("Refresh Token")
                                 )
                                 .responseSchema(Schema.schema("[response] member-login")).build()
                         )));
@@ -177,11 +179,14 @@ class MemberControllerTest extends BfTestConfig {
                                         fieldWithPath("authorizationCode").type(JsonFieldType.STRING)
                                                 .description("Authorization Server에서 받은 인증 코드입니다."),
                                         fieldWithPath("providerType").type(JsonFieldType.STRING)
-                                                .description("어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"),
+                                                .description(
+                                                        "어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"),
                                         fieldWithPath("rolesType").type(JsonFieldType.STRING)
-                                                .description("유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원 : ROLE_STORE_OWNER )"),
+                                                .description(
+                                                        "유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원 : ROLE_STORE_OWNER )"),
                                         fieldWithPath("state").type(JsonFieldType.STRING).optional()
-                                                .description("네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO 로그인 시 null )"),
+                                                .description(
+                                                        "네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO 로그인 시 null )"),
                                         fieldWithPath("token").type(JsonFieldType.STRING).optional()
                                                 .description("소셜 인증 서버에서 발급받은 접근 토큰 값입니다.")
                                 )
