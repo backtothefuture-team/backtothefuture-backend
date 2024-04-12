@@ -1,10 +1,8 @@
 package com.backtothefuture.domain.common.enums;
 
-import org.springframework.http.HttpStatus;
-
 import com.backtothefuture.domain.response.ErrorResponse;
-
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public enum MemberErrorCode implements BaseErrorCode {
@@ -17,6 +15,9 @@ public enum MemberErrorCode implements BaseErrorCode {
     NOT_FIND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
     NOT_FIND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_MATCH_REFRESH_TOKEN(404, "refresh token이 일치하지 않습니다.", HttpStatus.NOT_FOUND);
+    BUSINESS_VALIDATE_ERROR(500, "사업자등록 진위여부 확인에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    BUSINESS_STATUS_ERROR(500, "사업자등록번호 상태조회에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+
 
     private final int errorCode;
     private final String errorMessage;

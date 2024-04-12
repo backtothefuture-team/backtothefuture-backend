@@ -1,17 +1,21 @@
 package com.backtothefuture.security.config;
 
-import static com.backtothefuture.domain.member.enums.RolesType.*;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
+import static com.backtothefuture.domain.member.enums.RolesType.ROLE_USER;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.OPTIONS;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import com.backtothefuture.security.exception.CustomAccessDeniedHandler;
+import com.backtothefuture.security.jwt.JwtFilter;
+import com.backtothefuture.security.jwt.JwtProvider;
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,17 +28,10 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.backtothefuture.security.exception.CustomAccessDeniedHandler;
-import com.backtothefuture.security.jwt.JwtFilter;
-import com.backtothefuture.security.jwt.JwtProvider;
-
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -123,8 +120,9 @@ public class SpringSecurityConfig {
                 //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
-                antMatcher(GET, "/certificate/email/{email}/status") // 메일 인증 여부 확인
-
+                antMatcher(GET, "/certificate/email/{email}/status"), // 메일 인증 여부 확인
+                antMatcher(POST, "/member/business/validate-info"), // 사업자등록정보 진위여부 확인
+                antMatcher(POST, "/member/business/validate-status") // 사업자등록번호 상태조회
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
@@ -143,6 +141,7 @@ public class SpringSecurityConfig {
                 antMatcher(GET, "/reservations/**"), // 주문 조회
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(POST, "/member/refresh") // 엑세스 토큰 갱신
+                antMatcher(DELETE, "/reservations/**") // 주문 삭제
 
 
         );
