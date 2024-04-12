@@ -1,4 +1,4 @@
-package com.backtothefuture.domain.common.util;
+package com.backtothefuture.domain.common.util.s3;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class S3Util {
 
@@ -27,13 +29,14 @@ public class S3Util {
 
     private final S3Client s3Client;
 
-    public String uploadImageToS3(String bucketName, String key, MultipartFile multipartFile) throws IOException {
+    private final S3AsyncUtil s3AsyncUtil;
+
+    public String uploadImageToS3AndDeletePast(String bucketName, String key, MultipartFile multipartFile,
+                                               String dirPath)
+            throws IOException {
         // put request setting
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .acl(ObjectCannedACL.PUBLIC_READ)
-                .build();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucketName).key(key)
+                .acl(ObjectCannedACL.PUBLIC_READ).build();
 
         // MultipartFile to File
         File tempFile = File.createTempFile("upload_", multipartFile.getOriginalFilename());
@@ -43,12 +46,16 @@ public class S3Util {
         s3Client.putObject(putObjectRequest, RequestBody.fromFile(tempFile));
         tempFile.delete();
 
+        // delete past items (async)
+        s3AsyncUtil.deletePastImages(dirPath);
+
         // return url
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, regionString, key);
     }
 
     /**
-     * Product thumbnail store/<storeId>/product/<productId>/<timestamp>
+     * <p>Update product thumbnail</p>
+     * > store/{storeId}/product/{productId}/{timestamp}.{extension}
      *
      * @param storeId   가게아이디
      * @param productId 상품아이디
@@ -58,18 +65,18 @@ public class S3Util {
      */
     public String uploadProductThumbnail(String storeId, String productId, MultipartFile file) throws IOException {
         // 경로 및 파일명 설정
-        StringBuilder sb = new StringBuilder();
-        String key = sb.append(String.join("/", List.of("store", storeId, "product", productId, getCurrentTimestamp())))
-                .append(".")
-                .append(getImageExtension(file)) // 확장자 설정
-                .toString();
+        // store/{storeId}/product/{productId}/
+        String dirPath = String.join("/", List.of("store", storeId, "product", productId, ""));
+        // store/{storeId}/product/{productId}/{timestamp}.{extension}
+        String key = dirPath + getCurrentTimestamp() + "." + getImageExtension(file);
 
         // 업로드
-        return uploadImageToS3(imageBucketName, key, file);
+        return uploadImageToS3AndDeletePast(imageBucketName, key, file, dirPath);
     }
 
     /**
-     * Store thumbnail store/<storeId>/<timestamp>
+     * <p>Update store thumbnail</p>
+     * > store/{storeId}/{timestamp}.{extension}
      *
      * @param storeId 가게아이디
      * @param file    업로드 할 이미지 파일
@@ -77,17 +84,18 @@ public class S3Util {
      * @throws IOException
      */
     public String uploadStoreThumbnail(String storeId, MultipartFile file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        String key = sb.append(String.join("/", List.of("store", storeId, getCurrentTimestamp())))
-                .append(".")
-                .append(getImageExtension(file)) // 확장자 설정
-                .toString();
+        // store/{storeId}/
+        String dirPath = String.join("/", List.of("store", storeId, ""));
+        // store/{storeId}/{timestamp}.{extension}
+        String key = dirPath + getCurrentTimestamp() + "." + getImageExtension(file);
+
         // 업로드
-        return uploadImageToS3(imageBucketName, key, file);
+        return uploadImageToS3AndDeletePast(imageBucketName, key, file, dirPath);
     }
 
     /**
-     * Member profile member/<memberId>/<timestamp>
+     * <p>Update Member profile</p>
+     * > member/{memberId}/{timestamp}.{extension}
      *
      * @param memberId 회원아이디
      * @param file     업로드 할 이미지 파일
@@ -95,13 +103,13 @@ public class S3Util {
      * @throws IOException
      */
     public String uploadMemberProfile(String memberId, MultipartFile file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        String key = sb.append(String.join("/", List.of("member", memberId, getCurrentTimestamp())))
-                .append(".")
-                .append(getImageExtension(file)) // 확장자 설정
-                .toString();
+        // member/{memberId}/
+        String dirPath = String.join("/", List.of("member", memberId, ""));
+        // member/{memberId}/{timestamp}.{extension}
+        String key = dirPath + getCurrentTimestamp() + "." + getImageExtension(file);
+
         // 업로드
-        return uploadImageToS3(imageBucketName, key, file);
+        return uploadImageToS3AndDeletePast(imageBucketName, key, file, dirPath);
     }
 
     public String getCurrentTimestamp() {
@@ -116,7 +124,7 @@ public class S3Util {
         //파일의 Content Type 이 있을 경우 Content Type 기준으로 확장자 확인
         if (StringUtils.hasText(contentType)) {
             switch (contentType) {
-                case "image/jpeg" -> extension = "jpg";
+                case "image/jpeg" -> extension = "jpeg";
                 case "image/png" -> extension = "png";
                 //case "image/gif" -> extension = "gif";
             }

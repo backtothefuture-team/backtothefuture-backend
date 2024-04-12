@@ -8,7 +8,7 @@ import static com.backtothefuture.domain.common.enums.MemberErrorCode.UNSUPPORTE
 
 import com.backtothefuture.domain.common.repository.RedisRepository;
 import com.backtothefuture.domain.common.util.ConvertUtil;
-import com.backtothefuture.domain.common.util.S3Util;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.member.dto.request.MemberLoginDto;

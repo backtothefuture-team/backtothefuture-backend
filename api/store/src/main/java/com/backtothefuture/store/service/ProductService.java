@@ -8,7 +8,7 @@ import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND
 import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_STORE_PRODUCT_MATCH;
 import static com.backtothefuture.domain.common.enums.ProductErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
 
-import com.backtothefuture.domain.common.util.S3Util;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;

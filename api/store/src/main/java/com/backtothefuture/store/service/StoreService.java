@@ -5,7 +5,7 @@ import static com.backtothefuture.domain.common.enums.StoreErrorCode.DUPLICATED_
 import static com.backtothefuture.domain.common.enums.StoreErrorCode.IMAGE_UPLOAD_FAIL;
 import static com.backtothefuture.domain.common.enums.StoreErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
 
-import com.backtothefuture.domain.common.util.S3Util;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
