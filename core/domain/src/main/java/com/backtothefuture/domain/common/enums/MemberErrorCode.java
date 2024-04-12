@@ -15,8 +15,8 @@ public enum MemberErrorCode implements BaseErrorCode {
     CHECK_ID_OR_PASSWORD(400, "아이디 또는 비밀번호를 확인해주세요.", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_MATCHED(400, "비밀번호와 비밀번호 확인이 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     NOT_FIND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
-    NOT_FIND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
-    NOT_MATCH_REFRESH_TOKEN(404, "refresh token이 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+    NOT_FIND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    NOT_MATCH_REFRESH_TOKEN(404, "refresh token이 일치하지 않습니다.", HttpStatus.NOT_FOUND);
 
     private final int errorCode;
     private final String errorMessage;
