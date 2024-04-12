@@ -76,7 +76,7 @@ public class MemberController {
     public ResponseEntity<BfResponse<?>> refreshAccessToken(
             @Valid @RequestBody RefreshTokenRequestDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails)));
+        return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails.getId())));
     }
 
 }

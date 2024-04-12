@@ -116,9 +116,9 @@ public class MemberService {
 	}
 
 	@Transactional
-	public LoginTokenDto refreshToken(String oldRefreshToken, UserDetailsImpl userDetails){
+	public LoginTokenDto refreshToken(String oldRefreshToken, Long memberId){
 
-		Member member = memberRepository.findById(userDetails.getId())
+		Member member = memberRepository.findById(memberId)
 				.orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
 
 		// redis 갱신된 refresh token 유효성 검증
