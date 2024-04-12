@@ -1,11 +1,23 @@
 package com.backtothefuture.event;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 import com.backtothefuture.domain.common.util.RandomNumUtil;
-import com.backtothefuture.event.controller.CertificateController;
+import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
 import com.backtothefuture.event.service.CertificateService;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.infra.config.S3Config;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
@@ -26,22 +38,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
@@ -58,6 +54,16 @@ class EventApplicationTests extends BfTestConfig {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    // 임시 s3 관련 mockbean 설정..
+    @MockBean
+    private S3Util s3Util;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private S3AsyncUtil s3AsyncUtil;
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
@@ -150,7 +156,8 @@ class EventApplicationTests extends BfTestConfig {
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.mail_expiration_seconds").type(JsonFieldType.NUMBER).description("인증 만료 시간(초)")
+                                        fieldWithPath("data.mail_expiration_seconds").type(JsonFieldType.NUMBER)
+                                                .description("인증 만료 시간(초)")
                                 )
                                 .responseSchema(Schema.schema("[response] send-certificate-email")).build())));
     }
@@ -185,7 +192,8 @@ class EventApplicationTests extends BfTestConfig {
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.is_certificated").type(JsonFieldType.BOOLEAN).description("인증 여부. true: 인증 / false: 미인증")
+                                        fieldWithPath("data.is_certificated").type(JsonFieldType.BOOLEAN)
+                                                .description("인증 여부. true: 인증 / false: 미인증")
                                 )
                                 .responseSchema(Schema.schema("[response] check-certificate-email-status"))
                                 .build())));

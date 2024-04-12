@@ -1,6 +1,9 @@
 package com.backtothefuture.store.controller;
 
+import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.infra.config.S3Config;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
 import com.backtothefuture.store.service.StoreService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -46,6 +49,16 @@ class StoreControllerTest extends BfTestConfig {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    // 임시 s3 관련 mockbean 설정..
+    @MockBean
+    private S3Util s3Util;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private S3AsyncUtil s3AsyncUtil;
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext,
