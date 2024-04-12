@@ -52,12 +52,24 @@ public class S3AsyncUtil {
 
         ListObjectsResponse response = s3Client.listObjects(listObjectsRequest);
 
+        // 더 깊은 depth의 파일이 삭제되는것을 막기 위해 depth를 센다.
+        int countSlash = (int) dirPath.chars()
+                .filter(ch -> ch == '/')
+                .count();
+
         List<String> objects = response.contents().stream()
                 .map(S3Object::key) // key만 추출
                 .filter(key -> !key.endsWith("/")) // 파일만 필터링. 폴더는 끝이 '/'로 끝남
+                .filter(key -> {
+                    // 더 깊은 depth에 있는 파일은 제외한다.
+                    int countKeySlash = (int) key.chars()
+                            .filter(ch -> ch == '/')
+                            .count();
+                    return countSlash == countKeySlash;
+                })
                 .sorted(Comparator.reverseOrder()) // 내림차순 정렬
                 .toList();
-
+        
         return objects;
     }
 }
