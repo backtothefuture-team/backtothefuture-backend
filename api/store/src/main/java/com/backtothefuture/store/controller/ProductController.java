@@ -66,11 +66,13 @@ public class ProductController {
     public ResponseEntity<BfResponse<?>> updateProduct(
             @PathVariable Long storeId,
             @PathVariable Long productId,
-            @Valid @RequestBody ProductUpdateDto productUpdateDto
+            @Valid @RequestPart(value = "request") ProductUpdateDto productUpdateDto,
+            @RequestPart(value = "file", required = false) MultipartFile thumbnail
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new BfResponse<>(SUCCESS,
-                        Map.of("product", productService.partialUpdateProduct(storeId, productId, productUpdateDto))));
+                        Map.of("product",
+                                productService.partialUpdateProduct(storeId, productId, productUpdateDto, thumbnail))));
     }
 
     // 상품 삭제 API

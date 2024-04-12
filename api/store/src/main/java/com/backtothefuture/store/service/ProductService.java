@@ -98,7 +98,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDto partialUpdateProduct(Long storeId, Long productId, ProductUpdateDto productUpdateDto) {
+    public ProductResponseDto partialUpdateProduct(Long storeId, Long productId, ProductUpdateDto productUpdateDto,
+                                                   MultipartFile thumbnail) {
         // 권한 검사
         if (!validateIsProductOwner(storeId, productId)) {
             throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
@@ -115,8 +116,20 @@ public class ProductService {
                 .ifPresent(product::updatePrice);
         Optional.ofNullable(productUpdateDto.stockQuantity())
                 .ifPresent(product::updateStockQuantity);
-        Optional.ofNullable(productUpdateDto.thumbnail())
-                .ifPresent(product::updateThumbnail);
+
+        // thumbnail file 이 첨부되었을 경우 업데이트 한다.
+        if (thumbnail != null) {
+            try {
+                String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(productId),
+                        thumbnail);
+                product.updateThumbnail(imageUrl);
+            } catch (IllegalArgumentException e) {
+                throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
+            } catch (IOException e) {
+                throw new ProductException(IMAGE_UPLOAD_FAIL);
+            }
+
+        }
 
         return ProductResponseDto.builder()
                 .id(product.getId())
