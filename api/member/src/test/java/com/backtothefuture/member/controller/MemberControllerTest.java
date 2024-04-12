@@ -1,18 +1,33 @@
 package com.backtothefuture.member.controller;
 
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.backtothefuture.domain.member.enums.ProviderType;
 import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.member.dto.request.BusinessInfoValidateRequestDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.response.KakaoAccount;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
+import com.backtothefuture.member.service.MemberBusinessService;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,19 +43,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
 class MemberControllerTest extends BfTestConfig {
@@ -52,6 +54,9 @@ class MemberControllerTest extends BfTestConfig {
 
     @MockBean(name = "kakaoOAuthService")
     private OAuthService kakaoOAuthService;
+
+    @MockBean
+    private MemberBusinessService memberBusinessService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -91,7 +96,8 @@ class MemberControllerTest extends BfTestConfig {
                                         fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
                                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
                                         fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
-                                        fieldWithPath("passwordConfirm").type(JsonFieldType.STRING).description("비밀번호 확인"),
+                                        fieldWithPath("passwordConfirm").type(JsonFieldType.STRING)
+                                                .description("비밀번호 확인"),
                                         fieldWithPath("phoneNumber").type(JsonFieldType.ARRAY).description("전화번호")
                                 )
                                 .requestSchema(Schema.schema("[request] member-register"))
@@ -139,8 +145,10 @@ class MemberControllerTest extends BfTestConfig {
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("Access Token"),
-                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("Refresh Token")
+                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                                                .description("Access Token"),
+                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
+                                                .description("Refresh Token")
                                 )
                                 .responseSchema(Schema.schema("[response] member-login")).build()
                         )));
@@ -177,11 +185,14 @@ class MemberControllerTest extends BfTestConfig {
                                         fieldWithPath("authorizationCode").type(JsonFieldType.STRING)
                                                 .description("Authorization Server에서 받은 인증 코드입니다."),
                                         fieldWithPath("providerType").type(JsonFieldType.STRING)
-                                                .description("어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"),
+                                                .description(
+                                                        "어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"),
                                         fieldWithPath("rolesType").type(JsonFieldType.STRING)
-                                                .description("유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원 : ROLE_STORE_OWNER )"),
+                                                .description(
+                                                        "유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원 : ROLE_STORE_OWNER )"),
                                         fieldWithPath("state").type(JsonFieldType.STRING).optional()
-                                                .description("네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO 로그인 시 null )"),
+                                                .description(
+                                                        "네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO 로그인 시 null )"),
                                         fieldWithPath("token").type(JsonFieldType.STRING).optional()
                                                 .description("소셜 인증 서버에서 발급받은 접근 토큰 값입니다.")
                                 )
@@ -198,4 +209,94 @@ class MemberControllerTest extends BfTestConfig {
                                 .responseSchema(Schema.schema("LoginTokenDto")).build()
                         )));
     }
+
+    @Test
+    @DisplayName("사업자 정보 유효성 검증 테스트")
+    void validateBusinessInfoTest() throws Exception {
+        // 사업자 정보 유효성 검사 요청 정보
+        BusinessInfoValidateRequestDto businessInfoValidateRequestDto = new BusinessInfoValidateRequestDto(
+                "0000000000", // 사업자번호
+                "20000101", // 개업일자
+                "홍길동", // 대표자 성명
+                "홍길순", // 대표자 성명2 (선택사항)
+                "(주)테스트", // 상호
+                "0000000000000", // 법인등록번호 (선택사항)
+                "", // 주업태명
+                "", // 주종목명
+                "" // 사업장주소
+        );
+
+        // 사업자 정보 검증 성공 시, 반환할 값 설정
+        when(memberBusinessService.validateBusinessInfo(any())).thenReturn(true);
+
+        this.mockMvc.perform(post("/member/business/validate-info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(businessInfoValidateRequestDto)))
+                .andExpect(status().isOk())
+                .andDo(document("validate-business-info",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("사업자 정보 유효성 검증 API입니다. (지금은 사용하지 않습니다.)")
+                                .tags("business")
+                                .summary("사업자 정보 유효성 검증")
+                                // request
+                                .requestFields(
+                                        fieldWithPath("businessNumber").type(JsonFieldType.STRING).description("사업자번호"),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING).description("개업일자"),
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("대표자 성명"),
+                                        fieldWithPath("name2").type(JsonFieldType.STRING).optional()
+                                                .description("대표자 성명2"),
+                                        fieldWithPath("businessName").type(JsonFieldType.STRING).description("상호"),
+                                        fieldWithPath("corporationNumber").type(JsonFieldType.STRING).optional()
+                                                .description("법인등록번호"),
+                                        fieldWithPath("businessSector").type(JsonFieldType.STRING).description("주업태명"),
+                                        fieldWithPath("businessType").type(JsonFieldType.STRING).description("주종목명"),
+                                        fieldWithPath("businessAddress").type(JsonFieldType.STRING).description("사업장주소")
+                                )
+                                .requestSchema(Schema.schema("[request] validate-business-info"))
+                                // response
+                                .responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                        fieldWithPath("data.isValid").type(JsonFieldType.BOOLEAN)
+                                                .description("유효성 검사 결과")
+                                )
+                                .responseSchema(Schema.schema("[response] validate-business-info"))
+                                .build())));
+    }
+
+    @Test
+    @DisplayName("사업자 번호 상태 검증 테스트")
+    void businessNumberStatusTest() throws Exception {
+        // 사업자 번호 상태 검증 요청 정보
+        Map<String, String> requestbody = Map.of("businessNumber", "0000000000");
+
+        // 사업자 번호 상태 검증 성공 시, 반환할 값 설정
+        when(memberBusinessService.validateBusinessNumber(anyString())).thenReturn(true);
+
+        this.mockMvc.perform(post("/member/business/validate-status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestbody)))
+                .andExpect(status().isOk())
+                .andDo(document("business-number-status",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("사업자 번호 상태 검증 API입니다.")
+                                .tags("business")
+                                .summary("사업자 번호 상태 검증")
+                                // request
+                                .requestFields(
+                                        fieldWithPath("businessNumber").type(JsonFieldType.STRING).description("사업자번호")
+                                )
+                                .requestSchema(Schema.schema("[request] business-number-status"))
+                                // response
+                                .responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                        fieldWithPath("data.isValid").type(JsonFieldType.BOOLEAN)
+                                                .description("상태 검증 결과")
+                                )
+                                .responseSchema(Schema.schema("[response] business-number-status"))
+                                .build())));
+    }
+
+
 }
