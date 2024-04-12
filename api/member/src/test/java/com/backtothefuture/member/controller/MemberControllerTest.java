@@ -16,14 +16,17 @@ import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.member.dto.request.BusinessInfoValidateRequestDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
+import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
 import com.backtothefuture.member.dto.response.KakaoAccount;
 import com.backtothefuture.member.dto.response.KakaoUserInfo;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.service.MemberBusinessService;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
+import com.backtothefuture.security.annotation.WithMockCustomUser;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
+import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +45,20 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
@@ -211,6 +228,39 @@ class MemberControllerTest extends BfTestConfig {
     }
 
     @Test
+    @DisplayName("토큰 갱신 테스트")
+    @WithMockCustomUser
+    void refreshToken() throws Exception {
+
+        RefreshTokenRequestDto oldToken = new RefreshTokenRequestDto("5324fdswqe13dew");
+        LoginTokenDto tokenDto = new LoginTokenDto("access token", "resfresh token");
+
+        when(memberService.refreshToken(anyString(), anyLong())).thenReturn(tokenDto);
+
+        this.mockMvc.perform(post("/member/refresh").header("Authorization", "Bearer ${JWT Token}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(oldToken)))
+                .andExpect(status().isOk())
+                .andDo(document("refresh-access-and-refresh-token",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("refresh token을 이용하여 access,refresh token 갱신하는  API입니다.")
+                                .tags("member")
+                                .summary("토큰 갱신 API")
+                                .requestFields(
+                                        fieldWithPath("refreshToken").type(SimpleType.STRING)
+                                                .description("refresh token 값입니다.")
+                                )
+                                .responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
+                                                .description("갱신된 Access Token"),
+                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
+                                                .description("갱신된 Refresh Token")
+                                ).build()
+                        )));
+    }
+
     @DisplayName("사업자 정보 유효성 검증 테스트")
     void validateBusinessInfoTest() throws Exception {
         // 사업자 정보 유효성 검사 요청 정보
@@ -297,6 +347,7 @@ class MemberControllerTest extends BfTestConfig {
                                 .responseSchema(Schema.schema("[response] business-number-status"))
                                 .build())));
     }
+
 
 
 }

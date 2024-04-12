@@ -36,11 +36,14 @@ public class JwtProvider {
 	@Value("${jwt.secret-key}")
 	private String accessSecret;
 
+	@Value("${jwt.refresh-expiration-seconds}")
+	private int refreshExpirationSeconds;
+
 	@Value("${jwt.access-expiration-seconds}")
 	private int accessExpirationSeconds;
 
 	/**
-	 * 토큰 생성
+	 * access 토큰 생성
 	 */
 	public String createAccessToken(UserDetailsImpl userDetails) {
 		Instant now = Instant.now();
@@ -68,10 +71,31 @@ public class JwtProvider {
 	}
 
 	/**
-	 * Refresh 토큰 생성
+	 * refresh 토큰 생성
 	 */
-	public String createRefreshToken() {
-		return UUID.randomUUID().toString();
+	public String createRfreshToken(UserDetailsImpl userDetails) {
+		Instant now = Instant.now();
+		Date expiration = Date.from(now.plusSeconds(refreshExpirationSeconds));
+		SecretKey key = extractSecretKey();
+
+		StringBuilder roles = new StringBuilder();
+		// member roles 추출
+		if(userDetails.getAuthorities() != null && !userDetails.getAuthorities().isEmpty()) {
+			roles.append(
+					userDetails.getAuthorities().stream()
+							.map(GrantedAuthority::getAuthority)
+							.collect(Collectors.joining(", "))
+			);
+		}
+
+		return Jwts.builder()
+				.claim("id", userDetails.getId())
+				.setSubject(userDetails.getUsername())
+				.setIssuedAt(Date.from(now))
+				.setExpiration(expiration)
+				.claim(AUTHENTICATION_CLAIM_NAME, roles.toString())
+				.signWith(key, SignatureAlgorithm.HS512)
+				.compact();
 	}
 
 	/**

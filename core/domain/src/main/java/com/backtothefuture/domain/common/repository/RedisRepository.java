@@ -35,6 +35,27 @@ public class RedisRepository {
 	}
 
 	/**
+	 * refresh token 삭제
+	 */
+	public void deleteRefreshToken(Long memberId) {
+		redisTemplate.delete(String.valueOf(memberId));
+	}
+
+	/**
+	 * refresh token 가져 오기
+	 */
+	public Map getRefreshToken(Long memberId) {
+		return (Map) redisTemplate.opsForValue().get(String.valueOf(memberId));
+	}
+
+	/**
+	 * refresh token 존재 여부 확인
+	 */
+	public Boolean hasKey(Long memberId){
+		return redisTemplate.hasKey(String.valueOf(memberId));
+	}
+
+	/**
 	 * 인증 번호 저장
 	 */
 	public void saveCertificationNumber(String phoneNumber, String certificationNumber) {
