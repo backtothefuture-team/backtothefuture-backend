@@ -34,6 +34,32 @@ paths:
                 login-member:
                   value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
                     :\"access token\",\"refreshToken\":\"resfresh token\"}}"
+  /member/refresh:
+    post:
+      tags:
+      - member
+      summary: 토큰 갱신 API
+      description: "refresh token을 이용하여 access,refresh token 갱신하는  API입니다."
+      operationId: refresh-access-and-refresh-token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/member-refresh1564428056'
+            examples:
+              refresh-access-and-refresh-token:
+                value: "{\"refreshToken\":\"5324fdswqe13dew\"}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/member-refresh223414243'
+              examples:
+                refresh-access-and-refresh-token:
+                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
+                    :\"access token\",\"refreshToken\":\"resfresh token\"}}"
   /member/register:
     post:
       tags:
@@ -92,6 +118,30 @@ paths:
                     :\"accessToken\",\"refreshToken\":\"resfreshToken\"}}"
 components:
   schemas:
+    member-refresh223414243:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: number
+          description: 응답 코드
+        data:
+          required:
+          - accessToken
+          - refreshToken
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: 갱신된 Access Token
+            refreshToken:
+              type: string
+              description: 갱신된 Refresh Token
+        message:
+          type: string
+          description: 응답 메시지
     '[request] member-register':
       title: "[request] member-register"
       required:
@@ -188,6 +238,14 @@ components:
         message:
           type: string
           description: 응답 메시지
+    member-refresh1564428056:
+      required:
+      - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: refresh token 값입니다.
     LoginTokenDto:
       title: LoginTokenDto
       required:
