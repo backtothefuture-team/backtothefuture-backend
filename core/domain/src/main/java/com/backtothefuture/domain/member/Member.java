@@ -23,46 +23,37 @@ import lombok.Setter;
 @Entity
 @Getter
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "phoneNumber")
+	@UniqueConstraint(columnNames = "email"),
+	@UniqueConstraint(columnNames = "phoneNumber")
 })
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class Member extends MutableBaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
-    private Long id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "member_id")
+	private Long id;
 
-    private String authId;            // 소셜 회원 고유 번호
+	private String authId;			// 소셜 회원 고유 번호
 
-    private String email;            // 이메일
+	private String email;			// 이메일
 
-    private String name;            // 이름
+	private String name;			// 이름
 
-    @Setter
-    private String password;        // 비밀번호
+	@Setter
+	private String password;		// 비밀번호
 
-    @Setter
-    private String phoneNumber;        // 연락처
+	@Setter
+	private String phoneNumber;		// 연락처
 
-    private String profile;        // 프로필 이미지
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "VARCHAR(255)")
+	private StatusType status = StatusType.PENDING; // 상태
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255)")
-    private StatusType status = StatusType.PENDING; // 상태
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "VARCHAR(255)")
+	private ProviderType provider;	// 계정정보 공급 서비스
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255)")
-    private ProviderType provider;    // 계정정보 공급 서비스
-
-    @Setter
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(255)")
-    private RolesType roles = RolesType.ROLE_USER;        // 권한
-
-    public void setProfileUrl(String url) {
-        this.profile = url;
-    }
+	@Setter
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "VARCHAR(255)")
+	private RolesType roles = RolesType.ROLE_USER;		// 권한
 }

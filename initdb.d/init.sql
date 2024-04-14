@@ -14,7 +14,6 @@ CREATE TABLE member
     password     varchar(255),
     phone_number varchar(255) UNIQUE,
     status       varchar(255),
-    profile       varchar(255),
     provider     varchar(255),
     roles        varchar(255),
     updated_at   datetime(6),

@@ -3,10 +3,6 @@ jwt:
 
 certification:
   mail:
-    expiration-seconds: 600 # 이메일 인증 만료 시간
+    expiration-seconds : 600 # 이메일 인증 만료 시간
   message:
-    expiration-seconds: 180 # 인증 만료시간
-
-s3:
-  bucket: # s3 버킷명
-    image: bagtothefuture-static-image
+    expiration-seconds : 180 # 인증 만료시간

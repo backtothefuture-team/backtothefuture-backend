@@ -6,8 +6,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.util.Optional;
 import lombok.Builder;
+
+import java.util.Optional;
 
 @Builder
 public record ProductRegisterDto(
@@ -25,10 +26,12 @@ public record ProductRegisterDto(
         int price,
 
         @Min(value = 0, message = "재고는 음수일 수 없습니다.")
-        int stockQuantity // 재고 수량, optional, default 0
+        int stockQuantity, // 재고 수량, optional, default 0
 
+        String thumbnail // 썸네일 이미지, optional, default ""
 ) {
     public static Product toEntity(ProductRegisterDto productRegisterDto, Store store) {
+        String thumbnail = Optional.ofNullable(productRegisterDto.thumbnail()).orElse("");
         int stockQuantity = Optional.ofNullable(productRegisterDto.stockQuantity()).orElse(0);
 
         return Product.builder()
@@ -36,6 +39,7 @@ public record ProductRegisterDto(
                 .description(productRegisterDto.description())
                 .price(productRegisterDto.price())
                 .stockQuantity(stockQuantity)
+                .thumbnail(thumbnail)
                 .store(store)
                 .build();
     }
