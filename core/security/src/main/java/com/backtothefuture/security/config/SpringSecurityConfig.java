@@ -117,7 +117,7 @@ public class SpringSecurityConfig {
         List<RequestMatcher> requestMatchers = List.of(
                 antMatcher(POST, "/member/login"),            // 로그인
                 antMatcher(POST, "/member/register"),        // 회원가입
-                antMatcher(GET, "/store/{storeId}/products/{productId}"),        // 상품 단건 조회 API
+                antMatcher(GET, "/stores/{storeId}/products/{productId}"),        // 상품 단건 조회 API
                 antMatcher(GET, "/products"),                           // 상품 전체 조회 API
                 //    antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
                 //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
@@ -136,17 +136,15 @@ public class SpringSecurityConfig {
      */
     private RequestMatcher[] AuthRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
-                antMatcher(POST, "/store/register"),                            // 가게 등록
-                antMatcher(POST, "/store/{storeId}/products"),                // 상품 등록
-                antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
-                antMatcher(PATCH, "/store/{storeId}/products/{productId}"),  // 상품 수정
+                antMatcher(POST, "/stores"),                            // 가게 등록
+                antMatcher(POST, "/stores/{storeId}/products"),                // 상품 등록
+                antMatcher(DELETE, "/stores/{storeId}/products/{productId}"),    // 상품 삭제
+                antMatcher(PATCH, "/stores/{storeId}/products/{productId}"),  // 상품 수정
                 antMatcher(POST, "/reservations"), // 상품 주문
                 antMatcher(GET, "/reservations/**"), // 주문 조회
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
                 antMatcher(DELETE, "/reservations/**") // 주문 삭제
-
-
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);

@@ -18,8 +18,7 @@ public record ProductUpdateDto(
         int price,
 
         @Min(value = 0, message = "재고는 음수일 수 없습니다.")
-        int stockQuantity, // 재고 수량, optional, default 0
-        String thumbnail // 썸네일 이미지, optional, default ""
+        int stockQuantity // 재고 수량, optional, default 0
 ) {
 
 }
