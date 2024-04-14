@@ -67,6 +67,7 @@ public class ReservationConcurrencyTest extends BfTestConfig {
                 .email("leesangmin@naver.com")
                 .status(StatusType.ACTIVE)
                 .provider(null)
+                .profile("")
                 .roles(RolesType.ROLE_USER)
                 .build();
         memberRepository.save(customer1);
@@ -77,6 +78,7 @@ public class ReservationConcurrencyTest extends BfTestConfig {
                 .email("email3@naver.com")
                 .status(StatusType.ACTIVE)
                 .provider(null)
+                .profile("")
                 .roles(RolesType.ROLE_STORE_OWNER)
                 .build();
         memberRepository.save(owner);
