@@ -1,6 +1,7 @@
 package com.backtothefuture.store.dto.request;
 
 
+import com.backtothefuture.domain.reservation.enums.TimeType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -20,7 +21,10 @@ public record ReservationRequestDto(
 
     @DateTimeFormat(pattern = "HH:mm")
     @NotNull(message = "예약 시간은 필수 입니다.")
-    LocalTime reservationTime
+    LocalTime reservationTime,
+
+    @NotNull(message = "시간 종류는 필수 정보입니다.")
+    TimeType timeType
 ) {
 
 }
