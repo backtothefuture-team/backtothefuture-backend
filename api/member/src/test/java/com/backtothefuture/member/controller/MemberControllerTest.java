@@ -4,7 +4,6 @@ package com.backtothefuture.member.controller;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -12,12 +11,9 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
-import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.enums.ProviderType;
 import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.infra.config.BfTestConfig;
-import com.backtothefuture.infra.config.S3Config;
 import com.backtothefuture.member.dto.request.BusinessInfoValidateRequestDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
@@ -33,6 +29,7 @@ import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +45,19 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -68,15 +78,6 @@ class MemberControllerTest extends BfTestConfig {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private S3Util s3Util;
-
-    @MockBean
-    private S3Config s3Config;
-
-    @MockBean
-    private S3AsyncUtil s3AsyncUtil;
-
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
@@ -84,47 +85,48 @@ class MemberControllerTest extends BfTestConfig {
                 .build();
     }
 
-//    @Test
-//    @DisplayName("회원가입 테스트")
-//    void registerTest() throws Exception {
-//        // 회원가입 request 정보
-//        Map<String, Object> memberMap = new HashMap<>();
-//        memberMap.put("email", "kildong.hong@naver.com");
-//        memberMap.put("name", "홍길동");
-//        memberMap.put("password", "123456");
-//        memberMap.put("passwordConfirm", "123456");
-//        memberMap.put("phoneNumber", List.of("010", "1234", "5678"));
-//
-//        // 회원가입 성공 시, 반환할 값 (id) 설정
-//        when(memberService.registerMember(any())).thenReturn(1L);
-//
-//        this.mockMvc.perform(post("/member/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(memberMap)))
-//                .andExpect(status().isCreated())
-//                .andDo(document("register-member",
-//                        resource(ResourceSnippetParameters.builder()
-//                                .description("회원가입 API 입니다.")
-//                                .tags("member")
-//                                .summary("회원가입 API")
-//                                // request
-//                                .requestFields(
-//                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-//                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
-//                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
-//                                        fieldWithPath("passwordConfirm").type(JsonFieldType.STRING).description("비밀번호 확인"),
-//                                        fieldWithPath("phoneNumber").type(JsonFieldType.ARRAY).description("전화번호")
-//                                )
-//                                .requestSchema(Schema.schema("[request] member-register"))
-//                                // response
-//                                .responseFields(
-//                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-//                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-//                                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID")
-//                                )
-//                                .responseSchema(Schema.schema("[response] member-register")).build()
-//                        )));
-//    }
+    @Test
+    @DisplayName("회원가입 테스트")
+    void registerTest() throws Exception {
+        // 회원가입 request 정보
+        Map<String, Object> memberMap = new HashMap<>();
+        memberMap.put("email", "kildong.hong@naver.com");
+        memberMap.put("name", "홍길동");
+        memberMap.put("password", "123456");
+        memberMap.put("passwordConfirm", "123456");
+        memberMap.put("phoneNumber", List.of("010", "1234", "5678"));
+
+        // 회원가입 성공 시, 반환할 값 (id) 설정
+        when(memberService.registerMember(any())).thenReturn(1L);
+
+        this.mockMvc.perform(post("/member/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberMap)))
+                .andExpect(status().isCreated())
+                .andDo(document("register-member",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("회원가입 API 입니다.")
+                                .tags("member")
+                                .summary("회원가입 API")
+                                // request
+                                .requestFields(
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                                        fieldWithPath("passwordConfirm").type(JsonFieldType.STRING)
+                                                .description("비밀번호 확인"),
+                                        fieldWithPath("phoneNumber").type(JsonFieldType.ARRAY).description("전화번호")
+                                )
+                                .requestSchema(Schema.schema("[request] member-register"))
+                                // response
+                                .responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID")
+                                )
+                                .responseSchema(Schema.schema("[response] member-register")).build()
+                        )));
+    }
 
     @Test
     @DisplayName("일반 로그인 테스트")
@@ -345,6 +347,7 @@ class MemberControllerTest extends BfTestConfig {
                                 .responseSchema(Schema.schema("[response] business-number-status"))
                                 .build())));
     }
+
 
 
 }

@@ -1,14 +1,5 @@
 package com.backtothefuture.store.service;
 
-import static com.backtothefuture.domain.common.enums.GlobalErrorCode.CHECK_USER;
-import static com.backtothefuture.domain.common.enums.ProductErrorCode.FORBIDDEN_DELETE_PRODUCT;
-import static com.backtothefuture.domain.common.enums.ProductErrorCode.IMAGE_UPLOAD_FAIL;
-import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_PRODUCT_ID;
-import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_STORE_ID;
-import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_STORE_PRODUCT_MATCH;
-import static com.backtothefuture.domain.common.enums.ProductErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
-
-import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;
@@ -19,10 +10,6 @@ import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.exception.ProductException;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -30,7 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.backtothefuture.domain.common.enums.GlobalErrorCode.CHECK_USER;
+import static com.backtothefuture.domain.common.enums.ProductErrorCode.*;
 
 @Slf4j
 @Service
@@ -39,28 +32,15 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
-    private final S3Util s3Util;
 
     @Transactional
-    public Long registerProduct(Long storeId, ProductRegisterDto productRegisterDto, MultipartFile thumbnail) {
+    public Long registerProduct(Long storeId, ProductRegisterDto productRegisterDto) {
         // 가게 조회
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ProductException(NOT_FOUND_STORE_ID));
 
         Product product = ProductRegisterDto.toEntity(productRegisterDto, store);
-        Long id = productRepository.save(product).getId();
-
-        // 이미지 업로드
-        try {
-            String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(id), thumbnail);
-            product.setThumbnailUrl(imageUrl);
-        } catch (IllegalArgumentException e) {
-            throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
-        } catch (IOException e) {
-            throw new ProductException(IMAGE_UPLOAD_FAIL);
-        }
-
-        return id;
+        return productRepository.save(product).getId();
     }
 
     @Transactional(readOnly = true)
@@ -98,8 +78,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDto partialUpdateProduct(Long storeId, Long productId, ProductUpdateDto productUpdateDto,
-                                                   MultipartFile thumbnail) {
+    public ProductResponseDto partialUpdateProduct(Long storeId, Long productId, ProductUpdateDto productUpdateDto) {
         // 권한 검사
         if (!validateIsProductOwner(storeId, productId)) {
             throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
@@ -116,20 +95,8 @@ public class ProductService {
                 .ifPresent(product::updatePrice);
         Optional.ofNullable(productUpdateDto.stockQuantity())
                 .ifPresent(product::updateStockQuantity);
-
-        // thumbnail file 이 첨부되었을 경우 업데이트 한다.
-        if (thumbnail != null) {
-            try {
-                String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(productId),
-                        thumbnail);
-                product.updateThumbnail(imageUrl);
-            } catch (IllegalArgumentException e) {
-                throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
-            } catch (IOException e) {
-                throw new ProductException(IMAGE_UPLOAD_FAIL);
-            }
-
-        }
+        Optional.ofNullable(productUpdateDto.thumbnail())
+                .ifPresent(product::updateThumbnail);
 
         return ProductResponseDto.builder()
                 .id(product.getId())
