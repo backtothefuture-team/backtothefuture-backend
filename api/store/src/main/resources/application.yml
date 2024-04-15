@@ -9,6 +9,12 @@ spring:
         show_sql: true # sql query console 창에 표시 여부
         format_sql: true # console 창에 보여줄때 format 여부
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+
 server:
   port: 8081
   servlet:
