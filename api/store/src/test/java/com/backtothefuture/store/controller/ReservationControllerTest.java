@@ -1,5 +1,6 @@
 package com.backtothefuture.store.controller;
 
+import com.backtothefuture.domain.reservation.enums.TimeType;
 import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.store.dto.response.ReservationResponseDto;
 import com.backtothefuture.security.annotation.WithMockCustomUser;
@@ -58,10 +59,10 @@ class ReservationControllerTest extends BfTestConfig {
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext,
-        RestDocumentationContextProvider restDocumentation) {
+               RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-            .apply(documentationConfiguration(restDocumentation))
-            .build();
+                .apply(documentationConfiguration(restDocumentation))
+                .build();
     }
 
     @Test
@@ -74,47 +75,50 @@ class ReservationControllerTest extends BfTestConfig {
         Long product2Id = 2L;
 
         ReservationRequestDto reservationRequestDto = ReservationRequestDto.builder()
-            .storeId(storeId)
-            .orderRequestItems(List.of(new ReservationRequestItemDto(product1Id, 1),
-                new ReservationRequestItemDto(product2Id, 1)))
-            .reservationTime(LocalTime.of(12, 00))
-            .build();
+                .storeId(storeId)
+                .orderRequestItems(List.of(new ReservationRequestItemDto(product1Id, 1),
+                        new ReservationRequestItemDto(product2Id, 1)))
+                .reservationTime(LocalTime.of(01, 00))
+                .timeType(TimeType.PM)
+                .build();
 
         // TODO: 아래 코드가 테스트의 효과가 있는지 궁금합니다!
         when(mockReservationService.makeReservation(anyLong(),
-            eq(reservationRequestDto))).thenReturn(
-            1L);
+                eq(reservationRequestDto))).thenReturn(
+                1L);
 
         this.mockMvc.perform(RestDocumentationRequestBuilders.post("/reservations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(reservationRequestDto))
-                .header("Authorization", "Bearer ${JWT Token}")
-                .with(csrf()))
-            .andExpect(MockMvcResultMatchers.status().isCreated())
-            .andDo(document("make-reservation",
-                resource(ResourceSnippetParameters.builder()
-                    .description("구매자 예약하기 API입니다.")
-                    .tags("reservations")
-                    .summary("구매자 예약 API")
-                    .requestFields(
-                        fieldWithPath("storeId").type(SimpleType.NUMBER).description("가게 ID 값입니다."),
-                        fieldWithPath("orderRequestItems[].productId").type(SimpleType.NUMBER)
-                            .description("상품 ID 값입니다."),
-                        fieldWithPath("orderRequestItems[].quantity").type(SimpleType.NUMBER)
-                            .description("주문한 수량 값입니다."),
-                        fieldWithPath("reservationTime").type(SimpleType.STRING)
-                            .description("예약 시간입니다. 'HH:mm' 형태입니다.")
-                    )
-                    .requestSchema(Schema.schema("[request] make-reservation"))
-                    .responseFields(
-                        fieldWithPath("code").type(SimpleType.NUMBER)
-                            .description("HttpStatusCode 입니다."),
-                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
-                        fieldWithPath("data.reservation_id").type(SimpleType.NUMBER)
-                            .description("생성된 주문 ID 입니다.")
-                    )
-                    .responseSchema(Schema.schema("[response] make-reservation")).build()
-                )));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reservationRequestDto))
+                        .header("Authorization", "Bearer ${JWT Token}")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andDo(document("make-reservation",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("구매자 예약하기 API입니다.")
+                                .tags("reservations")
+                                .summary("구매자 예약 API")
+                                .requestFields(
+                                        fieldWithPath("storeId").type(SimpleType.NUMBER).description("가게 ID 값입니다."),
+                                        fieldWithPath("orderRequestItems[].productId").type(SimpleType.NUMBER)
+                                                .description("상품 ID 값입니다."),
+                                        fieldWithPath("orderRequestItems[].quantity").type(SimpleType.NUMBER)
+                                                .description("주문한 수량 값입니다."),
+                                        fieldWithPath("reservationTime").type(SimpleType.STRING)
+                                                .description("예약 시간입니다. 'HH:mm' 형태입니다."),
+                                        fieldWithPath("timeType").type(SimpleType.STRING)
+                                                .description("시간 종류 타입입니다. AM 또는 PM 입니다.")
+                                )
+                                .requestSchema(Schema.schema("[request] make-reservation"))
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER)
+                                                .description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data.reservation_id").type(SimpleType.NUMBER)
+                                                .description("생성된 주문 ID 입니다.")
+                                )
+                                .responseSchema(Schema.schema("[response] make-reservation")).build()
+                        )));
 
     }
 
@@ -126,41 +130,41 @@ class ReservationControllerTest extends BfTestConfig {
         Long reservationId = 1L;
 
         List<ReservationResponseDto> reservationResponseDto = List.of(
-            new ReservationResponseDto("product1", 1, 1000),
-            new ReservationResponseDto("product2", 2, 2000)
+                new ReservationResponseDto("product1", 1, 1000),
+                new ReservationResponseDto("product2", 2, 2000)
         );
 
         when(mockReservationService.getReservation(any(), eq(reservationId))).thenReturn(
-            reservationResponseDto);
+                reservationResponseDto);
 
         this.mockMvc.perform(
-                RestDocumentationRequestBuilders.get("/reservations/{reservationId}", reservationId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(reservationResponseDto))
-                    .header("Authorization", "Bearer ${JWT Token}"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andDo(document("get-reservation",
-                resource(ResourceSnippetParameters.builder()
-                    .description("구매자 예약 조회 API입니다.")
-                    .tags("reservations")
-                    .summary("구매자 예약 조회 API")
-                    .pathParameters(
-                        parameterWithName("reservationId").type(SimpleType.NUMBER)
-                            .description("예약 ID")
-                    )
-                    .responseFields(
-                        fieldWithPath("code").type(SimpleType.NUMBER)
-                            .description("HttpStatusCode 입니다."),
-                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
-                        fieldWithPath("data[].name").type(SimpleType.STRING)
-                            .description("상품 이름입니다."),
-                        fieldWithPath("data[].count").type(SimpleType.STRING)
-                            .description("주문된 각 상품의 수량입니다."),
-                        fieldWithPath("data[].price").type(SimpleType.STRING)
-                            .description("주문된 각 상품의 금액입니다.")
-                    )
-                    .responseSchema(Schema.schema("[response] make-reservation")).build()
-                )));
+                        RestDocumentationRequestBuilders.get("/reservations/{reservationId}", reservationId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(reservationResponseDto))
+                                .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(document("get-reservation",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("구매자 예약 조회 API입니다.")
+                                .tags("reservations")
+                                .summary("구매자 예약 조회 API")
+                                .pathParameters(
+                                        parameterWithName("reservationId").type(SimpleType.NUMBER)
+                                                .description("예약 ID")
+                                )
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER)
+                                                .description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data[].name").type(SimpleType.STRING)
+                                                .description("상품 이름입니다."),
+                                        fieldWithPath("data[].count").type(SimpleType.STRING)
+                                                .description("주문된 각 상품의 수량입니다."),
+                                        fieldWithPath("data[].price").type(SimpleType.STRING)
+                                                .description("주문된 각 상품의 금액입니다.")
+                                )
+                                .responseSchema(Schema.schema("[response] make-reservation")).build()
+                        )));
     }
 
     @Test
@@ -172,27 +176,27 @@ class ReservationControllerTest extends BfTestConfig {
         doNothing().when(mockReservationService).cancelReservation(any(), eq(reservationId));
 
         this.mockMvc.perform(
-                RestDocumentationRequestBuilders.delete("/reservations/{reservationId}", reservationId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer ${JWT Token}"))
-            .andExpect(MockMvcResultMatchers.status().isNoContent())
-            .andDo(document("cancel-reservation",
-                resource(ResourceSnippetParameters.builder()
-                    .description("구매자 예약 취소 API입니다.")
-                    .tags("reservations")
-                    .summary("구매자 예약 취소 API")
-                    .pathParameters(
-                        parameterWithName("reservationId").type(SimpleType.NUMBER)
-                            .description("예약 ID")
-                    )
-                    .responseFields(
-                        fieldWithPath("code").type(SimpleType.NUMBER)
-                            .description("HttpStatusCode 입니다."),
-                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
-                        fieldWithPath("data").type(SimpleType.STRING).description("NO_CONTENT")
-                    )
-                    .responseSchema(Schema.schema("[response] cancel-reservation")).build()
-                )));
+                        RestDocumentationRequestBuilders.delete("/reservations/{reservationId}", reservationId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer ${JWT Token}"))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(document("cancel-reservation",
+                        resource(ResourceSnippetParameters.builder()
+                                .description("구매자 예약 취소 API입니다.")
+                                .tags("reservations")
+                                .summary("구매자 예약 취소 API")
+                                .pathParameters(
+                                        parameterWithName("reservationId").type(SimpleType.NUMBER)
+                                                .description("예약 ID")
+                                )
+                                .responseFields(
+                                        fieldWithPath("code").type(SimpleType.NUMBER)
+                                                .description("HttpStatusCode 입니다."),
+                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
+                                        fieldWithPath("data").type(SimpleType.STRING).description("NO_CONTENT")
+                                )
+                                .responseSchema(Schema.schema("[response] cancel-reservation")).build()
+                        )));
 
     }
 }
