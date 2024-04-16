@@ -48,7 +48,7 @@ public class Store extends MutableBaseEntity {
 
     private double rating; // TODO 리뷰가 등록될 때 rating, ratingCount가 업데이트되어야 함
 
-    private double ratingCount;
+    private int ratingCount;
 
     private LocalTime startTime; // 영업 시작 시간
 
