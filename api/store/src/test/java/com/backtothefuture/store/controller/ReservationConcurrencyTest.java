@@ -6,6 +6,7 @@ import com.backtothefuture.domain.member.enums.StatusType;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.product.repository.ProductRepository;
+import com.backtothefuture.domain.reservation.enums.TimeType;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.infra.config.BfTestConfig;
@@ -91,7 +92,8 @@ public class ReservationConcurrencyTest extends BfTestConfig {
         ReservationRequestDto reservationRequestDto = ReservationRequestDto.builder()
                 .storeId(store.getId())
                 .orderRequestItems(List.of(new ReservationRequestItemDto(product.getId(), 6)))
-                .reservationTime(LocalTime.of(12, 00))
+                .reservationTime(LocalTime.of(01, 00))
+                .timeType(TimeType.PM)
                 .build();
 
         //when

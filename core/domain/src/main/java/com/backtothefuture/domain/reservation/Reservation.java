@@ -4,10 +4,10 @@ import com.backtothefuture.domain.common.MutableBaseEntity;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.store.Store;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -31,8 +31,8 @@ public class Reservation extends MutableBaseEntity {
 
     private Integer totalPrice; // 주문 총 금액
 
-    @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime reservationTime;
+    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
+    private LocalDateTime reservationTime;
 
     public void increaseTotalPrice(int price) {
         this.totalPrice += price;

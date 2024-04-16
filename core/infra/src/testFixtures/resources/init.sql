@@ -65,7 +65,7 @@ CREATE TABLE reservation
     updated_by       varchar(255),
     created_at       datetime(6),
     created_by       varchar(255),
-    reservation_time time,
+    reservation_time datetime(6),
     FOREIGN KEY (store_id) REFERENCES store (store_id),
     FOREIGN KEY (member_id) REFERENCES member (member_id)
 );

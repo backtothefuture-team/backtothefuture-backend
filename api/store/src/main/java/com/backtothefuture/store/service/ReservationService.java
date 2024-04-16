@@ -22,6 +22,8 @@ import com.backtothefuture.store.exception.MemberException;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.exception.ProductException;
 import com.backtothefuture.store.exception.StoreException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -152,14 +154,14 @@ public class ReservationService {
                     .store(store)
                     .member(member)
                     .totalPrice(0)
-                    .reservationTime(dto.reservationTime().plusHours(12))
+                    .reservationTime(LocalDateTime.of(LocalDate.now(), dto.reservationTime().plusHours(12)))
                     .build();
         } else {   // 7AM >> 07:00 그대로 입력
             return Reservation.builder()
                     .store(store)
                     .member(member)
                     .totalPrice(0)
-                    .reservationTime(dto.reservationTime())
+                    .reservationTime(LocalDateTime.of(LocalDate.now(), dto.reservationTime().plusHours(12)))
                     .build();
         }
     }
