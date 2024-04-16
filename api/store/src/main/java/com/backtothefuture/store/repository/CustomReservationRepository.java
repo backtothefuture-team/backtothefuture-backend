@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface CustomReservationRepository extends JpaRepository<Reservation, Long>, ReservationRepositoryPaging {
+public interface CustomReservationRepository extends JpaRepository<Reservation, Long> {
 
     @Query(value =
             "select new com.backtothefuture.store.dto.response.ReservationResponseDto(p.name,rp.quantity,p.price) "

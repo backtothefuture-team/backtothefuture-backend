@@ -144,7 +144,8 @@ public class SpringSecurityConfig {
                 antMatcher(GET, "/reservations/**"), // 주문 조회
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
-                antMatcher(DELETE, "/reservations/**") // 주문 삭제
+                antMatcher(DELETE, "/reservations/**"), // 주문 삭제
+                antMatcher(GET,"/reservations") // 사용자 주문(픽업) 완료 내역
 
 
         );
