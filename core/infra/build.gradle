@@ -29,6 +29,9 @@ dependencies {
 
     // springdoc
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    // aws s3
+    implementation platform('software.amazon.awssdk:bom:2.21.1')
+    implementation 'software.amazon.awssdk:s3'
 
     // testContainer
     testFixturesImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"

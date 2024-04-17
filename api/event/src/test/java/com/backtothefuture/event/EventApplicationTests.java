@@ -9,9 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.backtothefuture.domain.common.util.RandomNumUtil;
+import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
 import com.backtothefuture.event.service.CertificateService;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.infra.config.S3Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +47,16 @@ class EventApplicationTests extends BfTestConfig {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    // 임시 s3 관련 mockbean 설정..
+    @MockBean
+    private S3Util s3Util;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private S3AsyncUtil s3AsyncUtil;
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {

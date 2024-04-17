@@ -8,7 +8,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
+import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.infra.config.S3Config;
 import com.backtothefuture.security.annotation.WithMockCustomUser;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.request.ReservationRequestItemDto;
@@ -49,6 +52,16 @@ class ReservationControllerTest extends BfTestConfig {
     @Autowired
     private ObjectMapper objectMapper;
 
+    // 임시 s3 관련 mockbean 설정..
+    @MockBean
+    private S3Util s3Util;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private S3AsyncUtil s3AsyncUtil;
+
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext,
                RestDocumentationContextProvider restDocumentation) {
@@ -84,7 +97,6 @@ class ReservationControllerTest extends BfTestConfig {
                         .header("Authorization", "Bearer ${JWT Token}")
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
-
     }
 
     @Test
@@ -123,6 +135,5 @@ class ReservationControllerTest extends BfTestConfig {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer ${JWT Token}"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-
     }
 }
