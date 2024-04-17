@@ -23,20 +23,22 @@ CREATE TABLE member
 
 CREATE TABLE store
 (
-    store_id    bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name        varchar(255),
-    description TEXT,
-    location    varchar(255),
-    contact     varchar(255),
-    image       varchar(255),
-    member_id   bigint NOT NULL,
-    updated_at  datetime(6),
-    updated_by  varchar(255),
-    created_at  datetime(6),
-    created_by  varchar(255),
-    start_time  time,
-    end_time    time,
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
+    store_id     bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name         varchar(255),
+    description  TEXT,
+    location     varchar(255),
+    contact      varchar(255),
+    image        varchar(255),
+    member_id    bigint NOT NULL,
+    updated_at   datetime(6),
+    updated_by   varchar(255),
+    created_at   datetime(6),
+    created_by   varchar(255),
+    rating       double,
+    rating_count int,
+    start_time   time,
+    end_time     time,
+    FOREIGN KEY  (member_id) REFERENCES member (member_id)
 );
 
 CREATE TABLE product
@@ -84,6 +86,7 @@ CREATE TABLE reservation_product
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
+
 CREATE TABLE reservation_status_history
 (
     id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -91,6 +94,15 @@ CREATE TABLE reservation_status_history
     order_type varchar(255),
     event_time time,
     FOREIGN KEY (reservation_id) REFERENCES reservation (reservation_id)
+ ); 
+
+CREATE TABLE IF NOT EXISTS review (
+    review_id       VARCHAR(255)    NOT NULL,
+    member_id       VARCHAR(255)    NOT NULL,
+    store_id        VARCHAR(255)    NOT NULL,
+    star            VARCHAR(255)    NULL,
+    content         VARCHAR(255)    NULL
+
 );
 
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
