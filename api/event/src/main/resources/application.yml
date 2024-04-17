@@ -28,11 +28,10 @@ spring:
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
 
+# default swagger ui url : http://server:port/context-path/swagger-ui.html
 springdoc:
   api-docs:
     enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
 
 server:
   port: 8084
