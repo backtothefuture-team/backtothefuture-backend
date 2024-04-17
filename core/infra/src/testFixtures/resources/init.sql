@@ -23,22 +23,20 @@ CREATE TABLE member
 
 CREATE TABLE store
 (
-    store_id     bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name         varchar(255),
-    description  TEXT,
-    location     varchar(255),
-    contact      varchar(255),
-    image        varchar(255),
-    member_id    bigint NOT NULL,
-    updated_at   datetime(6),
-    updated_by   varchar(255),
-    created_at   datetime(6),
-    created_by   varchar(255),
-    rating       double,
-    rating_count int,
-    start_time   time,
-    end_time     time,
-    FOREIGN KEY  (member_id) REFERENCES member (member_id)
+    store_id    bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name        varchar(255),
+    description TEXT,
+    location    varchar(255),
+    contact     varchar(255),
+    image       varchar(255),
+    member_id   bigint NOT NULL,
+    updated_at  datetime(6),
+    updated_by  varchar(255),
+    created_at  datetime(6),
+    created_by  varchar(255),
+    start_time  time,
+    end_time    time,
+    FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 
 CREATE TABLE product
