@@ -84,14 +84,6 @@ CREATE TABLE reservation_product
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
-CREATE TABLE IF NOT EXISTS review (
-    review_id       VARCHAR(255)    NOT NULL,
-    member_id       VARCHAR(255)    NOT NULL,
-    store_id        VARCHAR(255)    NOT NULL,
-    star            VARCHAR(255)    NULL,
-    content         VARCHAR(255)    NULL
-);
-
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)
 VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
