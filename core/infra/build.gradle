@@ -40,4 +40,7 @@ dependencies {
     testFixturesImplementation "org.springframework.boot:spring-boot-starter-test"
     testFixturesImplementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+
 }
