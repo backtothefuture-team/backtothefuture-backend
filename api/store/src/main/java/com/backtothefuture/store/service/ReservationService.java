@@ -71,7 +71,7 @@ public class ReservationService {
         reservationStatusHistoryRepository.save(     // 주문 상태 이력 생성
                 ReservationStatusHistory.builder()
                         .reservation(reservation)
-                        .orderType(OrderType.CONFIRMATION)
+                        .orderType(OrderType.REGISTRATION)
                         .eventTime(LocalTime.now().withSecond(0).withNano(0)) // 분까지만 데이터를 저장하고 나머지는 0으로 초기화
                         .build());
 

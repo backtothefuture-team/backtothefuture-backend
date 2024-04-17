@@ -1,15 +1,20 @@
 package com.backtothefuture.store.dto.response;
 
-import com.backtothefuture.domain.reservation.enums.OrderType;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import lombok.Builder;
+import lombok.Getter;
 
-public record MemberProgressReservationResponseDto(
-        String storeImg, // 가게 이미지
-        String name, // 가게 이름
-        Long reservationId,
-        LocalDateTime reservationTime, // 예약 생성 시간
-        OrderType orderType, // 주문 진행 상황
-        LocalTime eventTime // 주문 상태 시작 시간
-) {
+@Getter
+@Builder
+public class MemberProgressReservationResponseDto {
+    private String storeImg; // 가게 이미지
+    private String name; // 가게 이름
+    private Long reservationId; // 마지막 조회 예약(주문) id
+    private LocalDateTime reservationTime; // 예약 생성 시간
+    private Integer totalPrice; // 주문 총 금액
+    private List<Map<String,String>> productNames; // 상품 이름
+    private List<Map<String, LocalTime>> reservationHistory;
 }

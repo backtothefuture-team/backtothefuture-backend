@@ -123,6 +123,7 @@ public class SpringSecurityConfig {
                 //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
                 antMatcher(POST, "/certificate/email"), // 메일 인증번호 전송
                 antMatcher(GET, "/certificate/email"), // 인증 번호 검증
+                antMatcher(POST, "/reservations"), // 상품 주문
                 antMatcher(GET, "/certificate/email/{email}/status"), // 메일 인증 여부 확인
                 antMatcher(POST, "/member/business/validate-info"), // 사업자등록정보 진위여부 확인
                 antMatcher(POST, "/member/business/validate-status") // 사업자등록번호 상태조회
@@ -140,12 +141,13 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/store/{storeId}/products"),                // 상품 등록
                 antMatcher(DELETE, "/store/{storeId}/products/{productId}"),    // 상품 삭제
                 antMatcher(PATCH, "/store/{storeId}/products/{productId}"),  // 상품 수정
-                antMatcher(POST, "/reservations"), // 상품 주문
+//                antMatcher(POST, "/reservations"), // 상품 주문
                 antMatcher(GET, "/reservations/**"), // 주문 조회
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
-                antMatcher(GET,"/reservations") // 사용자 주문(픽업) 완료 내역
+                antMatcher(GET,"/reservations/done"), // 고객 주문 완료 내역
+                antMatcher(GET,"/reservations/proceeding") // 고객 진행 중인 주문 내역
 
 
         );

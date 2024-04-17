@@ -84,6 +84,15 @@ CREATE TABLE reservation_product
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
+CREATE TABLE reservation_status_history
+(
+    id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    reservation_id bigint NOT NULL,
+    order_type varchar(255),
+    event_time time,
+    FOREIGN KEY (reservation_id) REFERENCES reservation (reservation_id)
+);
+
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)
 VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,

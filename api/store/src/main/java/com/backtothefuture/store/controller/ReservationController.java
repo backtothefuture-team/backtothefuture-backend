@@ -33,7 +33,7 @@ public class ReservationController {
             @Valid @RequestBody ReservationRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new BfResponse<>(CREATE,
-                        Map.of("reservation_id", reservationService.makeReservation(1L, dto))));
+                        Map.of("reservation_id", reservationService.makeReservation(userDetails.getId(), dto))));
     }
 
     @GetMapping("/{reservationId}")
@@ -54,13 +54,20 @@ public class ReservationController {
                 .body(new BfResponse<>(NO_CONTENT));
     }
 
-    @GetMapping
-    public ResponseEntity<BfResponse<?>> getMemberReservations(
+    @GetMapping("/done")
+    public ResponseEntity<BfResponse<?>> getMemberDoneReservations(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(name = "cursorId", required = true) Long cursorId,
             @RequestParam(name = "size", required = true) Integer size) {
         return ResponseEntity.ok(
                 new BfResponse<>(reservationHistoryService.getMemberDoneReservations(userDetails, cursorId, size)));
+    }
+
+    @GetMapping("/proceeding")
+    public ResponseEntity<BfResponse<?>> getMemberProceedingReservations(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(
+                new BfResponse<>(reservationHistoryService.getMemberProceedingReservation(userDetails)));
     }
 
 }

@@ -3,7 +3,7 @@ package com.backtothefuture.store.dto.response;
 
 import java.time.LocalDateTime;
 
-public record DoneReservationPagingResponseDto(
+public record ReservationListResponseDto(
         String storeImg, // 가게 이미지
         String name, // 가게 이름
         Long reservationId,
