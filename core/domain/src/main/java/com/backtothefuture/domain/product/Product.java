@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
@@ -66,11 +65,15 @@ public class Product extends MutableBaseEntity {
     }
 
     public int updateStockWhenReserve(int stockQuantity) {
-        this.stockQuantity-=stockQuantity;
+        this.stockQuantity -= stockQuantity;
         return stockQuantity * price; // 상품에 대한 총 주문 금액 반환
     }
 
     public void updateStockWhenCancel(int stockQuantity) {
-        this.stockQuantity+=stockQuantity;
+        this.stockQuantity += stockQuantity;
+    }
+
+    public void setThumbnailUrl(String url) {
+        this.thumbnail = url;
     }
 }

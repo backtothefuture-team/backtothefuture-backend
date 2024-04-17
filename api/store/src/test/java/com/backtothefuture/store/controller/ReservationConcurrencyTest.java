@@ -1,5 +1,7 @@
 package com.backtothefuture.store.controller;
 
+import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.domain.member.enums.StatusType;
@@ -10,6 +12,7 @@ import com.backtothefuture.domain.reservation.enums.TimeType;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.infra.config.S3Config;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.request.ReservationRequestItemDto;
 import com.backtothefuture.store.exception.ProductException;
@@ -26,7 +29,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+
 import static com.backtothefuture.domain.common.enums.ProductErrorCode.NOT_FOUND_PRODUCT_ID;
 
 @SpringBootTest
@@ -43,6 +48,16 @@ public class ReservationConcurrencyTest extends BfTestConfig {
     @Autowired
     private ProductRepository productRepository;
 
+    // 임시 s3 관련 mockbean 설정..
+    @MockBean
+    private S3Util s3Util;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private S3AsyncUtil s3AsyncUtil;
+
     @Test
     @DisplayName("구매자 예약 동시성 테스트")
     void ReservationConcurrencyTest() throws InterruptedException {
@@ -53,6 +68,7 @@ public class ReservationConcurrencyTest extends BfTestConfig {
                 .email("leesangmin@naver.com")
                 .status(StatusType.ACTIVE)
                 .provider(null)
+                .profile("")
                 .roles(RolesType.ROLE_USER)
                 .build();
         memberRepository.save(customer1);
@@ -63,6 +79,7 @@ public class ReservationConcurrencyTest extends BfTestConfig {
                 .email("email3@naver.com")
                 .status(StatusType.ACTIVE)
                 .provider(null)
+                .profile("")
                 .roles(RolesType.ROLE_STORE_OWNER)
                 .build();
         memberRepository.save(owner);

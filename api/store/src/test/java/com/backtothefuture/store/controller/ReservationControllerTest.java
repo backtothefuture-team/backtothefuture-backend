@@ -1,7 +1,9 @@
 package com.backtothefuture.store.controller;
 
-import com.backtothefuture.domain.reservation.enums.TimeType;
+import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
+import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.infra.config.BfTestConfig;
+import com.backtothefuture.infra.config.S3Config;
 import com.backtothefuture.store.dto.response.ReservationResponseDto;
 import com.backtothefuture.security.annotation.WithMockCustomUser;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
@@ -57,6 +59,16 @@ class ReservationControllerTest extends BfTestConfig {
     @Autowired
     private ObjectMapper objectMapper;
 
+    // 임시 s3 관련 mockbean 설정..
+    @MockBean
+    private S3Util s3Util;
+
+    @MockBean
+    private S3Config s3Config;
+
+    @MockBean
+    private S3AsyncUtil s3AsyncUtil;
+
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext,
                RestDocumentationContextProvider restDocumentation) {
@@ -78,8 +90,7 @@ class ReservationControllerTest extends BfTestConfig {
                 .storeId(storeId)
                 .orderRequestItems(List.of(new ReservationRequestItemDto(product1Id, 1),
                         new ReservationRequestItemDto(product2Id, 1)))
-                .reservationTime(LocalTime.of(01, 00))
-                .timeType(TimeType.PM)
+                .reservationTime(LocalTime.of(12, 00))
                 .build();
 
         // TODO: 아래 코드가 테스트의 효과가 있는지 궁금합니다!
@@ -105,9 +116,7 @@ class ReservationControllerTest extends BfTestConfig {
                                         fieldWithPath("orderRequestItems[].quantity").type(SimpleType.NUMBER)
                                                 .description("주문한 수량 값입니다."),
                                         fieldWithPath("reservationTime").type(SimpleType.STRING)
-                                                .description("예약 시간입니다. 'HH:mm' 형태입니다."),
-                                        fieldWithPath("timeType").type(SimpleType.STRING)
-                                                .description("시간 종류 타입입니다. AM 또는 PM 입니다.")
+                                                .description("예약 시간입니다. 'HH:mm' 형태입니다.")
                                 )
                                 .requestSchema(Schema.schema("[request] make-reservation"))
                                 .responseFields(
