@@ -1,27 +1,22 @@
 package com.backtothefuture.event.controller;
 
+import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
+
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
+import com.backtothefuture.event.dto.response.CertificateMailResponseDto;
 import com.backtothefuture.event.service.CertificateService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Map;
-
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,30 +42,23 @@ public class CertificateController {
 //    }
 
     @PostMapping("/email")
-    public ResponseEntity<BfResponse<?>> sendCertificateMail(
+    public ResponseEntity<BfResponse<CertificateMailResponseDto>> sendCertificateMail(
             @Valid @RequestBody MailCertificateRequestDto mailCertificateRequestDto
     ) {
-        int mailExp = certificationService.sendEmailCertificateNumber(mailCertificateRequestDto);
+        CertificateMailResponseDto responseDto = certificationService.sendEmailCertificateNumber(
+                mailCertificateRequestDto);
 
         return ResponseEntity.ok()
-                .body(new BfResponse<>(SUCCESS, Map.of("mail_expiration_seconds", mailExp)));
+                .body(new BfResponse<>(SUCCESS, responseDto));
     }
 
-    // TODO: html 버튼, form 전송으로 변경할것
     @GetMapping("/email")
-    public ModelAndView verifyCertificateMail(
+    public ResponseEntity<BfResponse<?>> verifyMailCertificationNumber(
             @RequestParam String email,
             @RequestParam String certificationNumber
     ) {
-        certificationService.verifyCertificateEmailNumber(email, certificationNumber);
-        // 인증 성공 시 성공 페이지를 반환
-        ModelAndView successModelAndView = new ModelAndView("mail/verify-success");
-        return successModelAndView;
-    }
-
-    @GetMapping("/email/{email}/status")
-    public ResponseEntity<BfResponse<?>> checkCertificateEmailStatus(@PathVariable String email) {
+        boolean isValid = certificationService.verifyCertificateEmailNumber(email, certificationNumber);
         return ResponseEntity.ok()
-                .body(new BfResponse<>(SUCCESS, Map.of("is_certificated", certificationService.getCertificateEmailStatus(email))));
+                .body(new BfResponse<>(SUCCESS, Map.of("isValid", isValid)));
     }
 }

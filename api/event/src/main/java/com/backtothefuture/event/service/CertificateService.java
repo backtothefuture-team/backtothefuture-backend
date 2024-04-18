@@ -4,16 +4,14 @@ import com.backtothefuture.domain.common.enums.CertificateErrorCode;
 import com.backtothefuture.domain.common.repository.RedisRepository;
 import com.backtothefuture.domain.common.util.RandomNumUtil;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
+import com.backtothefuture.event.dto.response.CertificateMailResponseDto;
 import com.backtothefuture.event.exception.CertificateException;
 import com.backtothefuture.event.exception.VerifyMailFailException;
 import jakarta.mail.MessagingException;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 
 @Slf4j
 @Service
@@ -25,9 +23,6 @@ public class CertificateService {
     private final RedisRepository redisRepository;
 
     private final MailService mailService;
-
-    @Value("${spring.certification.mail.baseurl}")
-    private String baseUrl;
 
 //    public String getCertificateNumber(String phoneNumber) {
 //        String parsePhoneNum = parsePhoneNumber(phoneNumber); // 전화번호 parse
@@ -62,20 +57,22 @@ public class CertificateService {
                 phoneNumber).equals(certificationNumber));
     }
 
-    public int sendEmailCertificateNumber(MailCertificateRequestDto mailCertificateRequestDto) {
+    private boolean validateCertificationEmailNumber(String email, String certificationNumber) {
+        // 해당 key의 value 값이 존재 하는지 + 인증 번호가 일치 하는지
+        return (redisRepository.hashEmailKey(email) && redisRepository.getCertificationEmailNumber(
+                email).equals(certificationNumber));
+    }
+
+    public CertificateMailResponseDto sendEmailCertificateNumber(MailCertificateRequestDto mailCertificateRequestDto) {
         String email = mailCertificateRequestDto.email();
 
         // 랜덤 번호 발급
         String randomNumber = RandomNumUtil.createRandomNum(6); // 6자리 임의의 숫자 생성
 
-        // 인증 url 설정
-        String certificateUrl = String.format("%s?certificationNumber=%s&email=%s",
-                getServerUrl(), randomNumber, email);
-
         // 메일 내용 설정
-        HashMap<String, String> content = getCertificationMailContent(certificateUrl);
+        HashMap<String, String> content = getCertificationMailContent(randomNumber);
 
-        // 메일 전송
+        // 메일 전송 (비동기)
         try {
             mailService.sendMail(email, content);
         } catch (MessagingException e) {
@@ -85,33 +82,23 @@ public class CertificateService {
         // 임시 발급 번호 redis에 저장
         redisRepository.saveCertificationEmailNumber(email, randomNumber);
 
-        return redisRepository.getMailExp();
+        CertificateMailResponseDto response = CertificateMailResponseDto.builder()
+                .mailExpirationSeconds(redisRepository.getMailExp())
+                .certificationNumber(randomNumber)
+                .build();
+
+        return response;
     }
 
-    public void verifyCertificateEmailNumber(String email, String certificationNumber) {
+    public boolean verifyCertificateEmailNumber(String email, String certificationNumber) {
         // 유효 번호 검증
-        if (!validateCertificationNumber(email, certificationNumber))
-            throw new VerifyMailFailException(CertificateErrorCode.INVALID_CERTIFCATE_NUMBER);
-
-        // 임시 인증 번호 삭제
-        redisRepository.deleteCertificationNumber(email);
-
-        // 검증 여부 저장
-        redisRepository.setMailCertificationFlag(email);
+        return validateCertificationEmailNumber(email, certificationNumber);
     }
 
-    public boolean getCertificateEmailStatus(String email) {
-        return redisRepository.getMailCertificationFlag(email);
-    }
-
-    public HashMap<String, String> getCertificationMailContent(String certificateUrl) {
-        return new HashMap<>(){{
+    public HashMap<String, String> getCertificationMailContent(String certificateNumber) {
+        return new HashMap<>() {{
             put("subject", "메일 제목");
-            put("text", "메일 내용, 인증 url = " + certificateUrl);
+            put("text", "인증코드 = " + certificateNumber);
         }};
-    }
-
-    public String getServerUrl() {
-        return baseUrl + "/certificate/email";
     }
 }
