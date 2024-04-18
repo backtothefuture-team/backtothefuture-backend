@@ -11,7 +11,6 @@ CREATE TABLE member
     name         varchar(255),
     password     varchar(255),
     phone_number varchar(255) UNIQUE,
-    profile      varchar(255),
     status       varchar(255),
     provider     varchar(255),
     roles        varchar(255),
@@ -24,20 +23,22 @@ CREATE TABLE member
 
 CREATE TABLE store
 (
-    store_id    bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name        varchar(255),
-    description TEXT,
-    location    varchar(255),
-    contact     varchar(255),
-    image       varchar(255),
-    member_id   bigint NOT NULL,
-    updated_at  datetime(6),
-    updated_by  varchar(255),
-    created_at  datetime(6),
-    created_by  varchar(255),
-    start_time  time,
-    end_time    time,
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
+    store_id     bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name         varchar(255),
+    description  TEXT,
+    location     varchar(255),
+    contact      varchar(255),
+    image        varchar(255),
+    member_id    bigint NOT NULL,
+    updated_at   datetime(6),
+    updated_by   varchar(255),
+    created_at   datetime(6),
+    created_by   varchar(255),
+    rating       double,
+    rating_count int,
+    start_time   time,
+    end_time     time,
+    FOREIGN KEY  (member_id) REFERENCES member (member_id)
 );
 
 CREATE TABLE product
@@ -85,6 +86,7 @@ CREATE TABLE reservation_product
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
+
 CREATE TABLE reservation_status_history
 (
     id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -92,12 +94,20 @@ CREATE TABLE reservation_status_history
     order_type varchar(255),
     event_time time,
     FOREIGN KEY (reservation_id) REFERENCES reservation (reservation_id)
+ );
+
+CREATE TABLE IF NOT EXISTS review (
+    review_id       VARCHAR(255)    NOT NULL,
+    member_id       VARCHAR(255)    NOT NULL,
+    store_id        VARCHAR(255)    NOT NULL,
+    star            VARCHAR(255)    NULL,
+    content         VARCHAR(255)    NULL
+
 );
 
-INSERT INTO member (member_id, auth_id, email, name, password, phone_number, profile, status, provider, roles,
-                    updated_at,
+INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)
-VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', '', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
+VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
         null,
         null, null);
 
@@ -109,3 +119,4 @@ INSERT INTO product (product_id, name, description, price, stock_quantity, thumb
                      created_at, created_by)
 VALUES (1, 'test', 'test', 1000, 10, null, 1, null, null, null, null),
        (2, 'test', 'test', 2000, 10, null, 1, null, null, null, null);
+
