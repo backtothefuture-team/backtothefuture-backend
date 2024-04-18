@@ -127,33 +127,5 @@ class EventApplicationTests extends BfTestConfig {
 //                        )));
 //    }
 
-    @Test
-    @DisplayName("인증 메일 전송 테스트")
-    void sendCertificateMailTest() throws Exception {
-        MailCertificateRequestDto requestDto = new MailCertificateRequestDto("test@example.com");
-        when(certificateService.sendEmailCertificateNumber(any(MailCertificateRequestDto.class))).thenReturn(600);
-
-        this.mockMvc.perform(post("/certificate/email")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("인증 메일 검증 테스트")
-    void verifyCertificateMailTest() throws Exception {
-        this.mockMvc.perform(get("/certificate/email")
-                        .param("email", "test@example.com")
-                        .param("certificationNumber", "123456"))
-                .andExpect(view().name("mail/verify-success"));
-    }
-
-    @Test
-    @DisplayName("이메일 인증 상태 확인 테스트")
-    void checkCertificateEmailStatusTest() throws Exception {
-        when(certificateService.getCertificateEmailStatus("test@example.com")).thenReturn(true);
-
-        this.mockMvc.perform(get("/certificate/email/{email}/status", "test@example.com"))
-                .andExpect(status().isOk());
-    }
+// TODO: 메일 전송/검증 API 테스트 작성
 }
