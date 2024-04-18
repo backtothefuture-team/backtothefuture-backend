@@ -6,7 +6,6 @@ import com.backtothefuture.domain.common.util.RandomNumUtil;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
 import com.backtothefuture.event.dto.response.CertificateMailResponseDto;
 import com.backtothefuture.event.exception.CertificateException;
-import com.backtothefuture.event.exception.VerifyMailFailException;
 import jakarta.mail.MessagingException;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
