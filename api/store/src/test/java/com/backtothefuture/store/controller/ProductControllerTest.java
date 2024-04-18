@@ -1,17 +1,19 @@
 package com.backtothefuture.store.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
 import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.infra.config.S3Config;
-import com.backtothefuture.store.dto.request.ProductRegisterDto;
-import com.backtothefuture.store.dto.request.ProductUpdateDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.service.ProductService;
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import com.epages.restdocs.apispec.Schema;
-import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,25 +21,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.List;
-
-import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.epages.restdocs.apispec.ResourceDocumentation.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest
@@ -82,33 +71,7 @@ class ProductControllerTest extends BfTestConfig {
         // when & then
         this.mockMvc.perform(get("/stores/{storeId}/products/{productId}", storeId, productId)
                         .header("Authorization", "Bearer ${JWT Token}"))
-                .andExpect(status().isOk())
-                .andDo(document("get-product-by-store",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("상품 단건 조회 API입니다.")
-                                .tags("products")
-                                .summary("상품 단건 조회 API")
-                                .pathParameters(
-                                        parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID"),
-                                        parameterWithName("productId").type(SimpleType.NUMBER).description("상품 ID")
-                                )
-                                .responseFields(
-                                        fieldWithPath("code").type(SimpleType.NUMBER)
-                                                .description("HttpStatusCode 입니다."),
-                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
-                                        fieldWithPath("data.product.id").type(SimpleType.NUMBER).description("상품 ID"),
-                                        fieldWithPath("data.product.name").type(SimpleType.STRING).description("상품 이름"),
-                                        fieldWithPath("data.product.description").type(SimpleType.STRING)
-                                                .description("상품 설명"),
-                                        fieldWithPath("data.product.price").type(SimpleType.NUMBER)
-                                                .description("상품 가격"),
-                                        fieldWithPath("data.product.stockQuantity").type(SimpleType.NUMBER)
-                                                .description("재고 수량"),
-                                        fieldWithPath("data.product.thumbnail").type(SimpleType.STRING)
-                                                .description("썸네일 이미지 URL")
-                                )
-                                .responseSchema(Schema.schema("[response] get-product")).build()
-                        )));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -123,32 +86,7 @@ class ProductControllerTest extends BfTestConfig {
         // when & then
         this.mockMvc.perform(get("/products")
                         .header("Authorization", "Bearer ${JWT Token}"))
-                .andExpect(status().isOk())
-                .andDo(document("get-all-products",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("모든 상품 조회 API입니다.")
-                                .tags("products")
-                                .summary("모든 상품 조회 API")
-                                // response
-                                .responseFields(
-                                        fieldWithPath("code").type(SimpleType.NUMBER)
-                                                .description("HttpStatusCode 입니다."),
-                                        fieldWithPath("message").type(SimpleType.STRING).description("응답 메시지 입니다."),
-                                        fieldWithPath("data.products[].id").type(SimpleType.NUMBER)
-                                                .description("상품 ID"),
-                                        fieldWithPath("data.products[].name").type(SimpleType.STRING)
-                                                .description("상품 이름"),
-                                        fieldWithPath("data.products[].description").type(SimpleType.STRING)
-                                                .description("상품 설명"),
-                                        fieldWithPath("data.products[].price").type(SimpleType.NUMBER)
-                                                .description("상품 가격"),
-                                        fieldWithPath("data.products[].stockQuantity").type(SimpleType.NUMBER)
-                                                .description("재고 수량"),
-                                        fieldWithPath("data.products[].thumbnail").type(SimpleType.STRING)
-                                                .description("썸네일 이미지 URL")
-                                )
-                                .responseSchema(Schema.schema("[response] get-all-products")).build()
-                        )));
+                .andExpect(status().isOk());
     }
 
 //    @Test
@@ -273,24 +211,6 @@ class ProductControllerTest extends BfTestConfig {
     void deleteProductTest() throws Exception {
         this.mockMvc.perform(delete("/stores/{storeId}/products/{productId}", 1, 1)
                         .header("Authorization", "Bearer ${JWT Token}"))
-                .andExpect(status().isNoContent())
-                .andDo(document("delete-product",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("상품 삭제 API 입니다.")
-                                .tags("products")
-                                .summary("상품 삭제 API")
-                                // request
-                                .requestHeaders(
-                                        headerWithName("Authorization").type(SimpleType.STRING)
-                                                .description("JWT 인증 토큰. 'Bearer ${Jwt Token}' 형식으로 입력해 주세요.")
-                                )
-                                .pathParameters(
-                                        parameterWithName("storeId").type(SimpleType.NUMBER).description("가게 ID"),
-                                        parameterWithName("productId").type(SimpleType.NUMBER).description("상품 ID")
-                                )
-                                .requestSchema(Schema.schema("[request] product-delete"))
-                                // no response
-                                .responseSchema(Schema.schema("[response] product-delete")).build()
-                        )));
+                .andExpect(status().isNoContent());
     }
 }
