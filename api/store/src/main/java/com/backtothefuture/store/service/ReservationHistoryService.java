@@ -6,9 +6,10 @@ import com.backtothefuture.domain.product.Product;
 import com.backtothefuture.domain.reservation.enums.OrderType;
 import com.backtothefuture.domain.reservation.repository.ReservationStatusHistoryRepository;
 import com.backtothefuture.security.service.UserDetailsImpl;
+import com.backtothefuture.store.dto.response.MemberDoneReservationResponseDto;
 import com.backtothefuture.store.dto.response.MemberProgressReservationResponseDto;
 import com.backtothefuture.store.dto.response.ReservationListResponseDto;
-import com.backtothefuture.store.dto.response.MemberDoneReservationResponseDto;
+import com.backtothefuture.store.dto.response.MemberDoneReservationListDto;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.repository.ReservationPagingRepository;
 import java.util.ArrayList;
@@ -36,11 +37,11 @@ public class ReservationHistoryService {
     private final String PRODUCT_NAME = "productName";
 
     @Transactional(readOnly = true)
-    public List<MemberDoneReservationResponseDto> getMemberDoneReservations(UserDetailsImpl userDetails, Long cursorId,
-                                                                            Integer size) {
+    public MemberDoneReservationResponseDto getMemberDoneReservations(UserDetailsImpl userDetails, Long cursorId,
+                                                                      Integer size) {
 
         boolean isLast = true; // 추가 데이터가 존재하는지 조회
-        List<MemberDoneReservationResponseDto> response = new ArrayList<>();
+        List<MemberDoneReservationListDto> response = new ArrayList<>();
 
         // 픽업 완료된 과거 주문 내역 Pagination
         Slice<ReservationListResponseDto> memberProceedingReservations = reservationPagingRepository.getMemberReservations(
@@ -53,7 +54,7 @@ public class ReservationHistoryService {
 
             memberProceedingReservations.getContent()
                     .forEach(dto -> {
-                        response.add(MemberDoneReservationResponseDto.builder()
+                        response.add(MemberDoneReservationListDto.builder()
                                 .storeImg(dto.storeImg())
                                 .name(dto.name())
                                 .reservationId(dto.reservationId())
@@ -69,7 +70,7 @@ public class ReservationHistoryService {
                     });
 
         }
-        return response;
+        return new MemberDoneReservationResponseDto(response, isLast);
     }
 
     @Transactional(readOnly = true)

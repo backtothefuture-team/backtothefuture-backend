@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +35,6 @@ public class ReservationStatusHistory {
     @Enumerated(EnumType.STRING)
     OrderType orderType;
 
-    @DateTimeFormat(pattern = "HH:mm")
-    LocalTime eventTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
+    LocalDateTime eventTime;
 }

@@ -4,7 +4,6 @@ import com.backtothefuture.domain.reservation.Reservation;
 import com.backtothefuture.domain.reservation.ReservationProduct;
 import com.backtothefuture.domain.reservation.ReservationStatusHistory;
 import com.backtothefuture.domain.reservation.enums.OrderType;
-import com.backtothefuture.domain.reservation.enums.TimeType;
 import com.backtothefuture.domain.reservation.repository.ReservationStatusHistoryRepository;
 import com.backtothefuture.store.dto.response.ReservationResponseDto;
 import com.backtothefuture.store.repository.CustomReservationRepository;
@@ -22,7 +21,6 @@ import com.backtothefuture.store.exception.MemberException;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.exception.ProductException;
 import com.backtothefuture.store.exception.StoreException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,19 +58,23 @@ public class ReservationService {
         Store store = storeRepository.findById(dto.storeId())  // 주문하고자 하는 가게 조회
                 .orElseThrow(() -> new StoreException(NOT_FOUND_STORE_ID));
 
-        if (!validateReservationTime(dto.timeType(), dto.reservationTime(), store.getEndTime())) // 영업 종료 30분 이전인지 판단
+        if (!validateReservationTime(dto.reservationTime(), store.getEndTime())) // 영업 종료 30분 이전인지 판단
         {
             throw new ReservationException(NOT_VALID_RESERVATION_TIME);
         }
 
-        Reservation reservation = reservationEntityFromDto(store, member, dto);  // 시간 변환
+        Reservation reservation = Reservation.builder()
+                .store(store)
+                .member(member)
+                .reservationTime(dto.reservationTime())
+                .build();
         reservationRepository.save(reservation);
 
         reservationStatusHistoryRepository.save(     // 주문 상태 이력 생성
                 ReservationStatusHistory.builder()
                         .reservation(reservation)
                         .orderType(OrderType.REGISTRATION)
-                        .eventTime(LocalTime.now().withSecond(0).withNano(0)) // 분까지만 데이터를 저장하고 나머지는 0으로 초기화
+                        .eventTime(LocalDateTime.now()) // 예약 접수 기간 초기화 ( 예약 시간 x )
                         .build());
 
         updateStock(dto, reservation);  // 재고 차감
@@ -141,29 +143,9 @@ public class ReservationService {
         });
     }
 
-    private boolean validateReservationTime(TimeType timeType, LocalTime reservationTime, LocalTime endTime) {
-        if (timeType == TimeType.PM) {
-            reservationTime = reservationTime.plusHours(12);
-        }
-        return reservationTime.plusMinutes(30).isBefore(endTime); // 예약 시간이 영업 종료 30분 이전인지 판단
-    }
-
-    private Reservation reservationEntityFromDto(Store store, Member member, ReservationRequestDto dto) {
-        if (dto.timeType() == TimeType.PM) {  // 7PM >> 19:00로 변환
-            return Reservation.builder()
-                    .store(store)
-                    .member(member)
-                    .totalPrice(0)
-                    .reservationTime(LocalDateTime.of(LocalDate.now(), dto.reservationTime().plusHours(12)))
-                    .build();
-        } else {   // 7AM >> 07:00 그대로 입력
-            return Reservation.builder()
-                    .store(store)
-                    .member(member)
-                    .totalPrice(0)
-                    .reservationTime(LocalDateTime.of(LocalDate.now(), dto.reservationTime().plusHours(12)))
-                    .build();
-        }
+    private boolean validateReservationTime(LocalDateTime reservationTime, LocalTime endTime) {
+        LocalTime time = LocalTime.of(reservationTime.getHour(), reservationTime.getMinute());
+        return time.plusMinutes(30).isBefore(endTime); // 예약 시간이 영업 종료 30분 이전인지 판단
     }
 
 }
