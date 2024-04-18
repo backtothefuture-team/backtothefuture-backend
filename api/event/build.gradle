@@ -1,7 +1,3 @@
-plugins {
-    id 'com.epages.restdocs-api-spec' version '0.19.1'
-}
-
 // 실행가능한 jar로 생성하는 옵션, main이 없는 라이브러리에서는 false로 비활성화함
 // 스프링 부트 2.0 이상이라면 bootRepackage.enabled를 사용해야 함
 bootJar { enabled = true }
@@ -29,13 +25,7 @@ dependencies {
 
     // timeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-}
 
-openapi3 {
-    server = 'http://localhost:8084/v1'
-    title = 'Bag To the Future'
-    description = 'API Documentation'
-    version = '0.1.0'
-    outputFileNamePrefix = 'event-openapi'
-    format = 'yaml'
+    // springdoc
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 }

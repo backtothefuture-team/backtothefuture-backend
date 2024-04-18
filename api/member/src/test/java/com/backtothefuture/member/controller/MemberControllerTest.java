@@ -1,15 +1,12 @@
 package com.backtothefuture.member.controller;
 
 
-import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
@@ -28,9 +25,6 @@ import com.backtothefuture.member.service.MemberBusinessService;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
 import com.backtothefuture.security.annotation.WithMockCustomUser;
-import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import com.epages.restdocs.apispec.Schema;
-import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +38,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -144,29 +137,7 @@ class MemberControllerTest extends BfTestConfig {
         this.mockMvc.perform(post("/member/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginMap)))
-                .andExpect(status().isOk())
-                .andDo(document("login-member",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("일반 로그인 API 입니다.")
-                                .tags("member")
-                                .summary("일반 로그인 API")
-                                // request
-                                .requestFields(
-                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
-                                )
-                                .requestSchema(Schema.schema("[request] member-login"))
-                                // response
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
-                                                .description("Access Token"),
-                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
-                                                .description("Refresh Token")
-                                )
-                                .responseSchema(Schema.schema("[response] member-login")).build()
-                        )));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -189,40 +160,7 @@ class MemberControllerTest extends BfTestConfig {
         this.mockMvc.perform(post("/member/login/oauth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(oauthLoginDto)))
-                .andExpect(status().isOk())
-                .andDo(document("oauth-login",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("소셜 로그인 API 입니다.")
-                                .tag("member")
-                                .summary("소셜 로그인 API")
-                                //request
-                                .requestFields(
-                                        fieldWithPath("authorizationCode").type(JsonFieldType.STRING)
-                                                .description("Authorization Server에서 받은 인증 코드입니다."),
-                                        fieldWithPath("providerType").type(JsonFieldType.STRING)
-                                                .description(
-                                                        "어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"),
-                                        fieldWithPath("rolesType").type(JsonFieldType.STRING)
-                                                .description(
-                                                        "유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원 : ROLE_STORE_OWNER )"),
-                                        fieldWithPath("state").type(JsonFieldType.STRING).optional()
-                                                .description(
-                                                        "네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO 로그인 시 null )"),
-                                        fieldWithPath("token").type(JsonFieldType.STRING).optional()
-                                                .description("소셜 인증 서버에서 발급받은 접근 토큰 값입니다.")
-                                )
-                                .requestSchema(Schema.schema("OAuthLoginDto"))
-                                //response
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
-                                                .description("Access Token"),
-                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
-                                                .description("Refresh Token")
-                                )
-                                .responseSchema(Schema.schema("LoginTokenDto")).build()
-                        )));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -238,25 +176,7 @@ class MemberControllerTest extends BfTestConfig {
         this.mockMvc.perform(post("/member/refresh").header("Authorization", "Bearer ${JWT Token}")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(oldToken)))
-                .andExpect(status().isOk())
-                .andDo(document("refresh-access-and-refresh-token",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("refresh token을 이용하여 access,refresh token 갱신하는  API입니다.")
-                                .tags("member")
-                                .summary("토큰 갱신 API")
-                                .requestFields(
-                                        fieldWithPath("refreshToken").type(SimpleType.STRING)
-                                                .description("refresh token 값입니다.")
-                                )
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING)
-                                                .description("갱신된 Access Token"),
-                                        fieldWithPath("data.refreshToken").type(JsonFieldType.STRING)
-                                                .description("갱신된 Refresh Token")
-                                ).build()
-                        )));
+                .andExpect(status().isOk());
     }
 
     @DisplayName("사업자 정보 유효성 검증 테스트")
@@ -280,36 +200,7 @@ class MemberControllerTest extends BfTestConfig {
         this.mockMvc.perform(post("/member/business/validate-info")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(businessInfoValidateRequestDto)))
-                .andExpect(status().isOk())
-                .andDo(document("validate-business-info",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("사업자 정보 유효성 검증 API입니다. (지금은 사용하지 않습니다.)")
-                                .tags("business")
-                                .summary("사업자 정보 유효성 검증")
-                                // request
-                                .requestFields(
-                                        fieldWithPath("businessNumber").type(JsonFieldType.STRING).description("사업자번호"),
-                                        fieldWithPath("startDate").type(JsonFieldType.STRING).description("개업일자"),
-                                        fieldWithPath("name").type(JsonFieldType.STRING).description("대표자 성명"),
-                                        fieldWithPath("name2").type(JsonFieldType.STRING).optional()
-                                                .description("대표자 성명2"),
-                                        fieldWithPath("businessName").type(JsonFieldType.STRING).description("상호"),
-                                        fieldWithPath("corporationNumber").type(JsonFieldType.STRING).optional()
-                                                .description("법인등록번호"),
-                                        fieldWithPath("businessSector").type(JsonFieldType.STRING).description("주업태명"),
-                                        fieldWithPath("businessType").type(JsonFieldType.STRING).description("주종목명"),
-                                        fieldWithPath("businessAddress").type(JsonFieldType.STRING).description("사업장주소")
-                                )
-                                .requestSchema(Schema.schema("[request] validate-business-info"))
-                                // response
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.isValid").type(JsonFieldType.BOOLEAN)
-                                                .description("유효성 검사 결과")
-                                )
-                                .responseSchema(Schema.schema("[response] validate-business-info"))
-                                .build())));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -324,27 +215,6 @@ class MemberControllerTest extends BfTestConfig {
         this.mockMvc.perform(post("/member/business/validate-status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestbody)))
-                .andExpect(status().isOk())
-                .andDo(document("business-number-status",
-                        resource(ResourceSnippetParameters.builder()
-                                .description("사업자 번호 상태 검증 API입니다.")
-                                .tags("business")
-                                .summary("사업자 번호 상태 검증")
-                                // request
-                                .requestFields(
-                                        fieldWithPath("businessNumber").type(JsonFieldType.STRING).description("사업자번호")
-                                )
-                                .requestSchema(Schema.schema("[request] business-number-status"))
-                                // response
-                                .responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                        fieldWithPath("data.isValid").type(JsonFieldType.BOOLEAN)
-                                                .description("상태 검증 결과")
-                                )
-                                .responseSchema(Schema.schema("[response] business-number-status"))
-                                .build())));
+                .andExpect(status().isOk());
     }
-
-
 }
