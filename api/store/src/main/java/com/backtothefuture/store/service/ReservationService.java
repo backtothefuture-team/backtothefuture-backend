@@ -2,6 +2,9 @@ package com.backtothefuture.store.service;
 
 import com.backtothefuture.domain.reservation.Reservation;
 import com.backtothefuture.domain.reservation.ReservationProduct;
+import com.backtothefuture.domain.reservation.ReservationStatusHistory;
+import com.backtothefuture.domain.reservation.enums.OrderType;
+import com.backtothefuture.domain.reservation.repository.ReservationStatusHistoryRepository;
 import com.backtothefuture.store.dto.response.ReservationResponseDto;
 import com.backtothefuture.store.repository.CustomReservationRepository;
 import com.backtothefuture.domain.reservation.repository.ReservationProductRepository;
@@ -18,6 +21,7 @@ import com.backtothefuture.store.exception.MemberException;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.exception.ProductException;
 import com.backtothefuture.store.exception.StoreException;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,50 +42,52 @@ import static com.backtothefuture.domain.common.enums.StoreErrorCode.NOT_FOUND_S
 public class ReservationService {
 
     private final ProductRepository productRepository;
-
     private final ReservationRepository reservationRepository;
-
     private final ReservationProductRepository reservationProductRepository;
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
-
     private final CustomReservationRepository customReservationRepository;
+    private final ReservationStatusHistoryRepository reservationStatusHistoryRepository;
 
     @Transactional
     public Long makeReservation(Long memberId, ReservationRequestDto dto) {
 
         Member member = memberRepository.findById(memberId)  // 현재 회원 조회
-            .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
+                .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
 
         Store store = storeRepository.findById(dto.storeId())  // 주문하고자 하는 가게 조회
-            .orElseThrow(() -> new StoreException(NOT_FOUND_STORE_ID));
+                .orElseThrow(() -> new StoreException(NOT_FOUND_STORE_ID));
 
-        if (!validateReservationTime(dto.reservationTime(),
-            store.getEndTime())) // 영업 종료 30분 이전인지 판단
+        if (!validateReservationTime(dto.reservationTime(), store.getEndTime())) // 영업 종료 30분 이전인지 판단
         {
             throw new ReservationException(NOT_VALID_RESERVATION_TIME);
         }
 
         Reservation reservation = Reservation.builder()
-            .store(store)
-            .member(member)
-            .totalPrice(0)
-            .reservationTime(dto.reservationTime())
-            .build();
-
+                .store(store)
+                .member(member)
+                .reservationTime(dto.reservationTime())
+                .build();
         reservationRepository.save(reservation);
 
-        updateStock(dto, reservation);
+        reservationStatusHistoryRepository.save(     // 주문 상태 이력 생성
+                ReservationStatusHistory.builder()
+                        .reservation(reservation)
+                        .orderType(OrderType.REGISTRATION)
+                        .eventTime(LocalDateTime.now()) // 예약 접수 기간 초기화 ( 예약 시간 x )
+                        .build());
+
+        updateStock(dto, reservation);  // 재고 차감
 
         return reservation.getId();
     }
 
     @Transactional(readOnly = true)
     public List<ReservationResponseDto> getReservation(UserDetailsImpl userDetails,
-        Long reservationId) {
+                                                       Long reservationId) {
         //TODO: memberId 비교해서 권한 체크
         List<ReservationResponseDto> reservationResponseDto =
-            customReservationRepository.getReservation(userDetails.getId(), reservationId);
+                customReservationRepository.getReservation(userDetails.getId(), reservationId);
 
         reservationResponseDto.forEach(ReservationResponseDto::calculateTotalPrice);
 
@@ -92,7 +98,7 @@ public class ReservationService {
     public void cancelReservation(UserDetailsImpl userDetails, Long reservationId) {
         //TODO: memberId 비교해서 권한 체크
         List<ReservationProduct> reservationProducts = reservationProductRepository.findAllByReservation(
-            reservationId);
+                reservationId);
 
         if (reservationProducts.size() == 0) {
             throw new ReservationException(NOT_FOUND_RESERVATION_PRODUCT);
@@ -100,7 +106,7 @@ public class ReservationService {
 
         reservationProducts.forEach((reservationProduct) -> {
             Product product = productRepository.findById(reservationProduct.getProduct().getId())
-                .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
+                    .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
             product.updateStockWhenCancel(reservationProduct.getQuantity()); // 취소된 상품에 대해서 재고 증가
             reservationProductRepository.delete(reservationProduct); // 주문 상품 엔티티 삭제
         });
@@ -116,8 +122,8 @@ public class ReservationService {
         dto.orderRequestItems().forEach(itemDto -> {
 
             Product product = productRepository.findProductWithPessimisticLockById(
-                    itemDto.productId())  // 주문하고자 하는 상품 조회
-                .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
+                            itemDto.productId())  // 주문하고자 하는 상품 조회
+                    .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
 
             if (product.getStockQuantity() < itemDto.quantity())  // 재고가 부족하면 예외 처리
             {
@@ -125,20 +131,21 @@ public class ReservationService {
             }
 
             int price = product.updateStockWhenReserve(
-                itemDto.quantity()); // 재고 차감하고 상품에 대한 주문 금액 반환
+                    itemDto.quantity()); // 재고 차감하고 상품에 대한 주문 금액 반환
             reservation.increaseTotalPrice(price); // 주문 금액 반영
 
             reservationProductRepository.save(
-                ReservationProduct.builder()
-                    .reservation(reservation)
-                    .product(product)
-                    .quantity(itemDto.quantity())
-                    .build());
+                    ReservationProduct.builder()
+                            .reservation(reservation)
+                            .product(product)
+                            .quantity(itemDto.quantity())
+                            .build());
         });
     }
 
-    private boolean validateReservationTime(LocalTime reservationTime, LocalTime endTime) {
-        return reservationTime.plusMinutes(30).isBefore(endTime); // 예약 시간이 영업 종료 30분 이전인지 판단
+    private boolean validateReservationTime(LocalDateTime reservationTime, LocalTime endTime) {
+        LocalTime time = LocalTime.of(reservationTime.getHour(), reservationTime.getMinute());
+        return time.plusMinutes(30).isBefore(endTime); // 예약 시간이 영업 종료 30분 이전인지 판단
     }
 
 }

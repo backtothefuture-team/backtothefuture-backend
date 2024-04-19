@@ -117,7 +117,7 @@ public class SpringSecurityConfig {
         List<RequestMatcher> requestMatchers = List.of(
                 antMatcher(POST, "/member/login"),            // 로그인
                 antMatcher(POST, "/member/register"),        // 회원가입
-                antMatcher(GET, "/stores/{storeId}/products/{productId}"),        // 상품 단건 조회 API
+                antMatcher(GET, "/store/{storeId}/products/{productId}"),        // 상품 단건 조회 API
                 antMatcher(GET, "/products"),                           // 상품 전체 조회 API
                 //    antMatcher(GET, "/certificate/message/**"), // 인증 번호 받기
                 //    antMatcher(POST, "/certificate/message"), // 인증 번호 검증
@@ -144,7 +144,11 @@ public class SpringSecurityConfig {
                 antMatcher(GET, "/reservations/**"), // 주문 조회
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
-                antMatcher(DELETE, "/reservations/**") // 주문 삭제
+                antMatcher(DELETE, "/reservations/**"), // 주문 삭제
+                antMatcher(GET,"/reservations/done"), // 고객 주문 완료 내역
+                antMatcher(GET,"/reservations/proceeding") // 고객 진행 중인 주문 내역
+
+
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);

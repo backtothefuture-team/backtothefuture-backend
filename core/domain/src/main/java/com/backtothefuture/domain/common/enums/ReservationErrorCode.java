@@ -9,7 +9,8 @@ public enum ReservationErrorCode implements BaseErrorCode {
 
     NOT_ENOUGH_STOCK_QUANTITY(400, "재고가 충분하지 않습니다.", HttpStatus.BAD_REQUEST),
     NOT_FOUND_RESERVATION_PRODUCT(400, "주문 id에 해당하는 주문 상품이 없습니다.", HttpStatus.BAD_REQUEST),
-    NOT_VALID_RESERVATION_TIME(400, "적절한 예약 시간이 아닙니다.", HttpStatus.BAD_REQUEST);
+    NOT_VALID_RESERVATION_TIME(400, "적절한 예약 시간이 아닙니다.", HttpStatus.BAD_REQUEST),
+    NOT_FOUND_PROCEEDING_RESERVATION(404, "진행 중인 주문내역이 없습니다.", HttpStatus.NOT_FOUND);
 
     private final int errorCode;
     private final String errorMessage;
