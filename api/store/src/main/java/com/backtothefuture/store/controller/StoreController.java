@@ -38,7 +38,7 @@ public class StoreController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Operation(summary = "새로운 가게 등록",
-            description = "가게 정보와 선택적 썸네일을 등록합니다. 썸네일은 'image/png', 'image/jpg' 형식을 지원합니다.",
+            description = "가게 정보와 이미지를 등록합니다. 이미지는 'image/png', 'image/jpg' 형식을 지원합니다.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "생성 성공",
                             content = @Content(schema = @Schema(implementation = BfResponse.class),
