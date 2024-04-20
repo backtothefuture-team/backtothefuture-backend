@@ -111,16 +111,20 @@ paths:
     get:
       tags:
       - product-controller
+      summary: 상품 정보 조회
+      description: 특정 가게의 특정 상품에 대한 자세한 정보를 조회합니다.
       operationId: getProduct
       parameters:
       - name: storeId
         in: path
+        description: 가게 ID
         required: true
         schema:
           type: integer
           format: int64
       - name: productId
         in: path
+        description: 상품 ID
         required: true
         schema:
           type: integer
@@ -131,34 +135,37 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseProductGetOneResponseDto'
+      security: []
     delete:
       tags:
       - product-controller
+      summary: 싱픔 삭제
       operationId: deleteProduct
       parameters:
       - name: storeId
         in: path
+        description: 가게 ID
         required: true
         schema:
           type: integer
           format: int64
       - name: productId
         in: path
+        description: 상품 ID
         required: true
         schema:
           type: integer
           format: int64
       responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/BfResponseObject'
+        "204":
+          description: 삭제 성공
     patch:
       tags:
       - product-controller
+      summary: 상품 부분 수정
+      description: "상품 정보를 부분적으로 수정합니다. 수정하지 않는 정보는 요청 정보에 포함하지 않습니다. 이미지는 'image/png',\
+        \ 'image/jpeg' 형식을 지원합니다."
       operationId: updateProduct
       parameters:
       - name: storeId
@@ -175,7 +182,7 @@ paths:
           format: int64
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               required:
               - request
@@ -190,9 +197,9 @@ paths:
         "200":
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseProductGetOneResponseDto'
   /reservations/{reservationId}:
     get:
       tags:
@@ -271,6 +278,8 @@ paths:
     get:
       tags:
       - product-controller
+      summary: 모든 상품 정보 조회
+      description: "모든 상품을 조회합니다. TODO: 정렬기준, pagenation 추가"
       operationId: getAllProducts
       responses:
         "200":
@@ -278,7 +287,8 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseProductGetListResponseDto'
+      security: []
 components:
   schemas:
     BfResponse:
@@ -442,6 +452,56 @@ components:
           minimum: 0
           type: integer
           format: int32
+    BfResponseProductGetOneResponseDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/ProductGetOneResponseDto'
+    ProductGetOneResponseDto:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/ProductResponseDto'
+    ProductResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+          format: int32
+        stockQuantity:
+          type: integer
+          format: int32
+        thumbnail:
+          type: string
+    BfResponseProductGetListResponseDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/ProductGetListResponseDto'
+    ProductGetListResponseDto:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponseDto'
   securitySchemes:
     Authorization:
       type: http

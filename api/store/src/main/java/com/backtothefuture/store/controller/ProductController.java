@@ -7,8 +7,8 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
+import com.backtothefuture.store.dto.response.ProductGetListResponseDto;
 import com.backtothefuture.store.dto.response.ProductGetOneResponseDto;
-import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,7 @@ public class ProductController {
                     @Parameter(name = "storeId", description = "가게 ID", required = true),
                     @Parameter(name = "productId", description = "상품 ID", required = true)
             })
+    @SecurityRequirements(value = {}) // no security
     @GetMapping("/stores/{storeId}/products/{productId}")
     public ResponseEntity<BfResponse<ProductGetOneResponseDto>> getProduct(
             @PathVariable Long storeId,
@@ -82,16 +84,23 @@ public class ProductController {
 
     // 모든 상품 조회 API
     // TODO: 정렬 기준, 페이지네이션 등 추가 ..
+    @Operation(summary = "모든 상품 정보 조회", description = "모든 상품을 조회합니다. TODO: 정렬기준, pagenation 추가")
+    @SecurityRequirements(value = {}) // no security
     @GetMapping("/products")
-    public ResponseEntity<BfResponse<?>> getAllProducts() {
+    public ResponseEntity<BfResponse<ProductGetListResponseDto>> getAllProducts() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new BfResponse<>(SUCCESS, Map.of("products", productService.getAllProducts())));
+                .body(new BfResponse<>(SUCCESS, productService.getAllProducts()));
     }
 
     // 상품 수정 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
-    @PatchMapping("/stores/{storeId}/products/{productId}")
-    public ResponseEntity<BfResponse<Map<String, ProductResponseDto>>> updateProduct(
+    @Operation(summary = "상품 부분 수정",
+            description = "상품 정보를 부분적으로 수정합니다. 수정하지 않는 정보는 요청 정보에 포함하지 않습니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다.")
+    @PatchMapping(
+            value = "/stores/{storeId}/products/{productId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BfResponse<ProductGetOneResponseDto>> updateProduct(
             @PathVariable Long storeId,
             @PathVariable Long productId,
             @Valid @RequestPart(value = "request") ProductUpdateDto productUpdateDto,
@@ -99,12 +108,17 @@ public class ProductController {
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new BfResponse<>(SUCCESS,
-                        Map.of("product",
-                                productService.partialUpdateProduct(storeId, productId, productUpdateDto, thumbnail))));
+                        productService.partialUpdateProduct(storeId, productId, productUpdateDto, thumbnail)));
     }
 
     // 상품 삭제 API
     // TODO: ROLE 을 STORE_OWNER, ADMIN 제한
+    @Operation(summary = "싱픔 삭제", responses = {
+            @ApiResponse(description = "삭제 성공", responseCode = "204", content = @Content(schema = @Schema(hidden = true)))},
+            parameters = {
+                    @Parameter(name = "storeId", description = "가게 ID", required = true),
+                    @Parameter(name = "productId", description = "상품 ID", required = true)
+            })
     @DeleteMapping("/stores/{storeId}/products/{productId}")
     public ResponseEntity<BfResponse<?>> deleteProduct(
             @PathVariable("storeId") Long storeId,

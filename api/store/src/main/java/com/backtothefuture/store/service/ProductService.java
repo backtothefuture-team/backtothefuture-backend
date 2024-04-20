@@ -17,6 +17,7 @@ import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
+import com.backtothefuture.store.dto.response.ProductGetListResponseDto;
 import com.backtothefuture.store.dto.response.ProductGetOneResponseDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.exception.ProductException;
@@ -88,8 +89,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> getAllProducts() {
-        return productRepository.findAll().stream()
+    public ProductGetListResponseDto getAllProducts() {
+        List<ProductResponseDto> products = productRepository.findAll().stream()
                 .map(product -> ProductResponseDto.builder()
                         .id(product.getId())
                         .name(product.getName())
@@ -99,11 +100,13 @@ public class ProductService {
                         .thumbnail(product.getThumbnail())
                         .build())
                 .collect(Collectors.toList());
+        return new ProductGetListResponseDto(products);
     }
 
     @Transactional
-    public ProductResponseDto partialUpdateProduct(Long storeId, Long productId, ProductUpdateDto productUpdateDto,
-                                                   MultipartFile thumbnail) {
+    public ProductGetOneResponseDto partialUpdateProduct(Long storeId, Long productId,
+                                                         ProductUpdateDto productUpdateDto,
+                                                         MultipartFile thumbnail) {
         // 권한 검사
         if (!validateIsProductOwner(storeId, productId)) {
             throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
@@ -135,7 +138,7 @@ public class ProductService {
 
         }
 
-        return ProductResponseDto.builder()
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
@@ -143,6 +146,8 @@ public class ProductService {
                 .stockQuantity(product.getStockQuantity())
                 .thumbnail(product.getThumbnail())
                 .build();
+
+        return new ProductGetOneResponseDto(productResponseDto);
     }
 
     @Transactional
