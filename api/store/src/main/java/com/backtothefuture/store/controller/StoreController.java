@@ -31,16 +31,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class StoreController {
     private final StoreService storeService;
 
-
     @PostMapping(
             value = "",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @Operation(summary = "새로운 가게 등록",
-            description = "가게 정보와 이미지를 등록합니다. 이미지는 'image/png', 'image/jpg' 형식을 지원합니다.",
+            description = "가게 정보와 이미지를 등록합니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다.",
             responses = {
-                    @ApiResponse(responseCode = "201", description = "생성 성공",
+                    @ApiResponse(responseCode = "201", description = "등록 성공",
                             content = @Content(schema = @Schema(implementation = BfResponse.class),
                                     examples = {
                                             @ExampleObject(name = "success", value = "{\"code\": 201, \"message\": \"정상적으로 생성되었습니다.\", \"data\": {\"store_id\": 1}}")}))

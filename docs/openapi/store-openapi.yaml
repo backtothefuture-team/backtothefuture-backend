@@ -14,7 +14,7 @@ paths:
       tags:
       - store-controller
       summary: 새로운 가게 등록
-      description: "가게 정보와 이미지를 등록합니다. 이미지는 'image/png', 'image/jpg' 형식을 지원합니다."
+      description: "가게 정보와 이미지를 등록합니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다."
       operationId: registerStore
       requestBody:
         content:
@@ -32,7 +32,7 @@ paths:
                   format: binary
       responses:
         "201":
-          description: 생성 성공
+          description: 등록 성공
           content:
             application/json:
               schema:
@@ -49,6 +49,9 @@ paths:
     post:
       tags:
       - product-controller
+      summary: 새로운 상품 등록
+      description: "특정 가게에 새로운 상품을 등록합니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다\
+        ."
       operationId: registerProduct
       parameters:
       - name: storeId
@@ -59,7 +62,7 @@ paths:
           format: int64
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               required:
               - request
@@ -69,14 +72,23 @@ paths:
                   $ref: '#/components/schemas/ProductRegisterDto'
                 file:
                   type: string
+                  description: 상품 이미지로 사용할 이미지를 첨부해 주세요.
                   format: binary
       responses:
-        "200":
-          description: OK
+        "201":
+          description: 등록 성공
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponse'
+              examples:
+                success:
+                  description: success
+                  value:
+                    code: 201
+                    message: 정상적으로 생성되었습니다.
+                    data:
+                      product_id: 1
   /reservations:
     post:
       tags:
@@ -341,35 +353,35 @@ components:
       required:
       - description
       - name
+      - price
       type: object
       properties:
         name:
           maxLength: 20
           minLength: 0
           type: string
+          description: 상품 이름
+          example: 크루아상
         description:
           maxLength: 50
           minLength: 0
           type: string
+          description: 상품 설명
+          example: 프랑스 고메버터가 풍부하게 들어간 프랑스식 패스트리
         price:
           maximum: 1000000
           minimum: 0
           type: integer
+          description: "상품 가격 (단위: 원)"
           format: int32
+          example: 3000
         stockQuantity:
           minimum: 0
           type: integer
+          description: "재고 수량 (기본값: 0)"
           format: int32
-    BfResponseObject:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        data:
-          type: object
+          example: 50
+      description: 요청 정보입니다.
     ReservationRequestDto:
       required:
       - reservationTime
@@ -400,6 +412,16 @@ components:
           minimum: 0
           type: integer
           format: int32
+    BfResponseObject:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
     ProductUpdateDto:
       type: object
       properties:
