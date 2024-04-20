@@ -17,6 +17,7 @@ import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
+import com.backtothefuture.store.dto.response.ProductGetOneResponseDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.exception.ProductException;
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponseDto getProduct(Long storeId, Long productId) {
+    public ProductGetOneResponseDto getProduct(Long storeId, Long productId) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
@@ -75,14 +76,15 @@ public class ProductService {
             throw new ProductException(NOT_FOUND_STORE_PRODUCT_MATCH);
         }
 
-        return ProductResponseDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .stockQuantity(product.getStockQuantity())
-                .thumbnail(product.getThumbnail())
-                .build();
+        return new ProductGetOneResponseDto(
+                ProductResponseDto.builder()
+                        .id(product.getId())
+                        .name(product.getName())
+                        .description(product.getDescription())
+                        .price(product.getPrice())
+                        .stockQuantity(product.getStockQuantity())
+                        .thumbnail(product.getThumbnail())
+                        .build());
     }
 
     @Transactional(readOnly = true)
