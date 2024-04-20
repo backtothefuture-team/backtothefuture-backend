@@ -51,13 +51,15 @@ public class ProductService {
         Long id = productRepository.save(product).getId();
 
         // 이미지 업로드
-        try {
-            String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(id), thumbnail);
-            product.setThumbnailUrl(imageUrl);
-        } catch (IllegalArgumentException e) {
-            throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
-        } catch (IOException e) {
-            throw new ProductException(IMAGE_UPLOAD_FAIL);
+        if (thumbnail != null) {
+            try {
+                String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(id), thumbnail);
+                product.setThumbnailUrl(imageUrl);
+            } catch (IllegalArgumentException e) {
+                throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
+            } catch (IOException e) {
+                throw new ProductException(IMAGE_UPLOAD_FAIL);
+            }
         }
 
         return id;
