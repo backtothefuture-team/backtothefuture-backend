@@ -38,7 +38,7 @@ CREATE TABLE store
     rating_count int,
     start_time   time,
     end_time     time,
-    FOREIGN KEY  (member_id) REFERENCES member (member_id)
+    FOREIGN KEY (member_id) REFERENCES member (member_id)
 );
 
 CREATE TABLE product
@@ -86,22 +86,35 @@ CREATE TABLE reservation_product
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
+CREATE TABLE heart
+(
+    heart_id   bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    member_id  bigint NOT NULL,
+    store_id   bigint NOT NULL,
+    updated_at datetime(6),
+    updated_by varchar(255),
+    created_at datetime(6),
+    created_by varchar(255),
+    FOREIGN KEY (store_id) REFERENCES store (store_id),
+    FOREIGN KEY (member_id) REFERENCES member (member_id)
+);
 
 CREATE TABLE reservation_status_history
 (
-    id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id             bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
     reservation_id bigint NOT NULL,
-    order_type varchar(255),
-    event_time time,
+    order_type     varchar(255),
+    event_time     time,
     FOREIGN KEY (reservation_id) REFERENCES reservation (reservation_id)
- );
+);
 
-CREATE TABLE IF NOT EXISTS review (
-    review_id       VARCHAR(255)    NOT NULL,
-    member_id       VARCHAR(255)    NOT NULL,
-    store_id        VARCHAR(255)    NOT NULL,
-    star            VARCHAR(255)    NULL,
-    content         VARCHAR(255)    NULL
+CREATE TABLE IF NOT EXISTS review
+(
+    review_id VARCHAR(255) NOT NULL,
+    member_id VARCHAR(255) NOT NULL,
+    store_id  VARCHAR(255) NOT NULL,
+    star      VARCHAR(255) NULL,
+    content   VARCHAR(255) NULL
 
 );
 

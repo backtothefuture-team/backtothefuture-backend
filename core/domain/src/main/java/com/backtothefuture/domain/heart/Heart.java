@@ -1,5 +1,6 @@
 package com.backtothefuture.domain.heart;
 
+import com.backtothefuture.domain.common.MutableBaseEntity;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.store.Store;
 import jakarta.persistence.Column;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Heart {
+public class Heart extends MutableBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "heart_id")

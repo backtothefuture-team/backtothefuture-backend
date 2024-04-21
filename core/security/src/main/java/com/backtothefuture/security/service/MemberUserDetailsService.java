@@ -19,16 +19,16 @@ import lombok.RequiredArgsConstructor;
 @Qualifier("memberUserDetailsService")
 @RequiredArgsConstructor
 public class MemberUserDetailsService implements UserDetailsService {
-	private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomSecurityException(NOT_FIND_MEMBER_EMAIL));
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomSecurityException(NOT_FOUND_MEMBER_EMAIL));
 
-		if(member.getStatus().equals(INACTIVE)) {
-			throw new CustomSecurityException(DELETE_MEMBER);
-		}
-		return UserDetailsImpl.from(member);
-	}
+        if (member.getStatus().equals(INACTIVE)) {
+            throw new CustomSecurityException(DELETE_MEMBER);
+        }
+        return UserDetailsImpl.from(member);
+    }
 }
