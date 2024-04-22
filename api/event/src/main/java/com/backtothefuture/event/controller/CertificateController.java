@@ -90,7 +90,7 @@ public class CertificateController {
                     )
             )
     })
-    @GetMapping(value = "/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BfResponse<?>> verifyMailCertificationNumber(
             @Parameter(description = "이메일 주소", required = true) @RequestParam String email,
             @Parameter(description = "인증 번호", required = true) @RequestParam String certificationNumber
