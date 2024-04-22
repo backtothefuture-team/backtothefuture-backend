@@ -4,6 +4,7 @@ jwt:
 certification:
   mail:
     expiration-seconds: 600 # 이메일 인증 만료 시간
+    redis-key-prefix: email-certificate-
   message:
     expiration-seconds: 180 # 인증 만료시간
 

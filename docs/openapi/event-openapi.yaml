@@ -1,234 +1,146 @@
 openapi: 3.0.1
 info:
-  title: Bag To the Future
-  description: API Documentation
-  version: 0.1.0
+  title: 백투더퓨처 API Documentation
+  description: 백투더퓨처 API 문서입니다.
+  version: v1.0.0
 servers:
 - url: http://localhost:8084/v1
-tags: []
+  description: Generated server url
+security:
+- Authorization: []
+tags:
+- name: certificate
+  description: 인증 API
 paths:
   /certificate/email:
     get:
       tags:
       - certificate
-      summary: 인증 메일 검증
-      description: "인증 메일 검증 API입니다. 메일 수신자가 링크를 클릭하고, 이 API를 통해 인증하게 됩니다."
-      operationId: verify-certificate-email
-      responses:
-        "200":
-          description: "200"
-          content:
-            text/html;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/certificate-email486549215'
-              examples:
-                verify-certificate-email:
-                  value: |-
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>인증 결과</title>
-                        <meta charset="utf-8">
-                    </head>
-                        <h1>성공적으로 인증되었습니다. 앱 화면으로 돌아가 주세요.</h1>
-                    </html>
-    post:
-      tags:
-      - certificate
-      summary: 인증 메일 전송 API
-      description: 인증 메일 전송 API 입니다.
-      operationId: send-certificate-email
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/certificate-email486549215'
-            examples:
-              send-certificate-email:
-                value: "{\"email\":\"test@example.com\"}"
-      responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/[response] send-certificate-email"
-              examples:
-                send-certificate-email:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"mail_expiration_seconds\"\
-                    :600}}"
-  /certificate/message:
-    post:
-      tags:
-      - certificate
-      summary: 인증 번호 검증 API
-      description: 인증 번호 검증 API입니다.
-      operationId: verify-certificate-number
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/[request] verify-certificate-number"
-            examples:
-              verify-certificate-number:
-                value: "{\"phoneNumber\":[\"010\",\"1234\",\"5678\"],\"certificationNumber\"\
-                  :\"418790\"}"
-      responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/[response] verify-certificate-number"
-              examples:
-                verify-certificate-number:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\"}"
-  /certificate/message/{phoneNumber}:
-    post:
-      tags:
-      - certificate
-      summary: 인증 번호 발급 API
-      description: 인증 번호 발급 API입니다.
-      operationId: get-certificate-number
-      parameters:
-      - name: phoneNumber
-        in: path
-        description: ""
-        required: true
-        schema:
-          type: string
-      responses:
-        "201":
-          description: "201"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/[response] get-certificate-number"
-              examples:
-                get-certificate-number:
-                  value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
-                    certification_number\":\"374645\"}}"
-  /certificate/email/{email}/status:
-    get:
-      tags:
-      - certificate
-      summary: 이메일 인증 상태 확인
-      description: 이메일 인증 상태 확인 API입니다.
-      operationId: check-certificate-email-status
+      summary: 이메일 인증 번호 검증 API
+      description: 이메일과 인증 번호를 사용하여 인증 번호의 유효성을 검증합니다.
+      operationId: verifyMailCertificationNumber
       parameters:
       - name: email
-        in: path
-        description: ""
+        in: query
+        description: 이메일 주소
+        required: true
+        schema:
+          type: string
+      - name: certificationNumber
+        in: query
+        description: 인증 번호
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: "200"
+          description: 인증 번호 유효성 검사 결과
+          content:
+            application/json:
+              examples:
+                valid certification number:
+                  description: valid certification number
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      isValid: true
+                invalid certification number:
+                  description: invalid certification number
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      isValid: false
+      security: []
+    post:
+      tags:
+      - certificate
+      summary: 인증코드 메일 전송 API
+      description: 이메일로 인증코드를 전송합니다.
+      operationId: sendCertificateMail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MailCertificateRequestDto'
+        required: true
+      responses:
+        "400":
+          description: 이메일 형식에 맞지 않습니다.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/[response] check-certificate-email-status"
+                $ref: '#/components/schemas/ErrorResponse'
               examples:
-                check-certificate-email-status:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"is_certificated\"\
-                    :true}}"
+                invalid email:
+                  description: invalid email
+                  value:
+                    errorCode: 400
+                    errorMessage: 입력값에 대한 검증에 실패했습니다.
+                    validation:
+                      email: 이메일 형식에 맞지 않습니다.
+        "200":
+          description: 인증 번호 발송 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BfResponseCertificateMailResponseDto'
+      security: []
 components:
   schemas:
-    '[response] send-certificate-email':
-      title: "[response] send-certificate-email"
+    MailCertificateRequestDto:
       required:
-      - code
-      - message
+      - email
       type: object
       properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - mail_expiration_seconds
+        email:
+          pattern: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$"
+          type: string
+          description: 사용자 이메일 주소
+          example: user@example.com
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          format: int32
+        errorMessage:
+          type: string
+        validation:
           type: object
-          properties:
-            mail_expiration_seconds:
-              type: number
-              description: 인증 만료 시간(초)
-        message:
-          type: string
-          description: 응답 메시지
-    '[response] check-certificate-email-status':
-      title: "[response] check-certificate-email-status"
-      required:
-      - code
-      - message
+          additionalProperties:
+            type: string
+    BfResponseCertificateMailResponseDto:
       type: object
       properties:
         code:
-          type: number
+          type: integer
           description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
         data:
-          required:
-          - is_certificated
-          type: object
-          properties:
-            is_certificated:
-              type: boolean
-              description: "인증 여부. true: 인증 / false: 미인증"
-        message:
-          type: string
-          description: 응답 메시지
-    '[response] get-certificate-number':
-      title: "[response] get-certificate-number"
-      required:
-      - code
-      - message
+          $ref: '#/components/schemas/CertificateMailResponseDto'
+    CertificateMailResponseDto:
       type: object
       properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - certification_number
-          type: object
-          properties:
-            certification_number:
-              type: string
-              description: 인증 번호
-        message:
-          type: string
-          description: 응답 메시지
-    '[response] verify-certificate-number':
-      title: "[response] verify-certificate-number"
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: number
-          description: 응답 코드
-        message:
-          type: string
-          description: 응답 메시지
-    certificate-email486549215:
-      type: object
-    '[request] verify-certificate-number':
-      title: "[request] verify-certificate-number"
-      required:
-      - certificationNumber
-      - phoneNumber
-      type: object
-      properties:
-        phoneNumber:
-          type: array
-          description: 전화번호
-          items:
-            oneOf:
-            - type: object
-            - type: boolean
-            - type: string
-            - type: number
+        mailExpirationSeconds:
+          type: integer
+          description: 인증 번호 유효 시간(초)
+          format: int32
+          example: 600
         certificationNumber:
           type: string
-          description: 인증번호
+          description: 인증 번호
+          example: "123456"
+      description: 응답 데이터
+  securitySchemes:
+    Authorization:
+      type: http
+      name: Authorization
+      scheme: bearer
+      bearerFormat: JWT
