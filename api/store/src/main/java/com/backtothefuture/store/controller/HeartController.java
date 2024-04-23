@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/stores/{storeId}/likes")
-@Tag(name = "찜", description = "상점 찜")
+@Tag(name = "찜 API", description = "찜 관련 API 입니다.")
 public class HeartController {
 
     private final HeartService heartService;

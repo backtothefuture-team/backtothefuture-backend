@@ -16,6 +16,7 @@ import com.backtothefuture.member.service.MemberBusinessService;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
 import com.backtothefuture.security.service.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
+@Tag(name = "회원 API", description = "회원 관련 API 입니다.")
 public class MemberController {
 
     private final MemberService memberService;

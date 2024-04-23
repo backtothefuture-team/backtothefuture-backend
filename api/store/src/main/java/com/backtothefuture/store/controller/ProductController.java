@@ -8,6 +8,7 @@ import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
 import com.backtothefuture.store.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "상품 API", description = "상품 관련 API 입니다.")
 public class ProductController {
 
     private final ProductService productService;

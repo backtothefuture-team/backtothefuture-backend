@@ -5,8 +5,8 @@ import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
-import com.backtothefuture.store.service.HeartService;
 import com.backtothefuture.store.service.StoreService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/stores")
+@Tag(name = "가게 API", description = "가게 관련 API 입니다.")
 public class StoreController {
     private final StoreService storeService;
 

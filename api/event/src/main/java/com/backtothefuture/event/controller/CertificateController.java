@@ -1,13 +1,15 @@
 package com.backtothefuture.event.controller;
 
+import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
+
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.event.dto.request.MailCertificateRequestDto;
-import com.backtothefuture.event.dto.request.VerifyCertificateRequestDto;
 import com.backtothefuture.event.service.CertificateService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,11 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Map;
-
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
-
+@Tag(name = "인증 API", description = "인증 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/certificate")
@@ -71,6 +69,7 @@ public class CertificateController {
     @GetMapping("/email/{email}/status")
     public ResponseEntity<BfResponse<?>> checkCertificateEmailStatus(@PathVariable String email) {
         return ResponseEntity.ok()
-                .body(new BfResponse<>(SUCCESS, Map.of("is_certificated", certificationService.getCertificateEmailStatus(email))));
+                .body(new BfResponse<>(SUCCESS,
+                        Map.of("is_certificated", certificationService.getCertificateEmailStatus(email))));
     }
 }
