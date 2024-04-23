@@ -16,6 +16,10 @@ import com.backtothefuture.member.service.MemberBusinessService;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
 import com.backtothefuture.security.service.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
+@Tag(name = "회원 API", description = "회원 관련된 API입니다.")
 public class MemberController {
 
     private final MemberService memberService;
@@ -57,8 +62,15 @@ public class MemberController {
                 .body(new BfResponse<>(CREATE, Map.of("id", memberService.registerMember(reqMemberDto, thumbnail))));
     }
 
+    @Operation(
+            summary = "소셜 로그인",
+            description = "소셜 로그인 API입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "소셜 로그인 성공 응답입니다.", useReturnTypeSchema = true)
+            })
+    @SecurityRequirements(value = {})
     @PostMapping("/login/oauth")
-    public ResponseEntity<BfResponse<?>> oauthLogin(@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
+    public ResponseEntity<BfResponse<LoginTokenDto>> oauthLogin(@Valid @RequestBody OAuthLoginDto OAuthLoginDto) {
         switch (OAuthLoginDto.providerType()) {
             case KAKAO -> {
                 LoginTokenDto loginTokenDto = kakaoOAuthService.getUserInfoFromResourceServer(OAuthLoginDto);
@@ -78,8 +90,14 @@ public class MemberController {
 
     }
 
+    @Operation(
+            summary = "토큰 갱신",
+            description = "토큰 갱신 API입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "토큰 갱신에 성공했습니다.", useReturnTypeSchema = true)
+            })
     @PostMapping("/refresh")
-    public ResponseEntity<BfResponse<?>> refreshAccessToken(
+    public ResponseEntity<BfResponse<LoginTokenDto>> refreshAccessToken(
             @Valid @RequestBody RefreshTokenRequestDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails.getId())));
