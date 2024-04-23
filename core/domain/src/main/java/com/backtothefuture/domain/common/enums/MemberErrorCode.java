@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum MemberErrorCode implements BaseErrorCode {
     // 400 BAD_REQUEST
-    NOT_FIND_MEMBER_EMAIL(400, "존재하지 않는 회원입니다.", HttpStatus.BAD_REQUEST),
+    NOT_FOUND_MEMBER_EMAIL(400, "존재하지 않는 회원입니다.", HttpStatus.BAD_REQUEST),
     DUPLICATED_MEMBER_EMAIL(400, "이미 존재하는 회원 이메일입니다.", HttpStatus.BAD_REQUEST),
     DUPLICATED_MEMBER_PHONE_NUMBER(400, "이미 등록된 휴대폰 번호입니다.", HttpStatus.BAD_REQUEST),
     DELETE_MEMBER(400, "탈퇴 또는 삭제된 회원입니다.", HttpStatus.BAD_REQUEST),
@@ -16,8 +16,8 @@ public enum MemberErrorCode implements BaseErrorCode {
     UNSUPPORTED_IMAGE_EXTENSION(400, "지원하지 않는 확장자 입니다. jpeg혹은 png 파일을 업로드 해주세요.", HttpStatus.BAD_REQUEST),
 
     // 404 NOT_FOUND
-    NOT_FIND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
-    NOT_FIND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_MATCH_REFRESH_TOKEN(404, "refresh token이 일치하지 않습니다.", HttpStatus.NOT_FOUND),
 
     // 500 INTERNAL_SERVER_ERROR

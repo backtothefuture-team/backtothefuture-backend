@@ -3,8 +3,8 @@ package com.backtothefuture.member.service;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.DUPLICATED_MEMBER_EMAIL;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.DUPLICATED_MEMBER_PHONE_NUMBER;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.IMAGE_UPLOAD_FAIL;
-import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FIND_MEMBER_ID;
-import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FIND_REFRESH_TOKEN;
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_MEMBER_ID;
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_REFRESH_TOKEN;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_MATCH_REFRESH_TOKEN;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.PASSWORD_NOT_MATCHED;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
@@ -139,11 +139,11 @@ public class MemberService {
     public LoginTokenDto refreshToken(String oldRefreshToken, Long memberId) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
 
         // redis 갱신된 refresh token 유효성 검증
         if (!redisRepository.hasKey(member.getId())) {
-            throw new MemberException(NOT_FIND_REFRESH_TOKEN);
+            throw new MemberException(NOT_FOUND_REFRESH_TOKEN);
         }
 
         // redis에 저장된 토큰과 비교

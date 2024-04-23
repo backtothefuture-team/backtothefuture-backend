@@ -1,7 +1,7 @@
 DROP
-    DATABASE IF EXISTS test;
+DATABASE IF EXISTS test;
 CREATE
-    DATABASE IF NOT EXISTS test;
+DATABASE IF NOT EXISTS test;
 
 USE test;
 
@@ -101,4 +101,3 @@ INSERT INTO product (product_id, name, description, price, stock_quantity, thumb
                      created_at, created_by)
 VALUES (1, 'test', 'test', 1000, 10, null, 1, null, null, null, null),
        (2, 'test', 'test', 2000, 10, null, 1, null, null, null, null);
-

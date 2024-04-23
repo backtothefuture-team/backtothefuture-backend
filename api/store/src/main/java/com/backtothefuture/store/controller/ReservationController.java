@@ -1,6 +1,10 @@
 package com.backtothefuture.store.controller;
 
 
+import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
+import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
@@ -16,22 +20,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
-@Tag(name = "예약(주문) API", description = "예약 관련 API입니다.")
+@Tag(name = "예약(주문) API", description = "예약 관련 API 입니다.")
 public class ReservationController {
 
     private final ReservationService reservationService;

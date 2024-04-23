@@ -53,7 +53,7 @@ public class ReservationService {
     public Long makeReservation(Long memberId, ReservationRequestDto dto) {
 
         Member member = memberRepository.findById(memberId)  // 현재 회원 조회
-                .orElseThrow(() -> new MemberException(NOT_FIND_MEMBER_ID));
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
 
         Store store = storeRepository.findById(dto.storeId())  // 주문하고자 하는 가게 조회
                 .orElseThrow(() -> new StoreException(NOT_FOUND_STORE_ID));

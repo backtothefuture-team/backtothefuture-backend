@@ -8,11 +8,14 @@ servers:
   description: Generated server url
 security:
 - Authorization: []
+tags:
+- name: 회원 API
+  description: 회원 관련 API 입니다.
 paths:
   /member/register:
     post:
       tags:
-      - member-controller
+      - 회원 API
       operationId: registerMember
       requestBody:
         content:
@@ -37,7 +40,9 @@ paths:
   /member/refresh:
     post:
       tags:
-      - member-controller
+      - 회원 API
+      summary: 토큰 갱신
+      description: 토큰 갱신 API입니다.
       operationId: refreshAccessToken
       requestBody:
         content:
@@ -47,15 +52,15 @@ paths:
         required: true
       responses:
         "200":
-          description: OK
+          description: 토큰 갱신에 성공했습니다.
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseLoginTokenDto'
   /member/login:
     post:
       tags:
-      - member-controller
+      - 회원 API
       operationId: login
       requestBody:
         content:
@@ -73,7 +78,9 @@ paths:
   /member/login/oauth:
     post:
       tags:
-      - member-controller
+      - 회원 API
+      summary: 소셜 로그인
+      description: 소셜 로그인 API입니다.
       operationId: oauthLogin
       requestBody:
         content:
@@ -83,15 +90,16 @@ paths:
         required: true
       responses:
         "200":
-          description: OK
+          description: 소셜 로그인 성공 응답입니다.
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseLoginTokenDto'
+      security: []
   /member/business/number/status:
     post:
       tags:
-      - member-controller
+      - 회원 API
       summary: 사업자 번호 상태 조회
       description: 입력된 사업자 정보의 유효성을 검증합니다.
       operationId: businessNumberStatus
@@ -125,7 +133,7 @@ paths:
   /member/business/info/validation:
     post:
       tags:
-      - member-controller
+      - 회원 API
       summary: 사업자 정보 검증
       description: 입력된 사업자 정보의 유효성을 검증합니다.
       operationId: validateBusinessNumber
@@ -190,11 +198,16 @@ components:
       properties:
         code:
           type: integer
+          description: 응답 코드
           format: int32
+          example: 200
         message:
           type: string
+          description: 응답 메시지
+          example: 성공
         data:
           type: object
+          description: 응답 데이터
     RefreshTokenRequestDto:
       required:
       - refreshToken
@@ -202,6 +215,32 @@ components:
       properties:
         refreshToken:
           type: string
+          description: 리프래시 토큰 값입니다.
+      description: 토큰 갱신 요청 model입니다.
+    BfResponseLoginTokenDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          $ref: '#/components/schemas/LoginTokenDto'
+    LoginTokenDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: 엑세스 토큰 값
+        refreshToken:
+          type: string
+          description: 리프래시 토큰 값
+      description: "access, refresh token 반환 model"
     MemberLoginDto:
       required:
       - email
@@ -223,22 +262,29 @@ components:
       properties:
         authorizationCode:
           type: string
+          description: 인증 서버로부터 받은 승인 코드입니다.
         providerType:
           type: string
+          description: 어떤 종류의 소셜 로그인인지 식별 값입니다.
           enum:
           - KAKAO
           - NAVER
           - GOOGLE
         rolesType:
           type: string
+          description: 회원 식별 값입니다.
           enum:
           - ROLE_ADMIN
           - ROLE_USER
           - ROLE_STORE_OWNER
         state:
           type: string
+          description: 네이버 소셜 로그인 시 state 값입니다. state 문자열 주시면 됩니다.
+          example: state
         token:
           type: string
+          description: 인증 서버로부터 받은 access token 값입니다.
+      description: 소셜 로그인 요청 model입니다.
     BusinessNumberValidateRequestDto:
       required:
       - businessNumber

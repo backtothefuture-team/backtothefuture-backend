@@ -8,11 +8,20 @@ servers:
   description: Generated server url
 security:
 - Authorization: []
+tags:
+- name: 예약(주문) API
+  description: 예약 관련 API 입니다.
+- name: 찜 API
+  description: 찜 관련 API 입니다.
+- name: 상품 API
+  description: 상품 관련 API 입니다.
+- name: 가게 API
+  description: 가게 관련 API 입니다.
 paths:
   /stores:
     post:
       tags:
-      - store-controller
+      - 가게 API
       summary: 새로운 가게 등록
       description: "가게 정보와 이미지를 등록합니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다."
       operationId: registerStore
@@ -48,7 +57,7 @@ paths:
   /stores/{storeId}/products:
     post:
       tags:
-      - product-controller
+      - 상품 API
       summary: 새로운 상품 등록
       description: "특정 가게에 새로운 상품을 등록합니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다\
         ."
@@ -89,10 +98,68 @@ paths:
                     message: 정상적으로 생성되었습니다.
                     data:
                       product_id: 1
+  /stores/{storeId}/likes/{memberId}:
+    post:
+      tags:
+      - 찜 API
+      summary: 상점 찜 등록
+      description: 특정 상점에 대해 특정 사용자가 찜을 등록합니다.
+      operationId: addLike
+      parameters:
+      - name: storeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: 찜 추가 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BfResponse'
+              examples:
+                success:
+                  description: success
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data: SUCCESS
+    delete:
+      tags:
+      - 찜 API
+      summary: 상점 찜 취소
+      description: 특정 상점에 대해 특정 사용자의 찜을 취소합니다.
+      operationId: removeLike
+      parameters:
+      - name: storeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: 찜 취소 성공
   /reservations:
     post:
       tags:
-      - reservation-controller
+      - 예약(주문) API
+      summary: 주문
+      description: 주문 요청 API입니다.
       operationId: makeReservation
       requestBody:
         content:
@@ -102,15 +169,21 @@ paths:
         required: true
       responses:
         "200":
-          description: OK
+          description: 예약(주문) 성공 응답입니다.
           content:
             '*/*':
-              schema:
-                $ref: '#/components/schemas/BfResponseObject'
+              examples:
+                주문 번호:
+                  description: 주문 번호
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      reservation_id: 1
   /stores/{storeId}/products/{productId}:
     get:
       tags:
-      - product-controller
+      - 상품 API
       summary: 상품 정보 조회
       description: 특정 가게의 특정 상품에 대한 자세한 정보를 조회합니다.
       operationId: getProduct
@@ -139,7 +212,7 @@ paths:
       security: []
     delete:
       tags:
-      - product-controller
+      - 상품 API
       summary: 싱픔 삭제
       operationId: deleteProduct
       parameters:
@@ -162,7 +235,7 @@ paths:
           description: 삭제 성공
     patch:
       tags:
-      - product-controller
+      - 상품 API
       summary: 상품 부분 수정
       description: "상품 정보를 부분적으로 수정합니다. 수정하지 않는 정보는 요청 정보에 포함하지 않습니다. 이미지는 'image/png',\
         \ 'image/jpeg' 형식을 지원합니다."
@@ -203,7 +276,7 @@ paths:
   /reservations/{reservationId}:
     get:
       tags:
-      - reservation-controller
+      - 예약(주문) API
       operationId: getReservation
       parameters:
       - name: reservationId
@@ -221,7 +294,7 @@ paths:
                 $ref: '#/components/schemas/BfResponseObject'
     delete:
       tags:
-      - reservation-controller
+      - 예약(주문) API
       operationId: cancelReservation
       parameters:
       - name: reservationId
@@ -240,44 +313,50 @@ paths:
   /reservations/proceeding:
     get:
       tags:
-      - reservation-controller
+      - 예약(주문) API
+      summary: 주문 진행 내역
+      description: 주문 진행 내역 조회 API입니다.
       operationId: getMemberProceedingReservations
       responses:
         "200":
-          description: OK
+          description: 주문 진행 내역 조회 성공 응답입니다.
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseListMemberProgressReservationResponseDto'
   /reservations/done:
     get:
       tags:
-      - reservation-controller
+      - 예약(주문) API
+      summary: 주문 완료 내역
+      description: 주문 완료 내역 조회 API입니다.
       operationId: getMemberDoneReservations
       parameters:
       - name: cursorId
         in: query
+        description: 마지막으로 조회한 주문 id 값입니다.
         required: true
         schema:
           type: integer
           format: int64
       - name: size
         in: query
+        description: 페이지 크기입니다.
         required: true
         schema:
           type: integer
           format: int32
       responses:
         "200":
-          description: OK
+          description: 주문 완료 내역 조회 성공 응답입니다.
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseMemberDoneReservationResponseDto'
   /products:
     get:
       tags:
-      - product-controller
+      - 상품 API
       summary: 모든 상품 정보 조회
       description: "모든 상품을 조회합니다. TODO: 정렬기준, pagenation 추가"
       operationId: getAllProducts
@@ -296,11 +375,16 @@ components:
       properties:
         code:
           type: integer
+          description: 응답 코드
           format: int32
+          example: 200
         message:
           type: string
+          description: 응답 메시지
+          example: 성공
         data:
           type: object
+          description: 응답 데이터
     LocalTime:
       type: object
       properties:
@@ -400,16 +484,20 @@ components:
       properties:
         storeId:
           type: integer
+          description: 가게 id 값입니다.
           format: int64
         orderRequestItems:
           maxItems: 2147483647
           minItems: 1
           type: array
+          description: 예약 상품 값들입니다.
           items:
             $ref: '#/components/schemas/ReservationRequestItemDto'
         reservationTime:
           type: string
+          description: 예약(주문) 요청 시간입니다.
           format: date-time
+      description: 예약(주문)하기 요청 model입니다.
     ReservationRequestItemDto:
       required:
       - productId
@@ -417,21 +505,14 @@ components:
       properties:
         productId:
           type: integer
+          description: 상품 id 값입니다.
           format: int64
         quantity:
           minimum: 0
           type: integer
+          description: 주문 수량입니다.
           format: int32
-    BfResponseObject:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        data:
-          type: object
+      description: 예약 상품 model입니다.
     ProductUpdateDto:
       type: object
       properties:
@@ -457,9 +538,13 @@ components:
       properties:
         code:
           type: integer
+          description: 응답 코드
           format: int32
+          example: 200
         message:
           type: string
+          description: 응답 메시지
+          example: 성공
         data:
           $ref: '#/components/schemas/ProductGetOneResponseDto'
     ProductGetOneResponseDto:
@@ -467,6 +552,7 @@ components:
       properties:
         product:
           $ref: '#/components/schemas/ProductResponseDto'
+      description: 응답 데이터
     ProductResponseDto:
       type: object
       properties:
@@ -485,14 +571,169 @@ components:
           format: int32
         thumbnail:
           type: string
+    BfResponseObject:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          type: object
+          description: 응답 데이터
+    BfResponseListMemberProgressReservationResponseDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          type: array
+          description: 응답 데이터
+          items:
+            $ref: '#/components/schemas/MemberProgressReservationResponseDto'
+    MemberProgressReservationResponseDto:
+      type: object
+      properties:
+        storeImg:
+          type: string
+          description: 가게 이미지입니다.
+        name:
+          type: string
+          description: 가게 이름입니다.
+        reservationId:
+          type: integer
+          description: 가게 id 값입니다.
+          format: int64
+        reservationTime:
+          type: string
+          description: 예약(주문) 접수 시간입니다.
+          format: date-time
+        totalPrice:
+          type: integer
+          description: 주문 총 금액입니다.
+          format: int32
+        productNames:
+          type: array
+          description: "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은 productName\
+            \ 입니다."
+          items:
+            type: object
+            additionalProperties:
+              type: string
+              description: "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은\
+                \ productName 입니다."
+            description: "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은 productName\
+              \ 입니다."
+        reservationHistory:
+          type: array
+          description: |-
+            주문 진행 내역입니다. json key 값은REGISTRATION, // 예약 접수
+            CONFIRMATION, // 예약 확정
+            PICKUP_WAITING, // 픽업 대기
+            PICKUP_DONE; // 픽업 완료
+            중 하나입니다.
+          items:
+            type: object
+            additionalProperties:
+              type: string
+              description: |-
+                주문 진행 내역입니다. json key 값은REGISTRATION, // 예약 접수
+                CONFIRMATION, // 예약 확정
+                PICKUP_WAITING, // 픽업 대기
+                PICKUP_DONE; // 픽업 완료
+                중 하나입니다.
+              format: date-time
+            description: |-
+              주문 진행 내역입니다. json key 값은REGISTRATION, // 예약 접수
+              CONFIRMATION, // 예약 확정
+              PICKUP_WAITING, // 픽업 대기
+              PICKUP_DONE; // 픽업 완료
+              중 하나입니다.
+      description: 주문 진행 응답 model 입니다.
+    BfResponseMemberDoneReservationResponseDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          $ref: '#/components/schemas/MemberDoneReservationResponseDto'
+    MemberDoneReservationListDto:
+      type: object
+      properties:
+        storeImg:
+          type: string
+          description: 가게 이미지입니다.
+        name:
+          type: string
+          description: 가게 이름입니다.
+        reservationId:
+          type: integer
+          description: 예약(주문) id 값입니다.
+          format: int64
+        reservationTime:
+          type: string
+          description: 예약(주문) 접수 시간입니다.
+          format: date-time
+        totalPrice:
+          type: integer
+          description: 주문 전체 금액입니다.
+          format: int32
+        productNames:
+          type: array
+          description: "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은 productName\
+            \ 입니다."
+          items:
+            type: object
+            additionalProperties:
+              type: string
+              description: "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은\
+                \ productName 입니다."
+            description: "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은 productName\
+              \ 입니다."
+      description: 완료된 주문 정보 model입니다.
+    MemberDoneReservationResponseDto:
+      type: object
+      properties:
+        memberDoneReservationList:
+          type: array
+          description: 주문 정보 값들입니다.
+          items:
+            $ref: '#/components/schemas/MemberDoneReservationListDto'
+        isLast:
+          type: boolean
+          description: 다음 페이지 존재 여부입니다.
+      description: 주문 완료 내역 조회 model입니다.
     BfResponseProductGetListResponseDto:
       type: object
       properties:
         code:
           type: integer
+          description: 응답 코드
           format: int32
+          example: 200
         message:
           type: string
+          description: 응답 메시지
+          example: 성공
         data:
           $ref: '#/components/schemas/ProductGetListResponseDto'
     ProductGetListResponseDto:
@@ -502,6 +743,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductResponseDto'
+      description: 응답 데이터
   securitySchemes:
     Authorization:
       type: http

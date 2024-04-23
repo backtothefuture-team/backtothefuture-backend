@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "certificate", description = "인증 API")
+@Tag(name = "인증 API", description = "인증 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/certificate")
