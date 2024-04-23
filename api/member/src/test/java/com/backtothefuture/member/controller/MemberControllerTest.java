@@ -197,7 +197,7 @@ class MemberControllerTest extends BfTestConfig {
         // 사업자 정보 검증 성공 시, 반환할 값 설정
         when(memberBusinessService.validateBusinessInfo(any())).thenReturn(true);
 
-        this.mockMvc.perform(post("/member/business/validate-info")
+        this.mockMvc.perform(post("/member/business/info/validation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(businessInfoValidateRequestDto)))
                 .andExpect(status().isOk());
@@ -212,7 +212,7 @@ class MemberControllerTest extends BfTestConfig {
         // 사업자 번호 상태 검증 성공 시, 반환할 값 설정
         when(memberBusinessService.validateBusinessNumber(anyString())).thenReturn(true);
 
-        this.mockMvc.perform(post("/member/business/validate-status")
+        this.mockMvc.perform(post("/member/business/number/status")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestbody)))
                 .andExpect(status().isOk());

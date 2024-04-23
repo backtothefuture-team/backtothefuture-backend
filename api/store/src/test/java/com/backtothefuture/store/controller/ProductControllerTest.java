@@ -10,6 +10,8 @@ import com.backtothefuture.domain.common.util.s3.S3AsyncUtil;
 import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.infra.config.BfTestConfig;
 import com.backtothefuture.infra.config.S3Config;
+import com.backtothefuture.store.dto.response.ProductGetListResponseDto;
+import com.backtothefuture.store.dto.response.ProductGetOneResponseDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,7 +68,9 @@ class ProductControllerTest extends BfTestConfig {
         Long productId = 1L;
         ProductResponseDto productResponseDto = new ProductResponseDto(productId, "상품1", "상품1 설명", 10000, 10,
                 "thumbnail1");
-        when(productService.getProduct(storeId, productId)).thenReturn(productResponseDto);
+        ProductGetOneResponseDto productGetOneResponseDto = new ProductGetOneResponseDto(productResponseDto);
+
+        when(productService.getProduct(storeId, productId)).thenReturn(productGetOneResponseDto);
 
         // when & then
         this.mockMvc.perform(get("/stores/{storeId}/products/{productId}", storeId, productId)
@@ -81,7 +85,8 @@ class ProductControllerTest extends BfTestConfig {
         List<ProductResponseDto> products = List.of(
                 new ProductResponseDto(1L, "상품1", "상품1 설명", 10000, 10, "thumbnail1"),
                 new ProductResponseDto(2L, "상품2", "상품2 설명", 20000, 20, "thumbnail2"));
-        when(productService.getAllProducts()).thenReturn(products);
+        ProductGetListResponseDto productGetListResponseDto = new ProductGetListResponseDto(products);
+        when(productService.getAllProducts()).thenReturn(productGetListResponseDto);
 
         // when & then
         this.mockMvc.perform(get("/products")
