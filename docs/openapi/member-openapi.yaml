@@ -1,428 +1,298 @@
 openapi: 3.0.1
 info:
-  title: Bag To the Future
-  description: API Documentation
-  version: 0.1.0
+  title: 백투더퓨처 API Documentation
+  description: 백투더퓨처 API 문서입니다.
+  version: v1.0.0
 servers:
 - url: http://localhost:8080/v1
-tags: []
+  description: Generated server url
+security:
+- Authorization: []
 paths:
-  /member/login:
-    post:
-      tags:
-      - member
-      summary: 일반 로그인 API
-      description: 일반 로그인 API 입니다.
-      operationId: login-member
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/[request] member-login"
-            examples:
-              login-member:
-                value: "{\"password\":\"123456\",\"email\":\"kildong.hong@naver.com\"\
-                  }"
-      responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/[response] member-login"
-              examples:
-                login-member:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
-                    :\"access token\",\"refreshToken\":\"resfresh token\"}}"
-  /member/refresh:
-    post:
-      tags:
-      - member
-      summary: 토큰 갱신 API
-      description: "refresh token을 이용하여 access,refresh token 갱신하는  API입니다."
-      operationId: refresh-access-and-refresh-token
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/member-refresh1564428056'
-            examples:
-              refresh-access-and-refresh-token:
-                value: "{\"refreshToken\":\"5324fdswqe13dew\"}"
-      responses:
-        "200":
-          description: "200"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/member-refresh223414243'
-              examples:
-                refresh-access-and-refresh-token:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
-                    :\"access token\",\"refreshToken\":\"resfresh token\"}}"
   /member/register:
     post:
       tags:
-      - member
-      summary: 회원가입 API
-      description: 회원가입 API 입니다.
-      operationId: register-member
+      - member-controller
+      operationId: registerMember
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/[request] member-register"
-            examples:
-              register-member:
-                value: "{\"password\":\"123456\",\"phoneNumber\":[\"010\",\"1234\"\
-                  ,\"5678\"],\"passwordConfirm\":\"123456\",\"name\":\"홍길동\",\"email\"\
-                  :\"kildong.hong@naver.com\"}"
-      responses:
-        "201":
-          description: "201"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/[response] member-register"
-              examples:
-                register-member:
-                  value: "{\"code\":201,\"message\":\"정상적으로 생성되었습니다.\",\"data\":{\"\
-                    id\":1}}"
-  /member/business/validate-info:
-    post:
-      tags:
-      - business
-      summary: 사업자 정보 유효성 검증
-      description: 사업자 정보 유효성 검증 API입니다. (지금은 사용하지 않습니다.)
-      operationId: validate-business-info
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/[request] validate-business-info"
-            examples:
-              validate-business-info:
-                value: "{\"businessNumber\":\"0000000000\",\"startDate\":\"20000101\"\
-                  ,\"name\":\"홍길동\",\"name2\":\"홍길순\",\"businessName\":\"(주)테스트\"\
-                  ,\"corporationNumber\":\"0000000000000\",\"businessSector\":\"\"\
-                  ,\"businessType\":\"\",\"businessAddress\":\"\"}"
+              required:
+              - request
+              type: object
+              properties:
+                request:
+                  $ref: '#/components/schemas/MemberRegisterDto'
+                file:
+                  type: string
+                  format: binary
       responses:
         "200":
-          description: "200"
+          description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: "#/components/schemas/[response] validate-business-info"
-              examples:
-                validate-business-info:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"isValid\"\
-                    :true}}"
-  /member/business/validate-status:
+                $ref: '#/components/schemas/BfResponseObject'
+  /member/refresh:
     post:
       tags:
-      - business
-      summary: 사업자 번호 상태 검증
-      description: 사업자 번호 상태 검증 API입니다.
-      operationId: business-number-status
+      - member-controller
+      operationId: refreshAccessToken
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/[request] business-number-status"
-            examples:
-              business-number-status:
-                value: "{\"businessNumber\":\"0000000000\"}"
+              $ref: '#/components/schemas/RefreshTokenRequestDto'
+        required: true
       responses:
         "200":
-          description: "200"
+          description: OK
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: "#/components/schemas/[response] business-number-status"
-              examples:
-                business-number-status:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"isValid\"\
-                    :true}}"
+                $ref: '#/components/schemas/BfResponseObject'
+  /member/login:
+    post:
+      tags:
+      - member-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberLoginDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponseObject'
   /member/login/oauth:
     post:
       tags:
-      - member
-      summary: 소셜 로그인 API
-      description: 소셜 로그인 API 입니다.
-      operationId: oauth-login
+      - member-controller
+      operationId: oauthLogin
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/OAuthLoginDto'
-            examples:
-              oauth-login:
-                value: "{\"authorizationCode\":\"authorizationCode\",\"providerType\"\
-                  :\"KAKAO\",\"rolesType\":\"ROLE_USER\",\"state\":\"state\",\"token\"\
-                  :\"accessToken\"}"
+        required: true
       responses:
         "200":
-          description: "200"
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponseObject'
+  /member/business/number/status:
+    post:
+      tags:
+      - member-controller
+      summary: 사업자 번호 상태 조회
+      description: 입력된 사업자 정보의 유효성을 검증합니다.
+      operationId: businessNumberStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessNumberValidateRequestDto'
+        required: true
+      responses:
+        "200":
+          description: 사업자 번호 검증 유효성 검사 결과
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/LoginTokenDto'
               examples:
-                oauth-login:
-                  value: "{\"code\":200,\"message\":\"정상 처리되었습니다.\",\"data\":{\"accessToken\"\
-                    :\"accessToken\",\"refreshToken\":\"resfreshToken\"}}"
+                valid:
+                  description: valid
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      isValid: true
+                invalid:
+                  description: invalid
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      isValid: false
+      security: []
+  /member/business/info/validation:
+    post:
+      tags:
+      - member-controller
+      summary: 사업자 정보 검증
+      description: 입력된 사업자 정보의 유효성을 검증합니다.
+      operationId: validateBusinessNumber
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessInfoValidateRequestDto'
+        required: true
+      responses:
+        "200":
+          description: 사업자 정보 검증 유효성 검사 결과
+          content:
+            application/json:
+              examples:
+                valid:
+                  description: valid
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      isValid: true
+                invalid:
+                  description: invalid
+                  value:
+                    code: 200
+                    message: 정상 처리되었습니다.
+                    data:
+                      isValid: false
+      security: []
 components:
   schemas:
-    member-refresh223414243:
-    '[response] validate-business-info':
-      title: "[response] validate-business-info"
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - accessToken
-          - refreshToken
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: 갱신된 Access Token
-            refreshToken:
-              type: string
-              description: 갱신된 Refresh Token
-          - isValid
-          type: object
-          properties:
-            isValid:
-              type: boolean
-              description: 유효성 검사 결과
-        message:
-          type: string
-          description: 응답 메시지
-    '[request] business-number-status':
-      title: "[request] business-number-status"
-      required:
-      - businessNumber
-      type: object
-      properties:
-        businessNumber:
-          type: string
-          description: 사업자번호
-    '[response] business-number-status':
-      title: "[response] business-number-status"
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - isValid
-          type: object
-          properties:
-            isValid:
-              type: boolean
-              description: 상태 검증 결과
-        message:
-          type: string
-          description: 응답 메시지
-    '[request] member-register':
-      title: "[request] member-register"
+    MemberRegisterDto:
       required:
       - email
       - name
       - password
       - passwordConfirm
-      - phoneNumber
       type: object
       properties:
-        password:
+        email:
+          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
           type: string
-          description: 비밀번호
-        phoneNumber:
-          type: array
-          description: 전화번호
-          items:
-            oneOf:
-            - type: object
-            - type: boolean
-            - type: string
-            - type: number
-        passwordConfirm:
-          type: string
-          description: 비밀번호 확인
         name:
+          maxLength: 50
+          minLength: 2
           type: string
-          description: 이름
-        email:
-          type: string
-          description: 이메일
-    OAuthLoginDto:
-      title: OAuthLoginDto
-      required:
-      - authorizationCode
-      - providerType
-      - rolesType
-      type: object
-      properties:
-        rolesType:
-          type: string
-          description: "유저의 자격 값입니다. ( 관리자 : ROLE_ADMIN, 일반 회원 : ROLE_USER, 가게 회원\
-            \ : ROLE_STORE_OWNER )"
-        authorizationCode:
-          type: string
-          description: Authorization Server에서 받은 인증 코드입니다.
-        state:
-          type: string
-          description: 네이버 소셜 로그인 시 필요한 state 값입니다. 'state' string 주면 됩니다. ( KAKAO
-            로그인 시 null )
-          nullable: true
-        providerType:
-          type: string
-          description: "어떤 소셜 로그인인지 입력 값입니다. ( 카카오 로그인 : KAKAO, 네이버 로그인 : NAVER )"
-        token:
-          type: string
-          description: 소셜 인증 서버에서 발급받은 접근 토큰 값입니다.
-          nullable: true
-    '[request] member-login':
-      title: "[request] member-login"
-      required:
-      - email
-      - password
-      type: object
-      properties:
         password:
+          maxLength: 2147483647
+          minLength: 6
           type: string
-          description: 비밀번호
-        email:
+        passwordConfirm:
+          maxLength: 2147483647
+          minLength: 6
           type: string
-          description: 이메일
-    '[response] member-login':
-      title: "[response] member-login"
-      required:
-      - code
-      - message
+        phoneNumber:
+          maxLength: 3
+          minLength: 3
+          type: string
+    BfResponseObject:
       type: object
       properties:
         code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - accessToken
-          - refreshToken
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: Access Token
-            refreshToken:
-              type: string
-              description: Refresh Token
+          type: integer
+          format: int32
         message:
           type: string
-          description: 응답 메시지
-    member-refresh1564428056:
+        data:
+          type: object
+    RefreshTokenRequestDto:
       required:
       - refreshToken
       type: object
       properties:
         refreshToken:
           type: string
-          description: refresh token 값입니다.
-    LoginTokenDto:
-      title: LoginTokenDto
+    MemberLoginDto:
       required:
-      - code
-      - message
+      - email
+      - password
       type: object
       properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - accessToken
-          - refreshToken
-          type: object
-          properties:
-            accessToken:
-              type: string
-              description: Access Token
-            refreshToken:
-              type: string
-              description: Refresh Token
-        message:
+        email:
+          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
           type: string
-          description: 응답 메시지
-    '[response] member-register':
-      title: "[response] member-register"
+        password:
+          maxLength: 2147483647
+          minLength: 6
+          type: string
+    OAuthLoginDto:
       required:
-      - code
-      - message
+      - authorizationCode
+      - token
       type: object
       properties:
-        code:
-          type: number
-          description: 응답 코드
-        data:
-          required:
-          - id
-          type: object
-          properties:
-            id:
-              type: number
-              description: 사용자 ID
-        message:
+        authorizationCode:
           type: string
-          description: 응답 메시지
-    '[request] validate-business-info':
-      title: "[request] validate-business-info"
+        providerType:
+          type: string
+          enum:
+          - KAKAO
+          - NAVER
+          - GOOGLE
+        rolesType:
+          type: string
+          enum:
+          - ROLE_ADMIN
+          - ROLE_USER
+          - ROLE_STORE_OWNER
+        state:
+          type: string
+        token:
+          type: string
+    BusinessNumberValidateRequestDto:
       required:
-      - businessAddress
-      - businessName
       - businessNumber
-      - businessSector
-      - businessType
-      - name
-      - startDate
       type: object
       properties:
-        businessSector:
+        businessNumber:
           type: string
-          description: 주업태명
-        corporationNumber:
+          description: 사업자 번호
+          example: 123-45-67890
+    BusinessInfoValidateRequestDto:
+      required:
+      - businessNumber
+      - name
+      type: object
+      properties:
+        businessNumber:
           type: string
-          description: 법인등록번호
-          nullable: true
-        businessName:
+          description: 사업자 번호
+          example: 123-45-67890
+        startDate:
           type: string
-          description: 상호
+          description: "개업 일자, yyyyMMdd 형식"
+          example: "20220415"
         name:
           type: string
           description: 대표자 성명
-        businessNumber:
-          type: string
-          description: 사업자번호
-        businessAddress:
-          type: string
-          description: 사업장주소
-        businessType:
-          type: string
-          description: 주종목명
+          example: 홍길동
         name2:
           type: string
           description: 대표자 성명2
-          nullable: true
-        startDate:
+          example: 김철수
+        businessName:
           type: string
-          description: 개업일자
+          description: 대표자 성명2
+          example: 김철수
+        corporationNumber:
+          type: string
+          description: 상호
+          example: OOO 기업
+        businessSector:
+          type: string
+          description: 주업태명
+          example: 제조업
+        businessType:
+          type: string
+          description: 주종목명
+          example: 전자제품
+        businessAddress:
+          type: string
+          description: 사업장 주소
+          example: 서울시 강남구 역삼동 123-45
+  securitySchemes:
+    Authorization:
+      type: http
+      name: Authorization
+      scheme: bearer
+      bearerFormat: JWT
