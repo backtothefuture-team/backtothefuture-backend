@@ -28,7 +28,7 @@ public class HeartController {
         this.heartService = heartService;
     }
 
-    @Operation(summary = "상점 찜 추가", description = "특정 상점에 대해 특정 사용자가 찜을 추가합니다.")
+    @Operation(summary = "상점 찜 등록", description = "특정 상점에 대해 특정 사용자가 찜을 등록합니다.")
     @ApiResponse(responseCode = "200", description = "찜 추가 성공", content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = BfResponse.class),
             examples = {

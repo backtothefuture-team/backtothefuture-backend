@@ -1,6 +1,7 @@
 package com.backtothefuture.store.service;
 
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_MEMBER_ID;
+import static com.backtothefuture.domain.common.enums.StoreErrorCode.DUPLICATED_HEART;
 import static com.backtothefuture.domain.common.enums.StoreErrorCode.NOT_FOUND_STORE_ID;
 
 import com.backtothefuture.domain.heart.Heart;
@@ -31,6 +32,11 @@ public class HeartService {
 
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(NOT_FOUND_STORE_ID));
+
+        boolean exists = heartRepository.existsByMemberAndStore(member, store);
+        if (exists) {
+            throw new StoreException(DUPLICATED_HEART);
+        }
 
         Heart heart = Heart.builder()
                 .member(member)

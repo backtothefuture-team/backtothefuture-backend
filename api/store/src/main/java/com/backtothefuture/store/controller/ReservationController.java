@@ -12,11 +12,6 @@ import com.backtothefuture.store.dto.response.MemberDoneReservationResponseDto;
 import com.backtothefuture.store.dto.response.MemberProgressReservationResponseDto;
 import com.backtothefuture.store.service.ReservationHistoryService;
 import com.backtothefuture.store.service.ReservationService;
-<<<<<<< HEAD
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import java.util.Map;
-=======
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
->>>>>>> dev
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/reservations")
-<<<<<<< HEAD
 @Tag(name = "예약(주문) API", description = "예약 관련 API 입니다.")
-=======
-@Tag(name = "예약(주문) API", description = "예약 관련 API입니다.")
->>>>>>> dev
 public class ReservationController {
 
     private final ReservationService reservationService;
