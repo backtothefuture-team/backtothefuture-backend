@@ -17,6 +17,8 @@ import com.backtothefuture.security.exception.CustomSecurityException;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ProductRegisterDto;
 import com.backtothefuture.store.dto.request.ProductUpdateDto;
+import com.backtothefuture.store.dto.response.ProductGetListResponseDto;
+import com.backtothefuture.store.dto.response.ProductGetOneResponseDto;
 import com.backtothefuture.store.dto.response.ProductResponseDto;
 import com.backtothefuture.store.exception.ProductException;
 import java.io.IOException;
@@ -51,20 +53,22 @@ public class ProductService {
         Long id = productRepository.save(product).getId();
 
         // 이미지 업로드
-        try {
-            String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(id), thumbnail);
-            product.setThumbnailUrl(imageUrl);
-        } catch (IllegalArgumentException e) {
-            throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
-        } catch (IOException e) {
-            throw new ProductException(IMAGE_UPLOAD_FAIL);
+        if (thumbnail != null) {
+            try {
+                String imageUrl = s3Util.uploadProductThumbnail(String.valueOf(storeId), String.valueOf(id), thumbnail);
+                product.setThumbnailUrl(imageUrl);
+            } catch (IllegalArgumentException e) {
+                throw new ProductException(UNSUPPORTED_IMAGE_EXTENSION);
+            } catch (IOException e) {
+                throw new ProductException(IMAGE_UPLOAD_FAIL);
+            }
         }
 
         return id;
     }
 
     @Transactional(readOnly = true)
-    public ProductResponseDto getProduct(Long storeId, Long productId) {
+    public ProductGetOneResponseDto getProduct(Long storeId, Long productId) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(NOT_FOUND_PRODUCT_ID));
@@ -73,19 +77,20 @@ public class ProductService {
             throw new ProductException(NOT_FOUND_STORE_PRODUCT_MATCH);
         }
 
-        return ProductResponseDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .stockQuantity(product.getStockQuantity())
-                .thumbnail(product.getThumbnail())
-                .build();
+        return new ProductGetOneResponseDto(
+                ProductResponseDto.builder()
+                        .id(product.getId())
+                        .name(product.getName())
+                        .description(product.getDescription())
+                        .price(product.getPrice())
+                        .stockQuantity(product.getStockQuantity())
+                        .thumbnail(product.getThumbnail())
+                        .build());
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> getAllProducts() {
-        return productRepository.findAll().stream()
+    public ProductGetListResponseDto getAllProducts() {
+        List<ProductResponseDto> products = productRepository.findAll().stream()
                 .map(product -> ProductResponseDto.builder()
                         .id(product.getId())
                         .name(product.getName())
@@ -95,11 +100,13 @@ public class ProductService {
                         .thumbnail(product.getThumbnail())
                         .build())
                 .collect(Collectors.toList());
+        return new ProductGetListResponseDto(products);
     }
 
     @Transactional
-    public ProductResponseDto partialUpdateProduct(Long storeId, Long productId, ProductUpdateDto productUpdateDto,
-                                                   MultipartFile thumbnail) {
+    public ProductGetOneResponseDto partialUpdateProduct(Long storeId, Long productId,
+                                                         ProductUpdateDto productUpdateDto,
+                                                         MultipartFile thumbnail) {
         // 권한 검사
         if (!validateIsProductOwner(storeId, productId)) {
             throw new ProductException(FORBIDDEN_DELETE_PRODUCT);
@@ -131,7 +138,7 @@ public class ProductService {
 
         }
 
-        return ProductResponseDto.builder()
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
@@ -139,6 +146,8 @@ public class ProductService {
                 .stockQuantity(product.getStockQuantity())
                 .thumbnail(product.getThumbnail())
                 .build();
+
+        return new ProductGetOneResponseDto(productResponseDto);
     }
 
     @Transactional
