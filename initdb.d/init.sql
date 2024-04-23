@@ -1,7 +1,7 @@
 DROP
-    DATABASE IF EXISTS test;
+DATABASE IF EXISTS test;
 CREATE
-    DATABASE IF NOT EXISTS test;
+DATABASE IF NOT EXISTS test;
 
 USE test;
 
@@ -87,33 +87,6 @@ CREATE TABLE reservation_product
     FOREIGN KEY (product_id) REFERENCES product (product_id)
 );
 
-CREATE TABLE reservation_product
-(
-    reservation_product_id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    quantity               int,
-    reservation_id         bigint NOT NULL,
-    product_id             bigint NOT NULL,
-    updated_at             datetime(6),
-    updated_by             varchar(255),
-    created_at             datetime(6),
-    created_by             varchar(255),
-    FOREIGN KEY (reservation_id) REFERENCES reservation (reservation_id),
-    FOREIGN KEY (product_id) REFERENCES product (product_id)
-);
-
-CREATE TABLE heart
-(
-    heart_id    bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    member_id   bigint NOT NULL,
-    store_id    bigint NOT NULL,
-    updated_at  datetime(6),
-    updated_by  varchar(255),
-    created_at  datetime(6),
-    created_by  varchar(255),
-    FOREIGN KEY (store_id) REFERENCES store (store_id),
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
-);
-
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)
 VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
@@ -128,4 +101,3 @@ INSERT INTO product (product_id, name, description, price, stock_quantity, thumb
                      created_at, created_by)
 VALUES (1, 'test', 'test', 1000, 10, null, 1, null, null, null, null),
        (2, 'test', 'test', 2000, 10, null, 1, null, null, null, null);
-
