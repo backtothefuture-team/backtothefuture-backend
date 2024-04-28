@@ -41,3 +41,4 @@ out/
 
 ### tmp
 core/infra/src/main/resources/schema.sql
+core/infra/src/main/resources/firebase-secret.json

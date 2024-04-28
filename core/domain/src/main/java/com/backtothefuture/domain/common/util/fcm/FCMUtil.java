@@ -32,20 +32,20 @@ public class FCMUtil {
         fcmAsyncUtil.sendReservationRegisterMessage(message);
     }
 
-//    /**
-//     * 픽업 30분 전 알림 전송
-//     */
-//    public void sendReservationRemindMessages(List<String> tokens) throws FirebaseMessagingException {
-//
-//        MulticastMessage multicastMessage = MulticastMessage.builder()
-//                .setNotification(Notification.builder()
-//                        .setTitle(REMIND_TITLE)
-//                        .setBody(REMIND_BODY)
-//                        .build())
-//                .addAllTokens(tokens)
-//                .build();
-//
-//        fcmAsyncUtil.sendReservationRemindMessages(multicastMessage);
-//    }
+    /**
+     * 픽업 30분 전 알림 전송
+     */
+    public void sendReservationRemindMessages(List<String> tokens) throws FirebaseMessagingException {
+
+        MulticastMessage multicastMessage = MulticastMessage.builder()
+                .setNotification(Notification.builder()
+                        .setTitle(REMIND_TITLE)
+                        .setBody(REMIND_BODY)
+                        .build())
+                .addAllTokens(tokens)
+                .build();
+
+        fcmAsyncUtil.sendReservationRemindMessages(multicastMessage);
+    }
 
 }

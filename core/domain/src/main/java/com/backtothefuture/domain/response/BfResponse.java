@@ -31,4 +31,9 @@ public class BfResponse<T> {
         this.message = statusCode.getMessage();
         this.data = data;
     }
+
+    public BfResponse(GlobalSuccessCode statusCode) {
+        this.code = statusCode.getCode();
+        this.message = statusCode.getMessage();
+    }
 }

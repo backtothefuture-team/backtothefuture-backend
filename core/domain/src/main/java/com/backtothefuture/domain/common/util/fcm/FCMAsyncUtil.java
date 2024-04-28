@@ -24,12 +24,12 @@ public class FCMAsyncUtil {
         return firebaseMessaging.send(message);
     }
 
-//    /**
-//     * 특정 시각을 기준으로 예약 시간 30분 전 고객들에게 알림을 요청한다.
-//     */
-//    @Async("FCMAsyncBean")
-//    public void sendReservationRemindMessages(MulticastMessage messages) throws FirebaseMessagingException {
-//        firebaseMessaging.sendEachForMulticast(messages);
-//    }
+    /**
+     * 특정 시각을 기준으로 예약 시간 30분 전 고객들에게 알림을 요청한다.
+     */
+    @Async("FCMAsyncBean")
+    public void sendReservationRemindMessages(MulticastMessage messages) throws FirebaseMessagingException {
+        firebaseMessaging.sendEachForMulticast(messages);
+    }
 
 }
