@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.support.ListItemWriter;
 
-public class ItemWriterAdapterImpl<T extends String> extends ListItemWriter<T> {
+public class ListItemWriterImpl<T extends String> extends ListItemWriter<T> {
 
     private final FCMUtil fcmUtil;
     private final String TITLE = "픽업 30분 전 알림";
     private final String BODY = "픽업 30분 전입니다.";
 
-    public ItemWriterAdapterImpl(FCMUtil fcmUtil) {
+    public ListItemWriterImpl(FCMUtil fcmUtil) {
         this.fcmUtil= fcmUtil;
     }
 

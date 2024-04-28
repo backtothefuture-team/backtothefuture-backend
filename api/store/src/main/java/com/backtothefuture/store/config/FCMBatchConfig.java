@@ -4,7 +4,7 @@ package com.backtothefuture.store.config;
 import com.backtothefuture.domain.common.util.fcm.FCMUtil;
 import com.backtothefuture.infra.config.BatchConfig;
 import com.backtothefuture.store.dto.RegistrationTokenMappingDto;
-import com.backtothefuture.store.util.batch.ItemWriterAdapterImpl;
+import com.backtothefuture.store.util.batch.ListItemWriterImpl;
 import com.backtothefuture.store.util.batch.RegistrationTokenItemProcessor;
 import com.backtothefuture.store.util.batch.RegistrationTokenMapper;
 import javax.sql.DataSource;
@@ -82,7 +82,7 @@ public class FCMBatchConfig extends BatchConfig {
      */
     @Bean
     public ListItemWriter<String> getReservationWriter() {
-        return new ItemWriterAdapterImpl<>(fcmUtil);
+        return new ListItemWriterImpl<>(fcmUtil);
     }
 
 }
