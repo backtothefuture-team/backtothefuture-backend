@@ -1,5 +1,6 @@
 package com.backtothefuture.store.service;
 
+import com.backtothefuture.domain.common.util.fcm.FCMUtil;
 import com.backtothefuture.domain.reservation.Reservation;
 import com.backtothefuture.domain.reservation.ReservationProduct;
 import com.backtothefuture.domain.reservation.ReservationStatusHistory;
@@ -48,6 +49,7 @@ public class ReservationService {
     private final StoreRepository storeRepository;
     private final CustomReservationRepository customReservationRepository;
     private final ReservationStatusHistoryRepository reservationStatusHistoryRepository;
+    private final FCMUtil fcmUtil;
 
     @Transactional
     public Long makeReservation(Long memberId, ReservationRequestDto dto) {
