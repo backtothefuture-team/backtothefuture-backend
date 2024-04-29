@@ -1,19 +1,15 @@
 package com.backtothefuture.member.controller;
 
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
-import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
 
 import com.backtothefuture.domain.common.enums.OAuthErrorCode;
 import com.backtothefuture.domain.response.BfResponse;
-import com.backtothefuture.member.dto.request.BusinessInfoValidateRequestDto;
-import com.backtothefuture.member.dto.request.BusinessNumberValidateRequestDto;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.OAuthException;
-import com.backtothefuture.member.service.MemberBusinessService;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
 import com.backtothefuture.security.service.UserDetailsImpl;
@@ -23,7 +19,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -53,7 +48,6 @@ public class MemberController {
     @Qualifier("naverOAuthService")
     private final OAuthService naverOAuthService;
 
-    private final MemberBusinessService memberBusinessService;
 
     @PostMapping("/login")
     public ResponseEntity<BfResponse<?>> login(@Valid @RequestBody MemberLoginDto memberLoginDto) {
@@ -128,44 +122,4 @@ public class MemberController {
         return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails.getId())));
     }
 
-
-    @PostMapping("/business/info/validation")
-    @Operation(summary = "사업자 정보 검증", description = "입력된 사업자 정보의 유효성을 검증합니다.")
-    @SecurityRequirements(value = {}) // no security
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "사업자 정보 검증 유효성 검사 결과", useReturnTypeSchema = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(name = "valid", value = "{\"code\": 200, \"message\": \"정상 처리되었습니다.\", \"data\": {\"isValid\": true}}"),
-                                    @ExampleObject(name = "invalid", value = "{\"code\": 200, \"message\": \"정상 처리되었습니다.\", \"data\": {\"isValid\": false}}")
-                            }
-                    )
-            )
-    })
-    public ResponseEntity<BfResponse<?>> validateBusinessNumber(
-            @Valid @RequestBody BusinessInfoValidateRequestDto businessNumberValidateRequestDto) {
-        return ResponseEntity.ok().body(new BfResponse<>(SUCCESS,
-                Map.of("isValid", memberBusinessService.validateBusinessInfo(businessNumberValidateRequestDto))));
-    }
-
-    @PostMapping("/business/number/status")
-    @Operation(summary = "사업자 번호 상태 조회", description = "입력된 사업자 정보의 유효성을 검증합니다.")
-    @SecurityRequirements(value = {}) // no security
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "사업자 번호 검증 유효성 검사 결과", useReturnTypeSchema = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(name = "valid", value = "{\"code\": 200, \"message\": \"정상 처리되었습니다.\", \"data\": {\"isValid\": true}}"),
-                                    @ExampleObject(name = "invalid", value = "{\"code\": 200, \"message\": \"정상 처리되었습니다.\", \"data\": {\"isValid\": false}}")
-                            }
-                    )
-            )
-    })
-    public ResponseEntity<BfResponse<?>> businessNumberStatus(
-            @RequestBody BusinessNumberValidateRequestDto requestDto) {
-        return ResponseEntity.ok().body(new BfResponse<>(SUCCESS,
-                Map.of("isValid", memberBusinessService.validateBusinessNumber(requestDto.businessNumber()))));
-    }
 }
