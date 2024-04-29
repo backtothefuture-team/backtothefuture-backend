@@ -150,7 +150,8 @@ public class SpringSecurityConfig {
 
                 // Review
                 antMatcher(POST, "/reviews/**"),
-                antMatcher(GET, "/reviews/**")
+                antMatcher(GET, "/reviews/**"),
+                antMatcher(PATCH, "/reviews/**")
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);

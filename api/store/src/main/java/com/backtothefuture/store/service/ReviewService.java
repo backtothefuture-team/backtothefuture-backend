@@ -5,10 +5,12 @@ import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.review.Review;
 import com.backtothefuture.domain.review.repository.ReviewRepository;
 import com.backtothefuture.store.dto.request.ReviewCreateRequest;
+import com.backtothefuture.store.dto.request.ReviewUpdateRequest;
 import com.backtothefuture.store.dto.response.ReviewsReadResponse;
 import com.backtothefuture.store.exception.ReviewException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -63,5 +65,30 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findAllByMemberId(memberId, Sort.by(Direction.DESC, "createdAt"));
 
         return ReviewsReadResponse.from(reviews);
+    }
+
+    @Transactional
+    public void update(Long memberId, ReviewUpdateRequest request) {
+        Review review = findById(request.reviewId());
+        validateMemberMatch(review, memberId);
+
+        if (request.imageFile() != null) {
+            String imageUrl = uploadReviewImage(request.reviewId(), request.imageFile());
+            review.update(request.ratingCount(), request.content(), imageUrl);
+
+        } else {
+            review.update(request.ratingCount(), request.content());
+        }
+    }
+
+    private void validateMemberMatch(Review review, Long memberId) {
+        if (!Objects.equals(review.getMemberId(), memberId)) {
+            throw new ReviewException(ReviewErrorCode.MEMBER_MISMATCH);
+        }
+    }
+
+    private Review findById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.NOT_EXISTS));
     }
 }

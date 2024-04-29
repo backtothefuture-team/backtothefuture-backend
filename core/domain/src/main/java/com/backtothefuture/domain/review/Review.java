@@ -15,10 +15,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Review extends MutableBaseEntity {
 
     @Id
@@ -54,6 +56,17 @@ public class Review extends MutableBaseEntity {
     }
 
     public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void update(Double ratingCount, String content) {
+        this.ratingCount = ratingCount;
+        this.content = content;
+    }
+
+    public void update(Double ratingCount, String content, String imageUrl) {
+        this.ratingCount = ratingCount;
+        this.content = content;
         this.imageUrl = imageUrl;
     }
 }
