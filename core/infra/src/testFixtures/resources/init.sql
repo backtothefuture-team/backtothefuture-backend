@@ -35,7 +35,7 @@ CREATE TABLE store
     created_at   datetime(6),
     created_by   varchar(255),
     rating       double,
-    rating_count int,
+    rating_count double,
     start_time   time,
     end_time     time,
     FOREIGN KEY (member_id) REFERENCES member (member_id)

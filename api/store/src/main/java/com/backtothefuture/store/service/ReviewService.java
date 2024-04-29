@@ -5,9 +5,13 @@ import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.review.Review;
 import com.backtothefuture.domain.review.repository.ReviewRepository;
 import com.backtothefuture.store.dto.request.ReviewCreateRequest;
+import com.backtothefuture.store.dto.response.ReviewsReadResponse;
 import com.backtothefuture.store.exception.ReviewException;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,5 +57,11 @@ public class ReviewService {
         } catch (IOException e) {
             throw new ReviewException(ReviewErrorCode.IMAGE_UPLOAD_FAIL);
         }
+    }
+
+    public List<ReviewsReadResponse> findAllBy(Long memberId) {
+        List<Review> reviews = reviewRepository.findAllByMemberId(memberId, Sort.by(Direction.DESC, "createdAt"));
+
+        return ReviewsReadResponse.from(reviews);
     }
 }

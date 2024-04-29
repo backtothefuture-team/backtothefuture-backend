@@ -9,7 +9,7 @@ public record ReviewCreateRequest(
         Long storeId,
 
         @NotNull
-        int ratingCount, // TODO 더블로 수정
+        Double ratingCount,
 
         String content,
         MultipartFile imageFile

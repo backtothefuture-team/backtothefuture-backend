@@ -1,14 +1,19 @@
 package com.backtothefuture.store.controller;
 
+import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
+
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ReviewCreateRequest;
+import com.backtothefuture.store.dto.response.ReviewsReadResponse;
 import com.backtothefuture.store.service.ReviewService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +32,16 @@ public class ReviewController {
         reviewService.save(userDetails.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<BfResponse<List<ReviewsReadResponse>>> readReviews(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        List<ReviewsReadResponse> response = reviewService.findAllBy(userDetails.getId());
+
+        return ResponseEntity.ok(
+                new BfResponse<>(SUCCESS, response)
+        );
     }
 }

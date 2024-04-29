@@ -147,7 +147,10 @@ public class SpringSecurityConfig {
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(GET,"/reservations/done"), // 고객 주문 완료 내역
                 antMatcher(GET,"/reservations/proceeding"), // 고객 진행 중인 주문 내역
-                antMatcher(POST, "/reviews/**")
+
+                // Review
+                antMatcher(POST, "/reviews/**"),
+                antMatcher(GET, "/reviews/**")
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
