@@ -7,6 +7,7 @@ import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_REFRESH_TOKEN;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_MATCH_REFRESH_TOKEN;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.PASSWORD_NOT_MATCHED;
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.REQUIRED_TERM_ACCEPT;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
 
 import com.backtothefuture.domain.common.repository.RedisRepository;
@@ -14,6 +15,10 @@ import com.backtothefuture.domain.common.util.ConvertUtil;
 import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
+import com.backtothefuture.domain.term.Term;
+import com.backtothefuture.domain.term.TermHistory;
+import com.backtothefuture.domain.term.repository.TermHistoryRepository;
+import com.backtothefuture.domain.term.repository.TermRepository;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
@@ -21,6 +26,7 @@ import com.backtothefuture.member.exception.MemberException;
 import com.backtothefuture.security.jwt.JwtProvider;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +43,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final TermHistoryRepository termHistoryRepository;
+    private final TermRepository termRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
@@ -81,6 +89,15 @@ public class MemberService {
             throw new MemberException(DUPLICATED_MEMBER_PHONE_NUMBER);
         }
 
+        // 필수 동의 약관 체크
+        List<Term> allTerms = termRepository.findAll();
+
+        allTerms.stream().filter(Term::isRequired).forEach(term -> {
+            if (!memberRegisterDto.getAccpetedTerms().contains(term.getId())) {
+                throw new MemberException(REQUIRED_TERM_ACCEPT);
+            }
+        });
+
         // 비밀번호 확인
         validatePassword(memberRegisterDto.getPassword(), memberRegisterDto.getPasswordConfirm());
 
@@ -89,6 +106,16 @@ public class MemberService {
         member.setPhoneNumber(memberRegisterDto.getPhoneNumber());
 
         Long id = memberRepository.save(member).getId();
+
+        // 약관 동의 여부 저장
+        allTerms.forEach(term -> {
+            TermHistory termHistory = TermHistory.builder()
+                    .member(member)
+                    .term(term)
+                    .isAccepted(memberRegisterDto.getAccpetedTerms().contains(term.getId()))
+                    .build();
+            termHistoryRepository.save(termHistory);
+        });
 
         // 이미지 업로드
         try {
