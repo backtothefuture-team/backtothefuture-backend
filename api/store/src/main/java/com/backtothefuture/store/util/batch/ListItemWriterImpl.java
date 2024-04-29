@@ -11,8 +11,6 @@ import org.springframework.batch.item.support.ListItemWriter;
 public class ListItemWriterImpl<T extends String> extends ListItemWriter<T> {
 
     private final FCMUtil fcmUtil;
-    private final String TITLE = "픽업 30분 전 알림";
-    private final String BODY = "픽업 30분 전입니다.";
 
     public ListItemWriterImpl(FCMUtil fcmUtil) {
         this.fcmUtil= fcmUtil;
