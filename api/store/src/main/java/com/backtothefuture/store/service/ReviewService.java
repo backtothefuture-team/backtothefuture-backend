@@ -81,6 +81,14 @@ public class ReviewService {
         }
     }
 
+    @Transactional
+    public void delete(Long memberId, Long reviewId) {
+        Review review = findById(reviewId);
+        validateMemberMatch(review, memberId);
+
+        reviewRepository.deleteById(reviewId);
+    }
+
     private void validateMemberMatch(Review review, Long memberId) {
         if (!Objects.equals(review.getMemberId(), memberId)) {
             throw new ReviewException(ReviewErrorCode.MEMBER_MISMATCH);
