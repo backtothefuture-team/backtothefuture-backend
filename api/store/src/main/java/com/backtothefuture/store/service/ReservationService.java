@@ -22,6 +22,7 @@ import com.backtothefuture.store.exception.MemberException;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.exception.ProductException;
 import com.backtothefuture.store.exception.StoreException;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class ReservationService {
     private final FCMUtil fcmUtil;
 
     @Transactional
-    public Long makeReservation(Long memberId, ReservationRequestDto dto) {
+    public Long makeReservation(Long memberId, ReservationRequestDto dto) throws FirebaseMessagingException {
 
         Member member = memberRepository.findById(memberId)  // 현재 회원 조회
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
@@ -80,7 +81,7 @@ public class ReservationService {
                         .build());
 
         updateStock(dto, reservation);  // 재고 차감
-
+        fcmUtil.sendReservationRegisterMessage(store.getMember().getRegistrationToken()); // 가게 사장님에게 알림 전송
         return reservation.getId();
     }
 
