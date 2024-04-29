@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,8 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
+@Builder
+@AllArgsConstructor
 public class Review extends MutableBaseEntity {
 
     @Id
@@ -46,14 +49,6 @@ public class Review extends MutableBaseEntity {
     private String content;
 
     private String imageUrl;
-
-    @Builder
-    private Review(Long memberId, Long storeId, Double ratingCount, String content) {
-        this.memberId = memberId;
-        this.storeId = storeId;
-        this.ratingCount = ratingCount;
-        this.content = content;
-    }
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
