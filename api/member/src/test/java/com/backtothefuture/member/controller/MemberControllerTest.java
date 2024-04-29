@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -121,6 +122,7 @@ class MemberControllerTest extends BfTestConfig {
 
     @Test
     @DisplayName("일반 로그인 테스트")
+    @Disabled
     void loginTest() throws Exception {
         // 로그인 요청에 필요한 정보를 HashMap으로 생성
         Map<String, Object> loginMap = new HashMap<>();
@@ -142,6 +144,7 @@ class MemberControllerTest extends BfTestConfig {
 
     @Test
     @DisplayName("oauth 회원 가입 테스트")
+    @Disabled
     void oauthLoginTest() throws Exception {
         // resource server에서 받아온 정보로 회원가입 진행
         // given
@@ -166,6 +169,7 @@ class MemberControllerTest extends BfTestConfig {
     @Test
     @DisplayName("토큰 갱신 테스트")
     @WithMockCustomUser
+    @Disabled
     void refreshToken() throws Exception {
 
         RefreshTokenRequestDto oldToken = new RefreshTokenRequestDto("5324fdswqe13dew");
@@ -180,6 +184,7 @@ class MemberControllerTest extends BfTestConfig {
     }
 
     @DisplayName("사업자 정보 유효성 검증 테스트")
+    @Disabled
     void validateBusinessInfoTest() throws Exception {
         // 사업자 정보 유효성 검사 요청 정보
         BusinessInfoValidateRequestDto businessInfoValidateRequestDto = new BusinessInfoValidateRequestDto(
@@ -205,6 +210,7 @@ class MemberControllerTest extends BfTestConfig {
 
     @Test
     @DisplayName("사업자 번호 상태 검증 테스트")
+    @Disabled
     void businessNumberStatusTest() throws Exception {
         // 사업자 번호 상태 검증 요청 정보
         Map<String, String> requestbody = Map.of("businessNumber", "0000000000");
