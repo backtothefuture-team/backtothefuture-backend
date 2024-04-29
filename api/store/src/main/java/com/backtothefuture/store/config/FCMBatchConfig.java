@@ -32,7 +32,7 @@ public class FCMBatchConfig extends BatchConfig {
      */
     private final String QUERY =
             "select member.registration_token from member join reservation on member.member_id = reservation.member_id "
-                    + "where reservation_time > DATE_ADD(NOW(), INTERVAL 30 MINUTE) and reservation_time < DATE_ADD(NOW(), INTERVAL 31 MINUTE)";
+                    + "where reservation.reservation_time > DATE_ADD(NOW(), INTERVAL 30 MINUTE) and reservation.reservation_time < DATE_ADD(NOW(), INTERVAL 31 MINUTE)";
     private final RegistrationTokenMapper registrationTokenMapper;
     private final RegistrationTokenItemProcessor registrationTokenItemProcessor;
     private final FCMUtil fcmUtil;
