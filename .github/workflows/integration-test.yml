@@ -35,7 +35,7 @@ jobs:
       # firebase-secret.json 생성
       - name: create firebase-secret.json
         run: |
-          touch /core/infra/src/main/resources/firebase-secret.json
+          touch ./core/infra/src/main/resources/firebase-secret.json
           echo "${{ secrets.FIREBASE_SECRET }}" >> /core/infra/src/main/resources/firebase-secret.json
       - name: Set up JDK 17
         uses: actions/setup-java@v4
