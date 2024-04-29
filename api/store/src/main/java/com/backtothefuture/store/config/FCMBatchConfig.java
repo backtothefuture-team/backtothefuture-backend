@@ -28,11 +28,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class FCMBatchConfig extends BatchConfig {
 
     /*
-     현재 시간 기준으로 예약 시간이 30분 뒤인 예약을 접수한 고객들의 기기 등록 토큰을 조회
+     현재 시간 기준으로 예약 시간이 30~31분 뒤인 예약을 접수한 고객들의 기기 등록 토큰을 조회
      */
     private final String QUERY =
-            "select member.registration_token from member join reservation on member.member_id = "
-                    + "reservation.member_id where reservation_time > NOW() and reservation_time < DATE_ADD(NOW(), INTERVAL 30 MINUTE)";
+            "select member.registration_token from member join reservation on member.member_id = reservation.member_id "
+                    + "where reservation_time > DATE_ADD(NOW(), INTERVAL 30 MINUTE) and reservation_time < DATE_ADD(NOW(), INTERVAL 31 MINUTE)";
     private final RegistrationTokenMapper registrationTokenMapper;
     private final RegistrationTokenItemProcessor registrationTokenItemProcessor;
     private final FCMUtil fcmUtil;
