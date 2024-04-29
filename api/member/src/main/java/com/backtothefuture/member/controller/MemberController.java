@@ -18,8 +18,10 @@ import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -29,6 +31,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,13 +60,31 @@ public class MemberController {
         return ResponseEntity.ok(new BfResponse<>(memberService.login(memberLoginDto)));
     }
 
-    @PostMapping("/register")
+    @Operation(
+            summary = "회원 가입",
+            description = "회원 가입 API 입니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "등록 성공",
+                            content = @Content(schema = @Schema(implementation = BfResponse.class),
+                                    examples = {
+                                            @ExampleObject(name = "success", value = "{\"code\": 201, \"message\": \"정상적으로 생성되었습니다.\", \"data\": {\"member_id\": 1}}")
+                                    }))
+            })
+    @SecurityRequirements(value = {}) // no security
+    @PostMapping(
+            value = "/register",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<BfResponse<?>> registerMember(
+            @Parameter(description = "요청 정보입니다.")
             @Valid @RequestPart(value = "request") MemberRegisterDto reqMemberDto,
+            @Parameter(description = "프로필 이미지로 사용할 이미지를 첨부해 주세요.")
             @RequestPart(value = "file", required = false) MultipartFile thumbnail
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BfResponse<>(CREATE, Map.of("id", memberService.registerMember(reqMemberDto, thumbnail))));
+                .body(new BfResponse<>(CREATE,
+                        Map.of("member_id", memberService.registerMember(reqMemberDto, thumbnail))));
     }
 
     @Operation(
