@@ -34,9 +34,10 @@ jobs:
           echo GOOGLE_FIREBASE_SERVICE_PROJECTID=${{ secrets.GOOGLE_FIREBASE_SERVICE_PROJECTID }} >> .env
       # firebase-secret.json 생성
       - name: create firebase-secret.json
+        working-directory: /core/infra/src/main/resources
         run: |
-          touch ./core/infra/src/main/resources/firebase-secret.json
-          echo "${{ secrets.FIREBASE_SECRET }}" >> /core/infra/src/main/resources/firebase-secret.json
+          touch firebase-secret.json
+          echo "${{ secrets.FIREBASE_SECRET }}" >> firebase-secret.json
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
