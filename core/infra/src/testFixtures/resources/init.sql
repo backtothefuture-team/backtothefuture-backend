@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS review
     updated_by      varchar(255),
     created_at      datetime(6),
     created_by      varchar(255)
-)
+);
 
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)

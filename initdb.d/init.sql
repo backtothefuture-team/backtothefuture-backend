@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS review
     updated_by      varchar(255),
     created_at      datetime(6),
     created_by      varchar(255)
-)
+);
 
 CREATE TABLE reservation
 (
