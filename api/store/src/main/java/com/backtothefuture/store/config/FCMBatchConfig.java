@@ -4,7 +4,7 @@ package com.backtothefuture.store.config;
 import com.backtothefuture.domain.common.util.fcm.FCMUtil;
 import com.backtothefuture.infra.config.BatchConfig;
 import com.backtothefuture.store.dto.RegistrationTokenMappingDto;
-import com.backtothefuture.store.util.batch.ListItemWriterImpl;
+import com.backtothefuture.store.util.batch.FCMWriter;
 import com.backtothefuture.store.util.batch.RegistrationTokenItemProcessor;
 import com.backtothefuture.store.util.batch.RegistrationTokenMapper;
 import javax.sql.DataSource;
@@ -15,9 +15,9 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
-import org.springframework.batch.item.support.ListItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -81,8 +81,8 @@ public class FCMBatchConfig extends BatchConfig {
      * FCM ItemWriter 등록
      */
     @Bean
-    public ListItemWriter<String> getReservationWriter() {
-        return new ListItemWriterImpl<>(fcmUtil);
+    public ItemWriter<String> getReservationWriter() {
+        return new FCMWriter<>(fcmUtil);
     }
 
 }
