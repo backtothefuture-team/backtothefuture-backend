@@ -13,6 +13,9 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 @Testcontainers
 public abstract class BfTestConfig {
+
+    private static final int REDIS_PORT = 6379;
+
     @Container
     static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8")
             .withUsername("root")
@@ -22,7 +25,7 @@ public abstract class BfTestConfig {
 
     @Container
     static GenericContainer<?> redisContainer = new GenericContainer<>("redis:5.0.3-alpine")
-            .withExposedPorts(6379);
+            .withExposedPorts(REDIS_PORT);
 
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
@@ -34,8 +37,9 @@ public abstract class BfTestConfig {
 
     @DynamicPropertySource
     static void redisProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.redis.host", redisContainer::getHost);
-        registry.add("spring.redis.port", () -> redisContainer.getFirstMappedPort());
+        redisContainer.start();
+        registry.add("spring.data.redis.host", redisContainer::getHost);
+        registry.add("spring.data.redis.port", () -> String.valueOf(redisContainer.getMappedPort(REDIS_PORT)));
     }
 
     // .env 환경변수 등록
