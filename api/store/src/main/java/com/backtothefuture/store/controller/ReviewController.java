@@ -20,15 +20,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+@RequestMapping("/reviews")
 @RestController
 @RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/reviews")
+    @PostMapping("")
     public ResponseEntity<BfResponse<Void>> createReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @ModelAttribute ReviewCreateRequest request
@@ -38,7 +41,7 @@ public class ReviewController {
                 .build();
     }
 
-    @GetMapping("/reviews")
+    @GetMapping("")
     public ResponseEntity<BfResponse<List<ReviewsReadResponse>>> readReviews(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -49,7 +52,7 @@ public class ReviewController {
         );
     }
 
-    @PatchMapping("/reviews")
+    @PatchMapping("")
     public ResponseEntity<BfResponse<Void>> updateReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @ModelAttribute ReviewUpdateRequest request
@@ -59,7 +62,7 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/reviews/{reviewId}")
+    @DeleteMapping("/{reviewId}")
     public ResponseEntity<BfResponse<Void>> deleteReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long reviewId
