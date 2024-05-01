@@ -127,11 +127,13 @@ public class MemberController {
     }
 
     @PatchMapping("/{memberId}")
+    @Operation(summary = "회원 정보 업데이트", description = "회원의 정보를 업데이트합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 업데이트되었습니다.", content = @Content(schema = @Schema(implementation = BfResponse.class)))
     public ResponseEntity<BfResponse<?>> updateMemberInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Parameter(description = "회원 ID입니다.")
             @PathVariable Long memberId,
-            @Parameter(description = "회원 정보입니다.")
+            @Parameter(description = "업데이트 할 회원 정보입니다. 업데이트가 필요한 정보만 전달해주세요.")
             @Valid @RequestBody MemberUpdateRequestDto memberUpdateDto
     ) {
         memberService.updateMemberInfo(userDetails, memberId, memberUpdateDto);
