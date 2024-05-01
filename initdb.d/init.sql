@@ -131,6 +131,7 @@ CREATE TABLE account
     member_id      bigint NOT NULL,
     bank_id        bigint NOT NULL,
     account_number varchar(255),
+    account_holder varchar(255),
     updated_at     datetime(6),
     updated_by     varchar(255),
     created_at     datetime(6),

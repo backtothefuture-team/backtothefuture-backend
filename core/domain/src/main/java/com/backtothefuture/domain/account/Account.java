@@ -31,6 +31,8 @@ public class Account extends MutableBaseEntity {
 
     private String accountNumber;    // 계좌 번호
 
+    private String accountHolder;    // 예금주
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bank_id")
     private Bank bank;    // 은행
@@ -45,5 +47,9 @@ public class Account extends MutableBaseEntity {
 
     public void updateAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public void updateAccountHolder(String accountHolder) {
+        this.accountHolder = accountHolder;
     }
 }

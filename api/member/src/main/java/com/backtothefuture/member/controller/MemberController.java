@@ -13,6 +13,7 @@ import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
 import com.backtothefuture.member.dto.request.TermHistoryUpdateDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
+import com.backtothefuture.member.dto.response.MemberInfoDto;
 import com.backtothefuture.member.exception.OAuthException;
 import com.backtothefuture.member.service.MemberService;
 import com.backtothefuture.member.service.OAuthService;
@@ -34,6 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -134,6 +136,16 @@ public class MemberController {
             @Valid @RequestBody RefreshTokenRequestDto dto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails.getId())));
+    }
+
+    @GetMapping("/{memberId}")
+    @Operation(summary = "회원 정보 조회", description = "회원의 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "회원 정보 조회 성공", useReturnTypeSchema = true)
+    public ResponseEntity<BfResponse<MemberInfoDto>> getMemberInfo(
+            @Parameter(description = "회원 ID입니다.")
+            @PathVariable Long memberId
+    ) {
+        return ResponseEntity.ok(new BfResponse<>(memberService.getMemberInfo(memberId)));
     }
 
     @PatchMapping("/{memberId}")

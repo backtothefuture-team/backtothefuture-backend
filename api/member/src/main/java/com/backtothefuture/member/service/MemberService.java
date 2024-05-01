@@ -36,7 +36,9 @@ import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.ResidenceInfoDto;
 import com.backtothefuture.member.dto.request.TermHistoryUpdateDto;
+import com.backtothefuture.member.dto.response.AccountResponseInfoDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
+import com.backtothefuture.member.dto.response.MemberInfoDto;
 import com.backtothefuture.member.exception.MemberException;
 import com.backtothefuture.security.jwt.JwtProvider;
 import com.backtothefuture.security.service.UserDetailsImpl;
@@ -216,6 +218,46 @@ public class MemberService {
     }
 
     /**
+     * 회원 기본 정보 조회
+     */
+    public MemberInfoDto getMemberInfo(Long memberId) {
+        // 회원 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
+
+        // 계좌 정보 설정
+        AccountResponseInfoDto accountInfo = Optional.ofNullable(member.getAccount())
+                .map(account -> AccountResponseInfoDto.builder()
+                        .code(account.getBank().getCode())
+                        .name(account.getBank().getName())
+                        .accountHolder(account.getAccountHolder())
+                        .accountNumber(account.getAccountNumber())
+                        .build())
+                .orElse(null);
+
+        // 거주지 정보 설정
+        ResidenceInfoDto residenceInfo = Optional.ofNullable(member.getResidence())
+                .map(residence -> ResidenceInfoDto.builder()
+                        .latitude(residence.getLatitude())
+                        .longitude(residence.getLongitude())
+                        .address(residence.getAddress())
+                        .build())
+                .orElse(null);
+
+        return MemberInfoDto.builder()
+                .id(member.getId())
+                .authId(member.getAuthId())
+                .email(member.getEmail())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .profile(member.getProfile())
+                .birth(member.getBirth())
+                .accountInfo(accountInfo)
+                .residenceInfo(residenceInfo)
+                .build();
+    }
+
+    /**
      * 회원 기본 정보 수정
      */
     @Transactional
@@ -306,6 +348,7 @@ public class MemberService {
             account = Account.builder()
                     .bank(bank)
                     .accountNumber(accountInfo.accountNumber())
+                    .accountHolder(accountInfo.accountHolder())
                     .member(member)
                     .build();
         } else {
@@ -313,6 +356,7 @@ public class MemberService {
                 account.updateBankInfo(bank);
             }
             Optional.ofNullable(accountInfo.accountNumber()).ifPresent(account::updateAccountNumber);
+            Optional.ofNullable(accountInfo.accountHolder()).ifPresent(account::updateAccountHolder);
         }
 
         member.updateAccount(account);

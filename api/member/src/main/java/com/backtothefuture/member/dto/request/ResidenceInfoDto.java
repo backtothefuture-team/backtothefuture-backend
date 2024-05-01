@@ -1,7 +1,9 @@
 package com.backtothefuture.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
+@Builder
 public record ResidenceInfoDto(
         @Schema(description = "거주지 주소", example = "서울시 강남구 역삼동 123-45")
         String address,                         // 거주지 주소
