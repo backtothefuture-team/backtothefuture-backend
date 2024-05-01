@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum MemberErrorCode implements BaseErrorCode {
     // 400 BAD_REQUEST
+    BAD_REQUEST(400, "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
     NOT_FOUND_MEMBER_EMAIL(400, "존재하지 않는 회원입니다.", HttpStatus.BAD_REQUEST),
     DUPLICATED_MEMBER_EMAIL(400, "이미 존재하는 회원 이메일입니다.", HttpStatus.BAD_REQUEST),
     DUPLICATED_MEMBER_PHONE_NUMBER(400, "이미 등록된 휴대폰 번호입니다.", HttpStatus.BAD_REQUEST),
@@ -20,6 +21,7 @@ public enum MemberErrorCode implements BaseErrorCode {
     NOT_FOUND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_MATCH_REFRESH_TOKEN(404, "refresh token이 일치하지 않습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_BANK(404, "존재하지 않는 은행입니다.", HttpStatus.NOT_FOUND),
 
     // 500 INTERNAL_SERVER_ERROR
     BUSINESS_VALIDATE_ERROR(500, "사업자등록 진위여부 확인에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

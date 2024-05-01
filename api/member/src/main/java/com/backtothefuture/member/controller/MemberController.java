@@ -1,11 +1,13 @@
 package com.backtothefuture.member.controller;
 
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.CREATE;
+import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
 
 import com.backtothefuture.domain.common.enums.OAuthErrorCode;
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
+import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
@@ -29,6 +31,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -122,4 +126,15 @@ public class MemberController {
         return ResponseEntity.ok(new BfResponse<>(memberService.refreshToken(dto.refreshToken(), userDetails.getId())));
     }
 
+    @PatchMapping("/{memberId}")
+    public ResponseEntity<BfResponse<?>> updateMemberInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Parameter(description = "회원 ID입니다.")
+            @PathVariable Long memberId,
+            @Parameter(description = "회원 정보입니다.")
+            @Valid @RequestBody MemberUpdateRequestDto memberUpdateDto
+    ) {
+        memberService.updateMemberInfo(userDetails, memberId, memberUpdateDto);
+        return ResponseEntity.ok(new BfResponse<>(SUCCESS));
+    }
 }

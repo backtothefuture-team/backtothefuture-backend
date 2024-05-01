@@ -1,19 +1,25 @@
 package com.backtothefuture.domain.member;
 
+import com.backtothefuture.domain.account.Account;
 import com.backtothefuture.domain.common.MutableBaseEntity;
 import com.backtothefuture.domain.member.enums.ProviderType;
 import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.domain.member.enums.StatusType;
-
+import com.backtothefuture.domain.residence.Residence;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,6 +55,14 @@ public class Member extends MutableBaseEntity {
 
     private String profile;        // 프로필 이미지
 
+    private LocalDate birth;        // 생년월일
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private Account account;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private Residence residence;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255)")
     private StatusType status = StatusType.PENDING; // 상태
@@ -64,5 +78,26 @@ public class Member extends MutableBaseEntity {
 
     public void setProfileUrl(String url) {
         this.profile = url;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updateBirth(String birth) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        this.birth = LocalDate.parse(birth, formatter);
+    }
+
+    public void updateAccount(Account account) {
+        this.account = account;
+    }
+
+    public void updateResidence(Residence residence) {
+        this.residence = residence;
     }
 }

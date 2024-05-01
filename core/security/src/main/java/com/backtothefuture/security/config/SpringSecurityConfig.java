@@ -136,6 +136,7 @@ public class SpringSecurityConfig {
      */
     private RequestMatcher[] AuthRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(PATCH, "/member/{memberId}"),                            // 회원 정보 수정
                 antMatcher(POST, "/stores"),                            // 가게 등록
                 antMatcher(POST, "/stores/{storeId}/products"),                // 상품 등록
                 antMatcher(DELETE, "/stores/{storeId}/products/{productId}"),    // 상품 삭제
@@ -145,9 +146,8 @@ public class SpringSecurityConfig {
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
-                antMatcher(GET,"/reservations/done"), // 고객 주문 완료 내역
-                antMatcher(GET,"/reservations/proceeding") // 고객 진행 중인 주문 내역
-
+                antMatcher(GET, "/reservations/done"), // 고객 주문 완료 내역
+                antMatcher(GET, "/reservations/proceeding") // 고객 진행 중인 주문 내역
 
         );
 
