@@ -50,7 +50,7 @@ public class MemberRegisterDto {
     @NotEmpty(message = "약관 동의는 필수 항목입니다.")
     private List<Long> accpetedTerms;
 
-    public String getPhoneNumber() {
+    public String getJoinedPhoneNumber() {
         return String.join("-", this.phoneNumber);
     }
 }

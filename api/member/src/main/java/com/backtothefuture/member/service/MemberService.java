@@ -85,7 +85,7 @@ public class MemberService {
         // 아이디 중복 체크
         if (memberRepository.existsByEmail(memberRegisterDto.getEmail())) {
             throw new MemberException(DUPLICATED_MEMBER_EMAIL);
-        } else if (memberRepository.existsByPhoneNumber(memberRegisterDto.getPhoneNumber())) {
+        } else if (memberRepository.existsByPhoneNumber(memberRegisterDto.getJoinedPhoneNumber())) {
             throw new MemberException(DUPLICATED_MEMBER_PHONE_NUMBER);
         }
 
@@ -103,7 +103,7 @@ public class MemberService {
 
         Member member = ConvertUtil.toDtoOrEntity(memberRegisterDto, Member.class);
         member.setPassword(passwordEncoder.encode(memberRegisterDto.getPassword()));
-        member.setPhoneNumber(memberRegisterDto.getPhoneNumber());
+        member.setPhoneNumber(memberRegisterDto.getJoinedPhoneNumber());
 
         Long id = memberRepository.save(member).getId();
 
@@ -118,13 +118,15 @@ public class MemberService {
         });
 
         // 이미지 업로드
-        try {
-            String imageUrl = s3Util.uploadMemberProfile(String.valueOf(id), thumbnail);
-            member.setProfileUrl(imageUrl);
-        } catch (IllegalArgumentException e) {
-            throw new MemberException(UNSUPPORTED_IMAGE_EXTENSION);
-        } catch (IOException e) {
-            throw new MemberException(IMAGE_UPLOAD_FAIL);
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            try {
+                String imageUrl = s3Util.uploadMemberProfile(String.valueOf(id), thumbnail);
+                member.setProfileUrl(imageUrl);
+            } catch (IllegalArgumentException e) {
+                throw new MemberException(UNSUPPORTED_IMAGE_EXTENSION);
+            } catch (IOException e) {
+                throw new MemberException(IMAGE_UPLOAD_FAIL);
+            }
         }
 
         return id;
