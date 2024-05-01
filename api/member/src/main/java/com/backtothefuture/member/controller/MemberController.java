@@ -52,9 +52,15 @@ public class MemberController {
     @Qualifier("naverOAuthService")
     private final OAuthService naverOAuthService;
 
-
+    @Operation(
+            summary = "일반 로그인",
+            description = "일반 로그인 API입니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "로그인 성공 응답입니다.", useReturnTypeSchema = true)
+            })
+    @SecurityRequirements(value = {})
     @PostMapping("/login")
-    public ResponseEntity<BfResponse<?>> login(@Valid @RequestBody MemberLoginDto memberLoginDto) {
+    public ResponseEntity<BfResponse<LoginTokenDto>> login(@Valid @RequestBody MemberLoginDto memberLoginDto) {
         return ResponseEntity.ok(new BfResponse<>(memberService.login(memberLoginDto)));
     }
 
