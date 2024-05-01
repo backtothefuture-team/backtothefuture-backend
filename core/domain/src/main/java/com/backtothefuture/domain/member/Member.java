@@ -100,4 +100,12 @@ public class Member extends MutableBaseEntity {
     public void updateResidence(Residence residence) {
         this.residence = residence;
     }
+
+    public void activeMember() {
+        this.status = StatusType.ACTIVE;
+    }
+
+    public void inactiveMember() {
+        this.status = StatusType.INACTIVE;
+    }
 }

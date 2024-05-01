@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -144,5 +145,19 @@ public class MemberController {
     ) {
         memberService.updateMemberInfo(userDetails, memberId, memberUpdateDto);
         return ResponseEntity.ok(new BfResponse<>(SUCCESS));
+    }
+
+    @DeleteMapping("/{memberId}")
+    @Operation(summary = "회원 탈퇴", responses = {
+            @ApiResponse(description = "탈퇴 성공", responseCode = "204", content = @Content(schema = @Schema(hidden = true)))},
+            parameters = {
+                    @Parameter(name = "memberId", description = "회원 ID", required = true)
+            })
+    public ResponseEntity<BfResponse<?>> deleteMember(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable("memberId") Long memberId
+    ) {
+        memberService.inactiveMember(userDetails, memberId);
+        return ResponseEntity.noContent().build();
     }
 }

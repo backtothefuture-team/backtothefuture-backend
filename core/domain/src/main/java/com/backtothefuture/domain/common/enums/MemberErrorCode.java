@@ -17,6 +17,9 @@ public enum MemberErrorCode implements BaseErrorCode {
     REQUIRED_TERM_ACCEPT(400, "필수 약관에 동의해주세요.", HttpStatus.BAD_REQUEST),
     UNSUPPORTED_IMAGE_EXTENSION(400, "지원하지 않는 확장자 입니다. jpeg혹은 png 파일을 업로드 해주세요.", HttpStatus.BAD_REQUEST),
 
+    // 403 FORBIDDEN
+    FORBIDDEN_DELETE_MEMBER(403, "권한이 없습니다. 본인 계정만 탈퇴할 수 있습니다.", HttpStatus.FORBIDDEN),
+
     // 404 NOT_FOUND
     NOT_FOUND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),

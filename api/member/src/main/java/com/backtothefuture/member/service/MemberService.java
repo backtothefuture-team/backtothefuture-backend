@@ -3,6 +3,7 @@ package com.backtothefuture.member.service;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.BAD_REQUEST;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.DUPLICATED_MEMBER_EMAIL;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.DUPLICATED_MEMBER_PHONE_NUMBER;
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.FORBIDDEN_DELETE_MEMBER;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.IMAGE_UPLOAD_FAIL;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_BANK;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_MEMBER_ID;
@@ -20,6 +21,7 @@ import com.backtothefuture.domain.common.repository.RedisRepository;
 import com.backtothefuture.domain.common.util.ConvertUtil;
 import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
+import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.residence.Residence;
 import com.backtothefuture.domain.residence.repository.ResidenceRepository;
@@ -139,6 +141,9 @@ public class MemberService {
             }
         }
 
+        // 모든 회원 가입 절차 종료 후 회원을 active 상태로 변경
+        member.activeMember();
+
         return id;
     }
 
@@ -243,6 +248,25 @@ public class MemberService {
         });
 
         memberRepository.save(member);
+    }
+
+    /**
+     * 회원 탈퇴 실제 삭제처리 하지 않고, INACTIVE 처리
+     */
+    @Transactional
+    public void inactiveMember(UserDetailsImpl userDetails, Long memberId) {
+
+        // 회원 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
+
+        // 현재 로그인된 유저와 탈퇴하려는 회원이 일치하는지 확인 (관리자는 예외)
+        if (member.getRoles() != RolesType.ROLE_ADMIN
+                && !userDetails.getId().equals(memberId)) {
+            throw new MemberException(FORBIDDEN_DELETE_MEMBER);
+        }
+
+        member.inactiveMember();
     }
 
     protected void checkRequiredTerms(List<Term> allTerms, List<Long> acceptedTerms) {
