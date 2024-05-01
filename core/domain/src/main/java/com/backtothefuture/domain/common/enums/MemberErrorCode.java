@@ -25,6 +25,7 @@ public enum MemberErrorCode implements BaseErrorCode {
     NOT_FOUND_REFRESH_TOKEN(404, "refresh token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_MATCH_REFRESH_TOKEN(404, "refresh token이 일치하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_BANK(404, "존재하지 않는 은행입니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_TERM_HISTORY(404, "존재하지 않는 약관 이력입니다.", HttpStatus.NOT_FOUND),
 
     // 500 INTERNAL_SERVER_ERROR
     BUSINESS_VALIDATE_ERROR(500, "사업자등록 진위여부 확인에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

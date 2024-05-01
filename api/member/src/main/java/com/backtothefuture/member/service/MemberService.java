@@ -8,6 +8,7 @@ import static com.backtothefuture.domain.common.enums.MemberErrorCode.IMAGE_UPLO
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_BANK;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_MEMBER_ID;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_REFRESH_TOKEN;
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_TERM_HISTORY;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_MATCH_REFRESH_TOKEN;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.PASSWORD_NOT_MATCHED;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.REQUIRED_TERM_ACCEPT;
@@ -34,6 +35,7 @@ import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.ResidenceInfoDto;
+import com.backtothefuture.member.dto.request.TermHistoryUpdateDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.MemberException;
 import com.backtothefuture.security.jwt.JwtProvider;
@@ -251,11 +253,29 @@ public class MemberService {
     }
 
     /**
+     * 약관 동의 업데이트
+     */
+    @Transactional
+    public void updateTermAgreement(Long memberId, Long termId, TermHistoryUpdateDto termHistoryUpdateDto) {
+        TermHistory termHistory = termHistoryRepository.findByTermIdAndMemberId(termId, memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_TERM_HISTORY));
+
+        // 약관 동의 철회일때, 필수 약관 체크
+        if (!termHistoryUpdateDto.isAccepted()) {
+            Term term = termHistory.getTerm();
+            if (term.isRequired()) {
+                throw new MemberException(REQUIRED_TERM_ACCEPT);
+            }
+        }
+
+        termHistory.updateIsAccepted(termHistoryUpdateDto.isAccepted());
+    }
+
+    /**
      * 회원 탈퇴 실제 삭제처리 하지 않고, INACTIVE 처리
      */
     @Transactional
     public void inactiveMember(UserDetailsImpl userDetails, Long memberId) {
-
         // 회원 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));

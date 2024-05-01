@@ -5,11 +5,13 @@ import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
 
 import com.backtothefuture.domain.common.enums.OAuthErrorCode;
 import com.backtothefuture.domain.response.BfResponse;
+import com.backtothefuture.domain.response.ErrorResponse;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
+import com.backtothefuture.member.dto.request.TermHistoryUpdateDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.OAuthException;
 import com.backtothefuture.member.service.MemberService;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -144,6 +147,39 @@ public class MemberController {
             @Valid @RequestBody MemberUpdateRequestDto memberUpdateDto
     ) {
         memberService.updateMemberInfo(userDetails, memberId, memberUpdateDto);
+        return ResponseEntity.ok(new BfResponse<>(SUCCESS));
+    }
+
+    @PutMapping("/{memberId}/terms/{termId}")
+    @Operation(
+            summary = "약관 동의 여부 업데이트",
+            description = "약관 동의 여부를 업데이트 합니다.",
+            parameters = {
+                    @Parameter(name = "memberId", description = "회원 ID", required = true),
+                    @Parameter(name = "termId", description = "약관 ID", required = true)
+            }
+    )
+    @ApiResponse(responseCode = "200", description = "약관 동의 여부 업데이트 성공", content = @Content(schema = @Schema(implementation = BfResponse.class)))
+    @ApiResponse(
+            responseCode = "400",
+            description = "필수 약관에 동의하지 않았을 경우",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            name = "필수 약관 미동의 에러",
+                            summary = "필수 약관 미동의",
+                            description = "사용자가 필수 약관에 동의하지 않았을 때 반환되는 에러 메시지입니다.",
+                            value = "{\"errorCode\": 400, \"errorMessage\": \"필수 약관에 동의해주세요.\"}"
+                    )
+            )
+    )
+    public ResponseEntity<BfResponse<?>> updateTermAgreement(
+            @PathVariable Long memberId,
+            @PathVariable Long termId,
+            @RequestBody TermHistoryUpdateDto termHistoryUpdateDto
+    ) {
+        memberService.updateTermAgreement(memberId, termId, termHistoryUpdateDto);
         return ResponseEntity.ok(new BfResponse<>(SUCCESS));
     }
 
