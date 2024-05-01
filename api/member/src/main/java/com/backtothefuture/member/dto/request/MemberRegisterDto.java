@@ -41,7 +41,7 @@ public class MemberRegisterDto {
     @Size(min = 6, message = "비밀번호 확인은 최소 6자 이상 입력해주세요.")
     private String passwordConfirm;
 
-    @ArraySchema(arraySchema = @Schema(description = "회원 핸드폰 번호", example = "[\"010\", \"0000\", \"0000\"]"))
+    @ArraySchema(arraySchema = @Schema(description = "회원 핸드폰 번호", example = "[\"010\", \"9876\", \"5432\"]"))
     @Size(min = 3, max = 3, message = "핸드폰 번호를 올바르게 입력해 주세요.")
     @NumericStringList(message = "핸드폰 번호는 숫자만 입력할 수 있습니다.")
     private List<String> phoneNumber;
@@ -50,7 +50,7 @@ public class MemberRegisterDto {
     @NotEmpty(message = "약관 동의는 필수 항목입니다.")
     private List<Long> accpetedTerms;
 
-    public String getJoinedPhoneNumber() {
+    public String makePhoneNumberString() {
         return String.join("-", this.phoneNumber);
     }
 }

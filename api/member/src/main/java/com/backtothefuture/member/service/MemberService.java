@@ -100,7 +100,7 @@ public class MemberService {
         // 아이디 중복 체크
         if (memberRepository.existsByEmail(memberRegisterDto.getEmail())) {
             throw new MemberException(DUPLICATED_MEMBER_EMAIL);
-        } else if (memberRepository.existsByPhoneNumber(memberRegisterDto.getJoinedPhoneNumber())) {
+        } else if (memberRepository.existsByPhoneNumber(memberRegisterDto.makePhoneNumberString())) {
             throw new MemberException(DUPLICATED_MEMBER_PHONE_NUMBER);
         }
 
@@ -113,7 +113,7 @@ public class MemberService {
 
         Member member = ConvertUtil.toDtoOrEntity(memberRegisterDto, Member.class);
         member.setPassword(passwordEncoder.encode(memberRegisterDto.getPassword()));
-        member.setPhoneNumber(memberRegisterDto.getJoinedPhoneNumber());
+        member.setPhoneNumber(memberRegisterDto.makePhoneNumberString());
 
         Long id = memberRepository.save(member).getId();
 
