@@ -46,9 +46,9 @@ public class Store extends MutableBaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;        // 회원
 
-    private double rating; // TODO 리뷰가 등록될 때 rating, ratingCount가 업데이트되어야 함
+    private double averageRating; // TODO 리뷰가 등록될 때 rating, ratingCount가 업데이트되어야 함
 
-    private int ratingCount;
+    private int totalRatingCount;
 
     private LocalTime startTime; // 영업 시작 시간
 

@@ -12,8 +12,8 @@ public record StoreResponse(
         //int surpriseBagPrice,
         //int surpriseBagDiscountRate, // TODO 서프라이즈백 구분 기능 확정된 후 구현
 
-        double rating,
-        int ratingCount,
+        double averageRating,
+        int totalRatingCount,
 
         LocalTime startTime,
         LocalTime endTime
@@ -26,8 +26,8 @@ public record StoreResponse(
                 store.getId(),
                 store.getName(),
                 store.getImage(),
-                store.getRating(),
-                store.getRatingCount(),
+                store.getAverageRating(),
+                store.getTotalRatingCount(),
                 store.getStartTime(),
                 store.getEndTime()
         );
