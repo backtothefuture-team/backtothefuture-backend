@@ -2,7 +2,6 @@ package com.backtothefuture.domain.store;
 
 import com.backtothefuture.domain.common.MutableBaseEntity;
 import com.backtothefuture.domain.member.Member;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,13 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -47,6 +45,10 @@ public class Store extends MutableBaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;        // 회원
+
+    private double rating; // TODO 리뷰가 등록될 때 rating, ratingCount가 업데이트되어야 함
+
+    private double ratingCount;
 
     private LocalTime startTime; // 영업 시작 시간
 

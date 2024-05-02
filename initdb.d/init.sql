@@ -58,6 +58,20 @@ CREATE TABLE product
     FOREIGN KEY (store_id) REFERENCES store (store_id)
 );
 
+CREATE TABLE IF NOT EXISTS review
+(
+    review_id       BIGINT     NOT NULL    AUTO_INCREMENT PRIMARY KEY,
+    member_id       BIGINT     NOT NULL,
+    store_id        BIGINT     NOT NULL,
+    rating_count    DOUBLE     NOT NULL,
+    content         TEXT,
+    image_url       VARCHAR(255),
+    updated_at      datetime(6),
+    updated_by      varchar(255),
+    created_at      datetime(6),
+    created_by      varchar(255)
+);
+
 CREATE TABLE reservation
 (
     reservation_id   bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,

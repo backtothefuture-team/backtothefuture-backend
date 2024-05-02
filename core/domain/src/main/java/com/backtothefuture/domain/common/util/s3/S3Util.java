@@ -112,6 +112,20 @@ public class S3Util {
         return uploadImageToS3AndDeletePast(imageBucketName, key, file, dirPath);
     }
 
+    public String uploadReviewImage(String reviewId, MultipartFile file) throws IOException {
+        String dirPath = String.join("/", List.of("review", reviewId, ""));
+
+        String key = dirPath + getCurrentTimestamp() + "." + getImageExtension(file);
+
+        return uploadImageToS3AndDeletePast(imageBucketName, key, file, dirPath);
+    }
+
+    public void deletePastReviewImage(String reviewId) {
+        String dirPath = String.join("/", List.of("review", reviewId, ""));
+
+        s3AsyncUtil.deletePastImages(dirPath);
+    }
+
     public String getCurrentTimestamp() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
