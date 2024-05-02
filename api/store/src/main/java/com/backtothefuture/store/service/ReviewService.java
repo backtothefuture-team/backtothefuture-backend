@@ -86,6 +86,8 @@ public class ReviewService {
         Review review = findById(reviewId);
         validateMemberMatch(review, memberId);
 
+        s3Util.deletePastReviewImage(reviewId.toString());
+
         reviewRepository.deleteById(reviewId);
     }
 

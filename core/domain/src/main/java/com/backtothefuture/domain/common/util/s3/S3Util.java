@@ -120,6 +120,12 @@ public class S3Util {
         return uploadImageToS3AndDeletePast(imageBucketName, key, file, dirPath);
     }
 
+    public void deletePastReviewImage(String reviewId) {
+        String dirPath = String.join("/", List.of("review", reviewId, ""));
+
+        s3AsyncUtil.deletePastImages(dirPath);
+    }
+
     public String getCurrentTimestamp() {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
