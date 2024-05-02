@@ -23,7 +23,7 @@ public record ReviewsReadResponse(
         return new ReviewsReadResponse(
                 review.getId(),
                 review.getStore().getName(),
-                review.getRatingCount(),
+                review.getRating(),
                 review.getCreatedAt(),
                 review.getImageUrl(),
                 review.getContent()

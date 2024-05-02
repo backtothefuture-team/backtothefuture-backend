@@ -30,6 +30,8 @@ public class Store extends MutableBaseEntity {
     @Column(name = "store_id")
     private Long id;
 
+    private Long sortingIndex;
+
     private String name;        // 가게 이름
 
     @Lob
@@ -46,7 +48,7 @@ public class Store extends MutableBaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;        // 회원
 
-    private double averageRating; // TODO 리뷰가 등록될 때 rating, ratingCount가 업데이트되어야 함
+    private double averageRating;
 
     private int totalRatingCount;
 
@@ -56,5 +58,23 @@ public class Store extends MutableBaseEntity {
 
     public void setThumbnailUrl(String url) {
         this.image = url;
+    }
+
+    public void updateRating(double reviewRating) {
+        averageRating = Math.round(
+                ((totalRatingCount * averageRating + reviewRating) / (totalRatingCount + 1)) * 10
+        ) / 10.0;
+        totalRatingCount++;
+    }
+
+    public void updateSortingIndex() {
+        sortingIndex = makeSortingIndex(id, averageRating);
+    }
+
+    private static Long makeSortingIndex(Long storeId, double averageRating) {
+        String format = (int) (averageRating * 10)
+                + String.format("%010d", storeId);
+
+        return Long.parseLong(format);
     }
 }
