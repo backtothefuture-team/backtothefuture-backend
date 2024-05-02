@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS review
     review_id       BIGINT     NOT NULL    AUTO_INCREMENT PRIMARY KEY,
     member_id       BIGINT     NOT NULL,
     store_id        BIGINT     NOT NULL,
-    rating_count    DOUBLE     NOT NULL,
+    rating          DOUBLE     NOT NULL,
     content         TEXT,
     image_url       VARCHAR(255),
     updated_at      datetime(6),
