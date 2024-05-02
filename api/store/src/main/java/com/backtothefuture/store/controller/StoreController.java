@@ -71,6 +71,7 @@ public class StoreController {
             },
             parameters = {
                     @Parameter(name = "sortingOption", description = "정렬 옵션(값이 없을 시 기본 default 적용)", example = "default/star/distance"),
+                    @Parameter(name = "sortingIndex", description = "정렬 옵션이 \"별점\"인 경우 정렬을 위한 옵션(값이 없을 시 0 적용): 이전 페이지의 마지막 가게 sortingIndex", example = "default/star/distance"),
                     @Parameter(name = "cursor", description = "커서(값이 없을 시 기본 0 적용): 이전 페이지의 마지막 가게 식별자", example = "0"),
                     @Parameter(name = "size", description = "페이지 크기(값이 없을 시 기본 10 적용)", example = "10")
             }
@@ -78,11 +79,13 @@ public class StoreController {
     @GetMapping("")
     public ResponseEntity<BfResponse<?>> readStores(
             @RequestParam(defaultValue = "default") String sortingOption,
+            @RequestParam(defaultValue = "0") Long sortingIndex,
             @RequestParam(defaultValue = "0") Long cursor,
             @RequestParam(defaultValue = "10") Integer size
     ) {
         List<StoreResponse> response = storeService.findStores(
                 SortingOption.from(sortingOption),
+                sortingIndex,
                 cursor,
                 size
         );
