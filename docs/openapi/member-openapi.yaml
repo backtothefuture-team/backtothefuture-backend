@@ -45,6 +45,12 @@ paths:
               $ref: '#/components/schemas/TermHistoryUpdateDto'
         required: true
       responses:
+        "200":
+          description: 약관 동의 여부 업데이트 성공
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponse'
         "400":
           description: 필수 약관에 동의하지 않았을 경우
           content:
@@ -58,12 +64,6 @@ paths:
                   value:
                     errorCode: 400
                     errorMessage: 필수 약관에 동의해주세요.
-        "200":
-          description: 약관 동의 여부 업데이트 성공
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/BfResponse'
   /member/register:
     post:
       tags:
@@ -336,18 +336,6 @@ components:
           description: 약관 동의 여부
           example: true
       description: 약관 이력 업데이트 요청
-    ErrorResponse:
-      type: object
-      properties:
-        errorCode:
-          type: integer
-          format: int32
-        errorMessage:
-          type: string
-        validation:
-          type: object
-          additionalProperties:
-            type: string
     BfResponse:
       type: object
       properties:
@@ -363,6 +351,18 @@ components:
         data:
           type: object
           description: 응답 데이터
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          format: int32
+        errorMessage:
+          type: string
+        validation:
+          type: object
+          additionalProperties:
+            type: string
     MemberRegisterDto:
       required:
       - accpetedTerms
@@ -588,6 +588,10 @@ components:
           type: string
           description: "생년월일, yyyyMMdd 포맷"
           example: "20000101"
+        gender:
+          pattern: "^([mf])$"
+          type: string
+          description: 성별
         accountInfo:
           $ref: '#/components/schemas/AccountInfoDto'
         residenceInfo:
@@ -703,6 +707,8 @@ components:
         birth:
           type: string
           format: date
+        gender:
+          type: string
         accountInfo:
           $ref: '#/components/schemas/AccountResponseInfoDto'
         residenceInfo:

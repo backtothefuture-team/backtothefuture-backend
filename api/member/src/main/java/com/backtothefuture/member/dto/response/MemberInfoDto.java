@@ -1,6 +1,5 @@
 package com.backtothefuture.member.dto.response;
 
-import com.backtothefuture.member.dto.request.AccountInfoDto;
 import com.backtothefuture.member.dto.request.ResidenceInfoDto;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -14,6 +13,7 @@ public record MemberInfoDto(
         String phoneNumber,
         String profile,
         LocalDate birth,
+        String gender,
         AccountResponseInfoDto accountInfo,
         ResidenceInfoDto residenceInfo
 ) {

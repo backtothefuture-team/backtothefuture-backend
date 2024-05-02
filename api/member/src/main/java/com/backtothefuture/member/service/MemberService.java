@@ -252,6 +252,7 @@ public class MemberService {
                 .phoneNumber(member.getPhoneNumber())
                 .profile(member.getProfile())
                 .birth(member.getBirth())
+                .gender(member.getGender())
                 .accountInfo(accountInfo)
                 .residenceInfo(residenceInfo)
                 .build();
@@ -280,6 +281,9 @@ public class MemberService {
 
         // 생년월일 업데이트
         Optional.ofNullable(memberUpdateDto.birth()).ifPresent(member::updateBirth);
+
+        // 성별 업데이트
+        Optional.ofNullable(memberUpdateDto.gender()).ifPresent(member::updateGender);
 
         // 계좌 정보 업데이트
         Optional.ofNullable(memberUpdateDto.accountInfo()).ifPresent(accountInfo -> {

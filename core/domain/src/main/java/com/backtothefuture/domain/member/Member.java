@@ -57,6 +57,8 @@ public class Member extends MutableBaseEntity {
 
     private LocalDate birth;        // 생년월일
 
+    private String gender;            // 성별
+
     @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private Account account;
 
@@ -91,6 +93,10 @@ public class Member extends MutableBaseEntity {
     public void updateBirth(String birth) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         this.birth = LocalDate.parse(birth, formatter);
+    }
+
+    public void updateGender(String gender) {
+        this.gender = gender;
     }
 
     public void updateAccount(Account account) {
