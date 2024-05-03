@@ -11,11 +11,16 @@ import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.security.service.UserDetailsImpl;
+import com.backtothefuture.store.domain.SortingOption;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
+import com.backtothefuture.store.dto.response.StoreResponse;
 import com.backtothefuture.store.exception.StoreException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +62,29 @@ public class StoreService {
                 throw new StoreException(IMAGE_UPLOAD_FAIL);
             }
         }
-        
+
         return id;
+    }
+
+    @Transactional(readOnly = true)
+    public List<StoreResponse> findStores(SortingOption sortingOption, Long cursor, Integer size) {
+        Pageable pageable = Pageable.ofSize(size);
+
+        List<Store> stores = new ArrayList<>();
+
+        switch (sortingOption) {
+            case DEFAULT:
+                stores = storeRepository.findStoresBy(cursor, pageable);
+
+            case STAR:
+                // TODO: 별점순으로 정렬하는 기능
+
+            case DISTANCE:
+                // TODO: 거리순으로 정렬하는 기능
+        }
+
+        return stores.stream()
+                .map(StoreResponse::from)
+                .toList();
     }
 }
