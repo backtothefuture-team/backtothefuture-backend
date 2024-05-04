@@ -148,8 +148,13 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(GET, "/reservations/done"), // 고객 주문 완료 내역
-                antMatcher(GET, "/reservations/proceeding") // 고객 진행 중인 주문 내역
+                antMatcher(GET, "/reservations/proceeding"), // 고객 진행 중인 주문 내역
 
+                // Review
+                antMatcher(POST, "/reviews/**"),
+                antMatcher(GET, "/reviews/**"),
+                antMatcher(PATCH, "/reviews/**"),
+                antMatcher(DELETE, "/reviews/**")
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
