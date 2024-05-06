@@ -6,6 +6,7 @@ import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.domain.SortingOption;
+import com.backtothefuture.store.dto.request.MemberLocationRequest;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
 import com.backtothefuture.store.dto.response.StoreResponse;
 import com.backtothefuture.store.service.StoreService;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -81,13 +83,17 @@ public class StoreController {
             @RequestParam(defaultValue = "default") String sortingOption,
             @RequestParam(defaultValue = "0") Long sortingIndex,
             @RequestParam(defaultValue = "0") Long cursor,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestBody(required = false) MemberLocationRequest request
     ) {
         List<StoreResponse> response = storeService.findStores(
                 SortingOption.from(sortingOption),
                 sortingIndex,
                 cursor,
-                size
+                size,
+                page,
+                request
         );
 
         return ResponseEntity.ok()

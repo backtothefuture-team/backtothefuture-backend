@@ -11,6 +11,7 @@ import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.domain.SortingOption;
+import com.backtothefuture.store.dto.request.MemberLocationRequest;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
 import com.backtothefuture.store.dto.response.StoreResponse;
 import com.backtothefuture.store.exception.StoreException;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,7 @@ public class StoreService {
     /**
      * 가게 등록
      */
+    // TODO 가게 등록 시 가게 주소 기반 위도 경도 저장 필요
     @Transactional
     public Long registerStore(UserDetailsImpl userDetails, StoreRegisterDto storeRegisterDto, MultipartFile thumbnail) {
         // 회원 조회
@@ -62,25 +65,32 @@ public class StoreService {
                 throw new StoreException(IMAGE_UPLOAD_FAIL);
             }
         }
-
         return id;
     }
 
     @Transactional(readOnly = true)
-    public List<StoreResponse> findStores(SortingOption sortingOption, Long sortingIndex, Long cursor, Integer size) {
+    public List<StoreResponse> findStores(
+            SortingOption sortingOption, Long sortingIndex, Long cursor,
+            Integer size, Integer page, MemberLocationRequest request
+    ) {
         Pageable pageable = Pageable.ofSize(size);
 
         List<Store> stores = new ArrayList<>();
 
         switch (sortingOption) {
-            case DEFAULT:
-                stores = storeRepository.findStoresByCursor(cursor, pageable);
+            case DISTANCE:
+                return storeRepository.findStoresByLocation(
+                        request.latitude(),
+                        request.longitude(),
+                        PageRequest.of(page, size)
+                );
 
             case STAR:
                 stores = storeRepository.findStoresBySortingIndex(sortingIndex, pageable);
+                break;
 
-            case DISTANCE:
-                // TODO: 거리순으로 정렬하는 기능
+            case DEFAULT:
+                stores = storeRepository.findStoresByCursor(cursor, pageable);
         }
 
         return stores.stream()
