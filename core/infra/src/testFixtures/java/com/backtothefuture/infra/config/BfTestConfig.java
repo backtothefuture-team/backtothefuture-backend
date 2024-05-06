@@ -39,7 +39,7 @@ public abstract class BfTestConfig {
     static void redisProperties(DynamicPropertyRegistry registry) {
         redisContainer.start();
         registry.add("spring.data.redis.host", redisContainer::getHost);
-        registry.add("spring.data.redis.port", () -> String.valueOf(redisContainer.getMappedPort(REDIS_PORT)));
+        registry.add("spring.data.redis.port", () -> redisContainer.getMappedPort(REDIS_PORT));
     }
 
     // .env 환경변수 등록
