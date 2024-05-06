@@ -5,6 +5,8 @@ import java.time.LocalTime;
 
 public record StoreResponse(
         Long id,
+        Long sortingIndex,
+
         String name,
         String image,
 
@@ -24,6 +26,7 @@ public record StoreResponse(
     public static StoreResponse from(Store store) {
         return new StoreResponse(
                 store.getId(),
+                store.getSortingIndex(),
                 store.getName(),
                 store.getImage(),
                 store.getAverageRating(),

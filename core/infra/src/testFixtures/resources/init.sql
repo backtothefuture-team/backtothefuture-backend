@@ -24,6 +24,7 @@ CREATE TABLE member
 CREATE TABLE store
 (
     store_id            bigint          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    sorting_index       bigint,
     name                varchar(255),
     description         TEXT,
     location            varchar(255),
@@ -38,7 +39,8 @@ CREATE TABLE store
     total_rating_count  int,
     start_time          time,
     end_time            time,
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    INDEX idx_sorting_index (sorting_index)
 );
 
 CREATE TABLE product
@@ -113,7 +115,7 @@ CREATE TABLE IF NOT EXISTS review
     review_id       BIGINT     NOT NULL    AUTO_INCREMENT PRIMARY KEY,
     member_id       BIGINT     NOT NULL,
     store_id        BIGINT     NOT NULL,
-    rating_count    DOUBLE     NOT NULL,
+    rating          DOUBLE     NOT NULL,
     content         TEXT,
     image_url       VARCHAR(255),
     updated_at      datetime(6),

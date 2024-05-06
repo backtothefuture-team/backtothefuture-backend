@@ -15,8 +15,16 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("SELECT store FROM Store store "
             + "WHERE (:cursor = 0L OR store.id < :cursor) "
             + "ORDER BY store.id DESC")
-    List<Store> findStoresBy(
+    List<Store> findStoresByCursor(
             @Param("cursor") Long cursor,
+            Pageable pageable
+    );
+
+    @Query("SELECT store FROM Store store "
+            + "WHERE (:sortingIndex = 0L OR store.sortingIndex < :sortingIndex) "
+            + "ORDER BY store.sortingIndex DESC, store.id DESC")
+    List<Store> findStoresBySortingIndex(
+            @Param("sortingIndex") Long sortingIndex,
             Pageable pageable
     );
 
