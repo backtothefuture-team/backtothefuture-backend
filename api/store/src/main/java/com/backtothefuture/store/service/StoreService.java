@@ -67,17 +67,17 @@ public class StoreService {
     }
 
     @Transactional(readOnly = true)
-    public List<StoreResponse> findStores(SortingOption sortingOption, Long cursor, Integer size) {
+    public List<StoreResponse> findStores(SortingOption sortingOption, Long sortingIndex, Long cursor, Integer size) {
         Pageable pageable = Pageable.ofSize(size);
 
         List<Store> stores = new ArrayList<>();
 
         switch (sortingOption) {
             case DEFAULT:
-                stores = storeRepository.findStoresBy(cursor, pageable);
+                stores = storeRepository.findStoresByCursor(cursor, pageable);
 
             case STAR:
-                // TODO: 별점순으로 정렬하는 기능
+                stores = storeRepository.findStoresBySortingIndex(sortingIndex, pageable);
 
             case DISTANCE:
                 // TODO: 거리순으로 정렬하는 기능

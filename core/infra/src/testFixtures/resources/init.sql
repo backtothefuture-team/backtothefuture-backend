@@ -28,22 +28,24 @@ CREATE TABLE member
 
 CREATE TABLE store
 (
-    store_id           bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name               varchar(255),
-    description        TEXT,
-    location           varchar(255),
-    contact            varchar(255),
-    image              varchar(255),
-    member_id          bigint NOT NULL,
-    updated_at         datetime(6),
-    updated_by         varchar(255),
-    created_at         datetime(6),
-    created_by         varchar(255),
-    average_rating     double,
-    total_rating_count int,
-    start_time         time,
-    end_time           time,
-    FOREIGN KEY (member_id) REFERENCES member (member_id)
+    store_id            bigint          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    sorting_index       bigint,
+    name                varchar(255),
+    description         TEXT,
+    location            varchar(255),
+    contact             varchar(255),
+    image               varchar(255),
+    member_id           bigint NOT NULL,
+    updated_at          datetime(6),
+    updated_by          varchar(255),
+    created_at          datetime(6),
+    created_by          varchar(255),
+    average_rating      double,
+    total_rating_count  int,
+    start_time          time,
+    end_time            time,
+    FOREIGN KEY (member_id) REFERENCES member (member_id),
+    INDEX idx_sorting_index (sorting_index)
 );
 
 CREATE TABLE product
@@ -181,16 +183,16 @@ CREATE TABLE reservation_status_history
 
 CREATE TABLE IF NOT EXISTS review
 (
-    review_id    BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    member_id    BIGINT NOT NULL,
-    store_id     BIGINT NOT NULL,
-    rating_count DOUBLE NOT NULL,
-    content      TEXT,
-    image_url    VARCHAR(255),
-    updated_at   datetime(6),
-    updated_by   varchar(255),
-    created_at   datetime(6),
-    created_by   varchar(255)
+    review_id       BIGINT     NOT NULL    AUTO_INCREMENT PRIMARY KEY,
+    member_id       BIGINT     NOT NULL,
+    store_id        BIGINT     NOT NULL,
+    rating          DOUBLE     NOT NULL,
+    content         TEXT,
+    image_url       VARCHAR(255),
+    updated_at      datetime(6),
+    updated_by      varchar(255),
+    created_at      datetime(6),
+    created_by      varchar(255)
 );
 
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,

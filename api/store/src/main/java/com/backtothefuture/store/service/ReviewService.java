@@ -1,13 +1,17 @@
 package com.backtothefuture.store.service;
 
 import com.backtothefuture.domain.common.enums.ReviewErrorCode;
+import com.backtothefuture.domain.common.enums.StoreErrorCode;
 import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.review.Review;
 import com.backtothefuture.domain.review.repository.ReviewRepository;
+import com.backtothefuture.domain.store.Store;
+import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.store.dto.request.ReviewCreateRequest;
 import com.backtothefuture.store.dto.request.ReviewUpdateRequest;
 import com.backtothefuture.store.dto.response.ReviewsReadResponse;
 import com.backtothefuture.store.exception.ReviewException;
+import com.backtothefuture.store.exception.StoreException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -24,17 +28,30 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final StoreRepository storeRepository;
     private final S3Util s3Util;
 
     @Transactional
     public void save(Long memberId, ReviewCreateRequest request) {
         validateCreatable();
 
-        Review review = request.toEntity(memberId);
+        Store store = storeRepository.findById(request.storeId())
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND_STORE_ID));
+
+        Review review = request.toEntity(memberId, store);
         reviewRepository.save(review);
 
-        String imageUrl = uploadReviewImage(review.getId(), request.imageFile());
-        review.updateImageUrl(imageUrl);
+        updateStoreRating(review.getRating(), store);
+
+        if (!request.imageFile().isEmpty()) {
+            String imageUrl = uploadReviewImage(review.getId(), request.imageFile());
+            review.updateImageUrl(imageUrl);
+        }
+    }
+
+    private void updateStoreRating(double reviewRating, Store store) {
+        store.updateRating(reviewRating);
+        store.updateSortingIndex();
     }
 
     private void validateCreatable() {

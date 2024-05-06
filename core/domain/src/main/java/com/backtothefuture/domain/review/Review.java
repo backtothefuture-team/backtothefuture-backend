@@ -31,18 +31,15 @@ public class Review extends MutableBaseEntity {
     @Column(name = "review_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) //
-    @JoinColumn(name = "store_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
     private Store store;
-
-    @Column(name = "store_id")
-    private Long storeId;
 
     private Long memberId;
 
     // TODO 예약상품id
 
-    private Double ratingCount;
+    private Double rating;
 
     @Lob
     @Column(columnDefinition = "TEXT")
@@ -54,13 +51,13 @@ public class Review extends MutableBaseEntity {
         this.imageUrl = imageUrl;
     }
 
-    public void update(Double ratingCount, String content) {
-        this.ratingCount = ratingCount;
+    public void update(Double rating, String content) {
+        this.rating = rating;
         this.content = content;
     }
 
-    public void update(Double ratingCount, String content, String imageUrl) {
-        this.ratingCount = ratingCount;
+    public void update(Double rating, String content, String imageUrl) {
+        this.rating = rating;
         this.content = content;
         this.imageUrl = imageUrl;
     }
