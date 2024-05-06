@@ -35,7 +35,6 @@ public class TermHistory extends MutableBaseEntity {
     @Column(name = "term_history_id")
     private Long id;
 
-    @Column(name = "is_accepted")
     private boolean isAccepted; // 약관 동의 여부
 
     @OneToOne(fetch = FetchType.LAZY)

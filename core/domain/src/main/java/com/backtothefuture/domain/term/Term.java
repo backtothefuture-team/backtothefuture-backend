@@ -28,6 +28,5 @@ public class Term extends MutableBaseEntity {
 
     private String content;      // 약관 내용
 
-    @Column(name = "is_required")
     private boolean isRequired;  // 필수 여부
 }
