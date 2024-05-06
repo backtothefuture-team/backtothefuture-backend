@@ -122,8 +122,6 @@ class MemberControllerTest extends RestAssuredTest {
 
         response.path("data.accessToken", accessToken);
         response.path("data.refreshToken", refreshToken);
-
-        System.out.println("accessToken = " + accessToken);
     }
 
     @Test
