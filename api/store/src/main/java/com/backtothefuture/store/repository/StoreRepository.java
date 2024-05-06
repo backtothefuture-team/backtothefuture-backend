@@ -1,4 +1,4 @@
-package com.backtothefuture.domain.store.repository;
+package com.backtothefuture.store.repository;
 
 import com.backtothefuture.domain.store.Store;
 import io.lettuce.core.dynamic.annotation.Param;
