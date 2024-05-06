@@ -89,3 +89,58 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:${{ env.CURRENT_VERSION }}
             ${{ secrets.DOCKER_USERNAME }}/bagtothefuture-swagger:latest
+
+      - name: Set .env file in EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            rm -rf ./.env
+            touch ./.env
+
+            echo DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} >> .env
+            echo OAUTH_KAKAO_CLIENTID=${{ secrets.OAUTH_KAKAO_CLIENTID }} >> .env
+            echo OAUTH_KAKAO_REDIRECT_URL=${{ secrets.OAUTH_KAKAO_REDIRECT_URL }} >> .env
+            echo OAUTH_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH_KAKAO_CLIENT_SECRET }} >> .env
+            echo OAUTH_NAVER_CLIENTID=${{ secrets.OAUTH_NAVER_CLIENTID }} >> .env
+            echo OAUTH_NAVER_CLIENT_SECRET=${{ secrets.OAUTH_NAVER_CLIENT_SECRET }} >> .env
+            echo MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} >> .env
+            echo MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} >> .env
+            echo COULD_AWS_S3_REGION=${{ secrets.COULD_AWS_S3_REGION }} >> .env
+            echo CLOUD_AWS_S3_ACCESSKEY=${{ secrets.CLOUD_AWS_S3_ACCESSKEY }} >> .env
+            echo CLOUD_AWS_S3_SECRETKEY=${{ secrets.CLOUD_AWS_S3_SECRETKEY }} >> .env
+            echo BUSINESS_VALIDATE_API_KEY=${{ secrets.BUSINESS_VALIDATE_API_KEY }} >> .env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+            echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
+            echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> .env
+            echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+
+      - uses: actions/checkout@v4
+      - name: Copy docker-compose file in ec2 via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          source: "./docker-compose.yml"
+          target: "/home/ec2-user/"
+
+
+      - name: Depoly to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            cd ~
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+            docker stop $(docker ps -a -q) 
+            docker rm -f $(docker ps -qa)
+            chmod +x docker-compose.yml
+            docker-compose pull
+            docker-compose up -d
+            docker image prune -f
