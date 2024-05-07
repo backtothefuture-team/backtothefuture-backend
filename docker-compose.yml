@@ -27,6 +27,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - /home/ec2-user/firebase-secret.json
 
   bagtothefuture-store:
     image: ${DOCKER_USERNAME}/bagtothefuture-store:latest # store api 이미지
@@ -45,10 +47,11 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - /home/ec2-user/firebase-secret.json
 
   bagtothefuture-event:
     image: ${DOCKER_USERNAME}/bagtothefuture-event:latest # event api 이미지
@@ -69,10 +72,11 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - /home/ec2-user/firebase-secret.json
 
   swagger-ui:
     image: ${DOCKER_USERNAME}/bagtothefuture-swagger:latest # swagger 이미지
