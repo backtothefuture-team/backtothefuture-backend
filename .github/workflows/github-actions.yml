@@ -117,6 +117,12 @@ jobs:
             echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
             echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> .env
             echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+            echo GOOGLE_FIREBASE_SERVICE_PROJECTID=${{ secrets.GOOGLE_FIREBASE_SERVICE_PROJECTID }} >> .env
+
+      - name: copy firebase-secret.json
+        run: |
+          touch ./core/infra/src/main/resources/firebase-secret.json
+          echo FIREBASE_SECRET=${{ secrets.FIREBASE_SECRET }} >> ./core/infra/src/main/resources/firebase-secret.json
 
       - uses: actions/checkout@v4
       - name: Copy docker-compose file in ec2 via ssh password
