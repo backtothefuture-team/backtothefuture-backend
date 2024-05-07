@@ -15,6 +15,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -30,8 +31,9 @@ import lombok.Setter;
 @Getter
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "phoneNumber")
-})
+        @UniqueConstraint(columnNames = "phoneNumber")},
+        indexes = {@Index(name = "idx_registration_token", columnList = "registrationToken")
+        })
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -78,6 +80,8 @@ public class Member extends MutableBaseEntity {
     @Column(columnDefinition = "VARCHAR(255)")
     private RolesType roles = RolesType.ROLE_USER;        // 권한
 
+    private String registrationToken; // 유저 기기 등록 토큰
+
     public void setProfileUrl(String url) {
         this.profile = url;
     }
@@ -113,5 +117,9 @@ public class Member extends MutableBaseEntity {
 
     public void inactiveMember() {
         this.status = StatusType.INACTIVE;
+    }
+
+    public void setRegistrationToken(String token) {
+        this.registrationToken = token;
     }
 }

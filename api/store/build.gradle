@@ -21,4 +21,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation 'org.springframework.security:spring-security-test:6.2.3'
     testImplementation 'org.springframework.security:spring-security-test:6.2.3'
+    //firebase admin sdk
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    //spring batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 }

@@ -34,6 +34,7 @@ import com.backtothefuture.member.dto.request.AccountInfoDto;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
+import com.backtothefuture.member.dto.request.RegistrationTokenRequestDto;
 import com.backtothefuture.member.dto.request.ResidenceInfoDto;
 import com.backtothefuture.member.dto.request.TermHistoryUpdateDto;
 import com.backtothefuture.member.dto.response.AccountResponseInfoDto;
@@ -183,6 +184,9 @@ public class MemberService {
         return loginTokenDto;
     }
 
+    /**
+     * 기존 refresh token으로 신규 access token, refresh token 발급
+     */
     @Transactional
     public LoginTokenDto refreshToken(String oldRefreshToken, Long memberId) {
 
@@ -379,5 +383,15 @@ public class MemberService {
             residence.updateResidence(residenceInfo.latitude(), residenceInfo.longitude(), residenceInfo.address());
         }
         member.updateResidence(residence);
+    }
+
+    /**
+     * 사용자 기기 등록 토큰 저장
+     */
+    @Transactional
+    public void saveRegistrationToken(UserDetailsImpl userDetail, RegistrationTokenRequestDto dto) {
+        Member member = memberRepository.findById(userDetail.getId())
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
+        member.setRegistrationToken(dto.registrationToken());
     }
 }

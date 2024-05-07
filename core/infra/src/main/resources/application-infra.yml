@@ -25,6 +25,9 @@ spring:
   sql:
     init:
       mode: always
+  batch:
+    jdbc:
+      initialize-schema: always
 cloud:
   aws:
     s3:
@@ -36,3 +39,9 @@ logging:
   level:
     org.hibernate:
       sql: debug
+
+google:
+  firebase:
+    service:
+      secret-key-path: core/infra/src/main/resources/firebase-secret.json
+      projectId: ${GOOGLE_FIREBASE_SERVICE_PROJECTID}
