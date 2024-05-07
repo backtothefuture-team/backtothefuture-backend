@@ -12,6 +12,7 @@ import com.backtothefuture.store.dto.response.MemberDoneReservationResponseDto;
 import com.backtothefuture.store.dto.response.MemberProgressReservationResponseDto;
 import com.backtothefuture.store.service.ReservationHistoryService;
 import com.backtothefuture.store.service.ReservationService;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,7 +59,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<BfResponse<?>> makeReservation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @Valid @RequestBody ReservationRequestDto dto) {
+            @Valid @RequestBody ReservationRequestDto dto) throws FirebaseMessagingException {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new BfResponse<>(CREATE,
                         Map.of("reservation_id", reservationService.makeReservation(userDetails.getId(), dto))));

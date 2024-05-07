@@ -8,7 +8,6 @@ import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_MATCH_REFRESH_TOKEN;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.PASSWORD_NOT_MATCHED;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
-
 import com.backtothefuture.domain.common.repository.RedisRepository;
 import com.backtothefuture.domain.common.util.ConvertUtil;
 import com.backtothefuture.domain.common.util.s3.S3Util;
@@ -16,6 +15,7 @@ import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
+import com.backtothefuture.member.dto.request.RegistrationTokenRequestDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.MemberException;
 import com.backtothefuture.security.jwt.JwtProvider;
@@ -135,6 +135,9 @@ public class MemberService {
         return loginTokenDto;
     }
 
+    /**
+     * 기존 refresh token으로 신규 access token, refresh token 발급
+     */
     @Transactional
     public LoginTokenDto refreshToken(String oldRefreshToken, Long memberId) {
 
@@ -167,5 +170,15 @@ public class MemberService {
 
         return loginTokenDto;
 
+    }
+
+    /**
+     * 사용자 기기 등록 토큰 저장
+     */
+    @Transactional
+    public void saveRegistrationToken(UserDetailsImpl userDetail, RegistrationTokenRequestDto dto) {
+        Member member = memberRepository.findById(userDetail.getId())
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
+        member.setRegistrationToken(dto.registrationToken());
     }
 }

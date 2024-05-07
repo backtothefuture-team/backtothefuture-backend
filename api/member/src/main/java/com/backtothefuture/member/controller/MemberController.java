@@ -11,6 +11,7 @@ import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
 import com.backtothefuture.member.dto.request.RefreshTokenRequestDto;
+import com.backtothefuture.member.dto.request.RegistrationTokenRequestDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
 import com.backtothefuture.member.exception.OAuthException;
 import com.backtothefuture.member.service.MemberBusinessService;
@@ -20,6 +21,7 @@ import com.backtothefuture.security.service.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -146,5 +148,19 @@ public class MemberController {
             @RequestBody BusinessNumberValidateRequestDto requestDto) {
         return ResponseEntity.ok().body(new BfResponse<>(SUCCESS,
                 Map.of("isValid", memberBusinessService.validateBusinessNumber(requestDto.businessNumber()))));
+    }
+
+    @Operation(summary = "사용자 기기 등록", description = "FCM 사용자 기기 등록 토큰 저장 API입니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자 기기 등록 토큰 저장 성공",
+                    content = @Content(schema = @Schema(implementation = BfResponse.class))
+            )})
+    @PostMapping("/registration/token")
+    public ResponseEntity<BfResponse<Void>> saveRegistrationToken(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody RegistrationTokenRequestDto registrationTokenRequestDto
+    ) {
+        memberService.saveRegistrationToken(userDetails, registrationTokenRequestDto);
+        return ResponseEntity.ok().body(new BfResponse<>(SUCCESS));
     }
 }
