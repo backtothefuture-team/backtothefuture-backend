@@ -1,26 +1,12 @@
 version: '3'
 
 services:
-  db:
-    image: mysql:8.0 # mysql 이미지
-    ports:
-      - "3306:3306" # TCP 포트 : 데이터베이스 연결 포트
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-    healthcheck:
-      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD' ]
-      timeout: 3s
-      retries: 5
-    volumes:
-      - ./initdb.d:/docker-entrypoint-initdb.d
-
   bagtothefuture-member:
     image: ${DOCKER_USERNAME}/bagtothefuture-member:latest # member api 이미지
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
       OAUTH_KAKAO_CLIENTID: ${OAUTH_KAKAO_CLIENTID}
       OAUTH_KAKAO_REDIRECT_URL: ${OAUTH_KAKAO_REDIRECT_URL}
       OAUTH_KAKAO_CLIENT_SECRET: ${OAUTH_KAKAO_CLIENT_SECRET}
@@ -31,11 +17,14 @@ services:
       CLOUD_AWS_S3_SECRETKEY: ${CLOUD_AWS_S3_SECRETKEY}
       BUSINESS_VALIDATE_API_KEY: ${BUSINESS_VALIDATE_API_KEY}
       GOOGLE_FIREBASE_SERVICE_PROJECTID: ${GOOGLE_FIREBASE_SERVICE_PROJECTID}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -45,16 +34,19 @@ services:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       COULD_AWS_S3_REGION: ${COULD_AWS_S3_REGION}
       CLOUD_AWS_S3_ACCESSKEY: ${CLOUD_AWS_S3_ACCESSKEY}
       CLOUD_AWS_S3_SECRETKEY: ${CLOUD_AWS_S3_SECRETKEY}
       GOOGLE_FIREBASE_SERVICE_PROJECTID: ${GOOGLE_FIREBASE_SERVICE_PROJECTID}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -64,7 +56,6 @@ services:
       - "8084:8084"
     environment:
       SPRING_PROFILES_ACTIVE: dev # dev 프로파일 활성화
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/test
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       MAIL_USERNAME: ${MAIL_USERNAME}
@@ -73,12 +64,13 @@ services:
       CLOUD_AWS_S3_ACCESSKEY: ${CLOUD_AWS_S3_ACCESSKEY}
       CLOUD_AWS_S3_SECRETKEY: ${CLOUD_AWS_S3_SECRETKEY}
       GOOGLE_FIREBASE_SERVICE_PROJECTID: ${GOOGLE_FIREBASE_SERVICE_PROJECTID}
-    #      COOL_SMS_FROM_PHONE_NUMBER: ${COOL_SMS_FROM_PHONE_NUMBER}
-    #      COOL_SMS_API_KEY: ${COOL_SMS_API_KEY}
-    #      COOL_SMS_API_SECRET_KEY: ${COOL_SMS_API_SECRET_KEY}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
