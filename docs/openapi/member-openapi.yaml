@@ -9,17 +9,71 @@ servers:
 security:
 - Authorization: []
 tags:
+- name: 약관 API
+  description: 약관 관련 API 입니다.
+- name: 은행 API
+  description: 은행 관련 API 입니다.
 - name: 회원 API
   description: 회원 관련 API 입니다.
 paths:
+  /member/{memberId}/terms/{termId}:
+    put:
+      tags:
+      - 회원 API
+      summary: 약관 동의 여부 업데이트
+      description: 약관 동의 여부를 업데이트 합니다.
+      operationId: updateTermAgreement
+      parameters:
+      - name: memberId
+        in: path
+        description: 회원 ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: termId
+        in: path
+        description: 약관 ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TermHistoryUpdateDto'
+        required: true
+      responses:
+        "200":
+          description: 약관 동의 여부 업데이트 성공
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponse'
+        "400":
+          description: 필수 약관에 동의하지 않았을 경우
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                필수 약관 미동의 에러:
+                  summary: 필수 약관 미동의
+                  description: 사용자가 필수 약관에 동의하지 않았을 때 반환되는 에러 메시지입니다.
+                  value:
+                    errorCode: 400
+                    errorMessage: 필수 약관에 동의해주세요.
   /member/register:
     post:
       tags:
       - 회원 API
+      summary: 회원 가입
+      description: "회원 가입 API 입니다. 이미지는 'image/png', 'image/jpeg' 형식을 지원합니다."
       operationId: registerMember
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               required:
               - request
@@ -29,14 +83,24 @@ paths:
                   $ref: '#/components/schemas/MemberRegisterDto'
                 file:
                   type: string
+                  description: 프로필 이미지로 사용할 이미지를 첨부해 주세요.
                   format: binary
       responses:
-        "200":
-          description: OK
+        "201":
+          description: 등록 성공
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponse'
+              examples:
+                success:
+                  description: success
+                  value:
+                    code: 201
+                    message: 정상적으로 생성되었습니다.
+                    data:
+                      member_id: 1
+      security: []
   /member/refresh:
     post:
       tags:
@@ -61,6 +125,8 @@ paths:
     post:
       tags:
       - 회원 API
+      summary: 일반 로그인
+      description: 일반 로그인 API입니다.
       operationId: login
       requestBody:
         content:
@@ -70,11 +136,12 @@ paths:
         required: true
       responses:
         "200":
-          description: OK
+          description: 로그인 성공 응답입니다.
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/BfResponseObject'
+                $ref: '#/components/schemas/BfResponseLoginTokenDto'
+      security: []
   /member/login/oauth:
     post:
       tags:
@@ -164,36 +231,112 @@ paths:
                     data:
                       isValid: false
       security: []
+  /member/{memberId}:
+    get:
+      tags:
+      - 회원 API
+      summary: 회원 정보 조회
+      description: 회원의 정보를 조회합니다.
+      operationId: getMemberInfo
+      parameters:
+      - name: memberId
+        in: path
+        description: 회원 ID입니다.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: 회원 정보 조회 성공
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponseMemberInfoDto'
+    delete:
+      tags:
+      - 회원 API
+      summary: 회원 탈퇴
+      operationId: deleteMember
+      parameters:
+      - name: memberId
+        in: path
+        description: 회원 ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: 탈퇴 성공
+    patch:
+      tags:
+      - 회원 API
+      summary: 회원 정보 업데이트
+      description: 회원의 정보를 업데이트합니다.
+      operationId: updateMemberInfo
+      parameters:
+      - name: memberId
+        in: path
+        description: 회원 ID입니다.
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberUpdateRequestDto'
+        required: true
+      responses:
+        "200":
+          description: 성공적으로 업데이트되었습니다.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponse'
+  /terms:
+    get:
+      tags:
+      - 약관 API
+      summary: 약관 리스트 조회
+      description: 약관 리스트 조회 API입니다.
+      operationId: getBanks
+      responses:
+        "200":
+          description: 약관 리스트 조회 성공 응답입니다.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponseTermListResponseDto'
+      security: []
+  /banks:
+    get:
+      tags:
+      - 은행 API
+      summary: 은행 리스트 조회
+      description: 은행 리스트 조회 API입니다.
+      operationId: getBanks_1
+      responses:
+        "200":
+          description: 은행 리스트 조회 성공 응답입니다.
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BfResponse은행 리스트 응답 Dto'
+      security: []
 components:
   schemas:
-    MemberRegisterDto:
-      required:
-      - email
-      - name
-      - password
-      - passwordConfirm
+    TermHistoryUpdateDto:
       type: object
       properties:
-        email:
-          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
-          type: string
-        name:
-          maxLength: 50
-          minLength: 2
-          type: string
-        password:
-          maxLength: 2147483647
-          minLength: 6
-          type: string
-        passwordConfirm:
-          maxLength: 2147483647
-          minLength: 6
-          type: string
-        phoneNumber:
-          maxLength: 3
-          minLength: 3
-          type: string
-    BfResponseObject:
+        isAccepted:
+          type: boolean
+          description: 약관 동의 여부
+          example: true
+      description: 약관 이력 업데이트 요청
+    BfResponse:
       type: object
       properties:
         code:
@@ -208,6 +351,75 @@ components:
         data:
           type: object
           description: 응답 데이터
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          format: int32
+        errorMessage:
+          type: string
+        validation:
+          type: object
+          additionalProperties:
+            type: string
+    MemberRegisterDto:
+      required:
+      - accpetedTerms
+      - email
+      - name
+      - password
+      - passwordConfirm
+      type: object
+      properties:
+        email:
+          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
+          type: string
+          description: 사용자의 이메일 주소
+          example: user@example.com
+        name:
+          maxLength: 50
+          minLength: 2
+          type: string
+          description: 사용자 이름
+          example: 홍길동
+        password:
+          maxLength: 2147483647
+          minLength: 6
+          type: string
+          description: 비밀번호
+          example: password123
+        passwordConfirm:
+          maxLength: 2147483647
+          minLength: 6
+          type: string
+          description: 비밀번호 확인
+          example: password123
+        phoneNumber:
+          maxItems: 3
+          minItems: 3
+          type: array
+          description: 회원 핸드폰 번호
+          example:
+          - "010"
+          - "9876"
+          - "5432"
+          items:
+            type: string
+        accpetedTerms:
+          type: array
+          description: 약관 동의 ID 목록. 필수 약관을 모두 동의해야 회원 가입이 가능합니다.
+          example:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          items:
+            type: integer
+            description: 약관 동의 ID 목록. 필수 약관을 모두 동의해야 회원 가입이 가능합니다.
+            format: int64
+      description: 요청 정보입니다.
     RefreshTokenRequestDto:
       required:
       - refreshToken
@@ -250,10 +462,14 @@ components:
         email:
           pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
           type: string
+          description: 사용자의 이메일 주소
+          example: user@example.com
         password:
           maxLength: 2147483647
           minLength: 6
           type: string
+          description: 사용자의 비밀번호
+          example: password123
     OAuthLoginDto:
       required:
       - authorizationCode
@@ -336,6 +552,197 @@ components:
           type: string
           description: 사업장 주소
           example: 서울시 강남구 역삼동 123-45
+    AccountInfoDto:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 은행 코드
+          example: "06"
+        accountHolder:
+          type: string
+          description: 예금주명
+          example: 홍길동
+        accountNumber:
+          type: string
+          description: 계좌 번호
+          example: "1234567890123456"
+      description: 계좌 정보
+    MemberUpdateRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 닉네임
+          example: 김길동
+        phoneNumber:
+          type: array
+          description: 핸드폰 전화번호
+          example:
+          - "010"
+          - "1234"
+          - "5678"
+          items:
+            type: string
+        birth:
+          type: string
+          description: "생년월일, yyyyMMdd 포맷"
+          example: "20000101"
+        gender:
+          pattern: "^([mf])$"
+          type: string
+          description: 성별
+        accountInfo:
+          $ref: '#/components/schemas/AccountInfoDto'
+        residenceInfo:
+          $ref: '#/components/schemas/ResidenceInfoDto'
+      description: 업데이트 할 회원 정보입니다. 업데이트가 필요한 정보만 전달해주세요.
+    ResidenceInfoDto:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 거주지 주소
+          example: 서울시 강남구 역삼동 123-45
+        longitude:
+          type: number
+          description: 거주지 경도
+          format: double
+          example: 127.123456
+        latitude:
+          type: number
+          description: 거주지 위도
+          format: double
+          example: 37.123456
+      description: 거주지 정보
+    BfResponseTermListResponseDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          $ref: '#/components/schemas/TermListResponseDto'
+    TermDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 약관 ID
+          format: int64
+        title:
+          type: string
+          description: 약관 제목
+        content:
+          type: string
+          description: 약관 내용
+        isRequired:
+          type: boolean
+          description: 필수 여부
+      description: 약관 리스트
+    TermListResponseDto:
+      type: object
+      properties:
+        terms:
+          type: array
+          description: 약관 리스트
+          items:
+            $ref: '#/components/schemas/TermDto'
+      description: 응답 데이터
+    AccountResponseInfoDto:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 은행 코드
+          example: "06"
+        name:
+          type: string
+          description: 은행명
+          example: 국민은행
+        accountHolder:
+          type: string
+          description: 예금주명
+          example: 홍길동
+        accountNumber:
+          type: string
+          description: 계좌 번호
+          example: "1234567890123456"
+    BfResponseMemberInfoDto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          $ref: '#/components/schemas/MemberInfoDto'
+    MemberInfoDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        authId:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        phoneNumber:
+          type: string
+        profile:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+        accountInfo:
+          $ref: '#/components/schemas/AccountResponseInfoDto'
+        residenceInfo:
+          $ref: '#/components/schemas/ResidenceInfoDto'
+      description: 응답 데이터
+    BankDto:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+    BfResponse은행 리스트 응답 Dto:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 응답 코드
+          format: int32
+          example: 200
+        message:
+          type: string
+          description: 응답 메시지
+          example: 성공
+        data:
+          $ref: '#/components/schemas/은행 리스트 응답 Dto'
+    은행 리스트 응답 Dto:
+      type: object
+      properties:
+        bankList:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankDto'
+      description: "은행 리스트(코드, 이름) 반환"
   securitySchemes:
     Authorization:
       type: http

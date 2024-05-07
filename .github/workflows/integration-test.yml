@@ -28,10 +28,11 @@ jobs:
           echo COULD_AWS_S3_REGION=${{ secrets.COULD_AWS_S3_REGION }} >> .env
           echo CLOUD_AWS_S3_ACCESSKEY=${{ secrets.CLOUD_AWS_S3_ACCESSKEY }} >> .env
           echo CLOUD_AWS_S3_SECRETKEY=${{ secrets.CLOUD_AWS_S3_SECRETKEY }} >> .env
+          echo BUSINESS_VALIDATE_API_KEY=${{ secrets.BUSINESS_VALIDATE_API_KEY }} >> .env
           echo GOOGLE_FIREBASE_SERVICE_PROJECTID=${{ secrets.GOOGLE_FIREBASE_SERVICE_PROJECTID }} >> .env
       # firebase-secret.json 생성
       - name: create firebase-secret.json
-#        working-directory: /core/infra/src/main/resources
+        #        working-directory: /core/infra/src/main/resources
         run: |
           cd ./core/infra/src/main/resources
           touch firebase-secret.json
