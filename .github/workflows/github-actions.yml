@@ -26,6 +26,12 @@ jobs:
       # gradle 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.1.0
+      # firebase-secret.json 복사
+      - name: create firebase-secret.json
+        run: |
+          cd ./core/infra/src/main/resources
+          touch firebase-secret.json
+          echo "${{ secrets.FIREBASE_SECRET }}" >> firebase-secret.json
       # 테스트 없이 빌드
       - name: Build with Gradle
         run: |
@@ -118,11 +124,6 @@ jobs:
             echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> .env
             echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
             echo GOOGLE_FIREBASE_SERVICE_PROJECTID=${{ secrets.GOOGLE_FIREBASE_SERVICE_PROJECTID }} >> .env
-
-      - name: copy firebase-secret.json
-        run: |
-          touch ./core/infra/src/main/resources/firebase-secret.json
-          echo FIREBASE_SECRET=${{ secrets.FIREBASE_SECRET }} >> ./core/infra/src/main/resources/firebase-secret.json
 
       - uses: actions/checkout@v4
       - name: Copy docker-compose file in ec2 via ssh password
