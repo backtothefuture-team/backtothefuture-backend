@@ -17,6 +17,7 @@ CREATE TABLE member
     profile      varchar(255),
     birth        date,
     gender       char(1),
+    registration_token varchar(255),
     provider     varchar(255),
     roles        varchar(255),
     updated_at   datetime(6),
