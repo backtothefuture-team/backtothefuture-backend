@@ -200,14 +200,14 @@ CREATE TABLE IF NOT EXISTS review
     review_id    BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     member_id    BIGINT NOT NULL,
     store_id     BIGINT NOT NULL,
-    rating_count DOUBLE NOT NULL,
+    rating       DOUBLE NOT NULL,
     content      TEXT,
     image_url    VARCHAR(255),
     updated_at   datetime(6),
     updated_by   varchar(255),
     created_at   datetime(6),
     created_by   varchar(255)
-    );
+);
 
 INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
                     updated_by, created_at, created_by)
