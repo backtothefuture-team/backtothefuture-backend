@@ -24,7 +24,6 @@ import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.enums.RolesType;
 import com.backtothefuture.domain.member.repository.MemberRepository;
-import com.backtothefuture.domain.residence.Residence;
 import com.backtothefuture.domain.residence.repository.ResidenceRepository;
 import com.backtothefuture.domain.term.Term;
 import com.backtothefuture.domain.term.TermHistory;
@@ -35,7 +34,6 @@ import com.backtothefuture.member.dto.request.MemberLoginDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.RegistrationTokenRequestDto;
-import com.backtothefuture.member.dto.request.ResidenceInfoDto;
 import com.backtothefuture.member.dto.request.TermHistoryUpdateDto;
 import com.backtothefuture.member.dto.response.AccountResponseInfoDto;
 import com.backtothefuture.member.dto.response.LoginTokenDto;
@@ -239,15 +237,6 @@ public class MemberService {
                         .build())
                 .orElse(null);
 
-        // 거주지 정보 설정
-        ResidenceInfoDto residenceInfo = Optional.ofNullable(member.getResidence())
-                .map(residence -> ResidenceInfoDto.builder()
-                        .latitude(residence.getLatitude())
-                        .longitude(residence.getLongitude())
-                        .address(residence.getAddress())
-                        .build())
-                .orElse(null);
-
         return MemberInfoDto.builder()
                 .id(member.getId())
                 .authId(member.getAuthId())
@@ -258,7 +247,6 @@ public class MemberService {
                 .birth(member.getBirth())
                 .gender(member.getGender())
                 .accountInfo(accountInfo)
-                .residenceInfo(residenceInfo)
                 .build();
     }
 
@@ -292,11 +280,6 @@ public class MemberService {
         // 계좌 정보 업데이트
         Optional.ofNullable(memberUpdateDto.accountInfo()).ifPresent(accountInfo -> {
             updateAccountInfo(member, accountInfo);
-        });
-
-        // 거주지 정보 업데이트
-        Optional.ofNullable(memberUpdateDto.residenceInfo()).ifPresent(residenceInfo -> {
-            updateResidenceInfo(member, residenceInfo);
         });
 
         memberRepository.save(member);
@@ -368,21 +351,6 @@ public class MemberService {
         }
 
         member.updateAccount(account);
-    }
-
-    protected void updateResidenceInfo(Member member, ResidenceInfoDto residenceInfo) {
-        Residence residence = member.getResidence();
-        if (residence == null) {
-            residence = Residence.builder()
-                    .latitude(residenceInfo.latitude())
-                    .longitude(residenceInfo.longitude())
-                    .address(residenceInfo.address())
-                    .member(member)
-                    .build();
-        } else {
-            residence.updateResidence(residenceInfo.latitude(), residenceInfo.longitude(), residenceInfo.address());
-        }
-        member.updateResidence(residence);
     }
 
     /**

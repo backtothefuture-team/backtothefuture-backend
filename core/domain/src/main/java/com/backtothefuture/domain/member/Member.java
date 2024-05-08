@@ -64,9 +64,6 @@ public class Member extends MutableBaseEntity {
     @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private Account account;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private Residence residence;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255)")
     private StatusType status = StatusType.PENDING; // 상태
@@ -105,10 +102,6 @@ public class Member extends MutableBaseEntity {
 
     public void updateAccount(Account account) {
         this.account = account;
-    }
-
-    public void updateResidence(Residence residence) {
-        this.residence = residence;
     }
 
     public void activeMember() {
