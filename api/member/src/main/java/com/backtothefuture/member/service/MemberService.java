@@ -4,6 +4,7 @@ import static com.backtothefuture.domain.common.enums.MemberErrorCode.BAD_REQUES
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.DUPLICATED_MEMBER_EMAIL;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.DUPLICATED_MEMBER_PHONE_NUMBER;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.FORBIDDEN_DELETE_MEMBER;
+import static com.backtothefuture.domain.common.enums.MemberErrorCode.FORBIDDEN_RESET_PASSWORD;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.IMAGE_UPLOAD_FAIL;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_BANK;
 import static com.backtothefuture.domain.common.enums.MemberErrorCode.NOT_FOUND_MEMBER_ID;
@@ -31,6 +32,7 @@ import com.backtothefuture.domain.term.repository.TermHistoryRepository;
 import com.backtothefuture.domain.term.repository.TermRepository;
 import com.backtothefuture.member.dto.request.AccountInfoDto;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
+import com.backtothefuture.member.dto.request.MemberPasswordResetRequestDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.RegistrationTokenRequestDto;
@@ -361,5 +363,29 @@ public class MemberService {
         Member member = memberRepository.findById(userDetail.getId())
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
         member.setRegistrationToken(dto.registrationToken());
+    }
+
+    /**
+     * 비밀번호 재발급
+     */
+    @Transactional
+    public void resetPassword(UserDetailsImpl userDetails, Long memberId,
+                              MemberPasswordResetRequestDto resetRequestDto) {
+        // 본인 or 관리자 권한 확인
+        if (!userDetails.getAuthorities().contains(RolesType.ROLE_ADMIN)
+                && !userDetails.getId().equals(memberId)) {
+            throw new MemberException(FORBIDDEN_RESET_PASSWORD);
+        }
+
+        // 회원 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
+
+        // 비밀번호 확인란 검증
+        if (!resetRequestDto.newPassword().equals(resetRequestDto.newPasswordConfirm())) {
+            throw new MemberException(PASSWORD_NOT_MATCHED);
+        }
+
+        member.resetPassword(passwordEncoder.encode(resetRequestDto.newPassword()));
     }
 }
