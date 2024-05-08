@@ -115,4 +115,8 @@ public class Member extends MutableBaseEntity {
     public void setRegistrationToken(String token) {
         this.registrationToken = token;
     }
+
+    public void resetPassword(String password) {
+        this.password = password;
+    }
 }
