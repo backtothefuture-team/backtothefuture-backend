@@ -47,4 +47,6 @@ dependencies {
     //spring batch
     implementation 'org.springframework.boot:spring-boot-starter-batch'
 
+    // actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
