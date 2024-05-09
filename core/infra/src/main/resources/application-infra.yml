@@ -46,3 +46,13 @@ google:
 #      secret-key-path: ../../../../../resources/firebase-secret.json
       secret-key-path: /home/ec2-user/firebase-secret.json
       projectId: ${GOOGLE_FIREBASE_SERVICE_PROJECTID}
+
+# actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus,health,info"
+    endpoint:
+      prometheus:
+        enabled: true
