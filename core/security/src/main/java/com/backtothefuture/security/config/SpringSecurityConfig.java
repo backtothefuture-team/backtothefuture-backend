@@ -8,6 +8,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.OPTIONS;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import com.backtothefuture.security.exception.CustomAccessDeniedHandler;
@@ -137,7 +138,9 @@ public class SpringSecurityConfig {
      */
     private RequestMatcher[] AuthRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(GET, "/member/{memberId}"),                  // 회원 정보 조회
                 antMatcher(PATCH, "/member/{memberId}"),                // 회원 정보 수정
+                antMatcher(PATCH, "/member/{memberId}/password"),        // 비밀번호 재설정
                 antMatcher(DELETE, "/member/{memberId}"),                // 회원 탈퇴
                 antMatcher(POST, "/stores"),                            // 가게 등록
                 antMatcher(POST, "/stores/{storeId}/products"),                // 상품 등록
@@ -149,9 +152,9 @@ public class SpringSecurityConfig {
                 antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
 
-                antMatcher(GET,"/reservations/done"), // 고객 주문 완료 내역
-                antMatcher(GET,"/reservations/proceeding"), // 고객 진행 중인 주문 내역
-                antMatcher(GET,"/member/registration/token"), // 고객 기기 등록 토큰 등록
+                antMatcher(GET, "/reservations/done"), // 고객 주문 완료 내역
+                antMatcher(GET, "/reservations/proceeding"), // 고객 진행 중인 주문 내역
+                antMatcher(GET, "/member/registration/token"), // 고객 기기 등록 토큰 등록
                 // Review
                 antMatcher(POST, "/reviews/**"),
                 antMatcher(GET, "/reviews/**"),

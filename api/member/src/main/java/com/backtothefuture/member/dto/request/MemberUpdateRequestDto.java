@@ -25,9 +25,6 @@ public record MemberUpdateRequestDto(
         String gender,                          // 성별
 
         @Schema(description = "계좌 정보", implementation = AccountInfoDto.class)
-        AccountInfoDto accountInfo,              // 계좌 정보
-
-        @Schema(description = "거주지 정보", implementation = ResidenceInfoDto.class)
-        ResidenceInfoDto residenceInfo           // 거주지 정보
+        AccountInfoDto accountInfo              // 계좌 정보
 ) {
 }

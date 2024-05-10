@@ -7,6 +7,7 @@ import com.backtothefuture.domain.common.enums.OAuthErrorCode;
 import com.backtothefuture.domain.response.BfResponse;
 import com.backtothefuture.domain.response.ErrorResponse;
 import com.backtothefuture.member.dto.request.MemberLoginDto;
+import com.backtothefuture.member.dto.request.MemberPasswordResetRequestDto;
 import com.backtothefuture.member.dto.request.MemberRegisterDto;
 import com.backtothefuture.member.dto.request.MemberUpdateRequestDto;
 import com.backtothefuture.member.dto.request.OAuthLoginDto;
@@ -208,6 +209,21 @@ public class MemberController {
             @PathVariable("memberId") Long memberId
     ) {
         memberService.inactiveMember(userDetails, memberId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{memberId}/password")
+    @Operation(summary = "비밀번호 재설정", description = "회원 비밀번호 재설정 API 입니다.", responses = {
+            @ApiResponse(description = "비밀번호 변경 성공", responseCode = "200", content = @Content(schema = @Schema(implementation = BfResponse.class)))},
+            parameters = {
+                    @Parameter(name = "memberId", description = "회원 ID", required = true)
+            })
+    public ResponseEntity<BfResponse<?>> resetPassword(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable("memberId") Long memberId,
+            @Valid @RequestBody MemberPasswordResetRequestDto resetRequestDto
+    ) {
+        memberService.resetPassword(userDetails, memberId, resetRequestDto);
         return ResponseEntity.noContent().build();
     }
 
