@@ -181,10 +181,7 @@ public class SpringSecurityConfig {
                         "http://127.0.0.1:3000",
                         "http://localhost:8000",
                         "http://127.0.0.1:8000",
-                        "http://43.200.50.128:8000",
-                        "http://43.200.50.128:8080",
-                        "http://43.200.50.128:8081",
-                        "http://43.200.50.128:8084"
+                        "http://swagger-ui-integrated:8000"
                 )
         );
 
