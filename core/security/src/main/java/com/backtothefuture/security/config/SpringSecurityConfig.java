@@ -138,8 +138,9 @@ public class SpringSecurityConfig {
      */
     private RequestMatcher[] AuthRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(GET, "/member/{memberId}"),                  // 회원 정보 조회
                 antMatcher(PATCH, "/member/{memberId}"),                // 회원 정보 수정
-                antMatcher(PUT, "/member/{memberId}/password"),        // 비밀번호 재설정
+                antMatcher(PATCH, "/member/{memberId}/password"),        // 비밀번호 재설정
                 antMatcher(DELETE, "/member/{memberId}"),                // 회원 탈퇴
                 antMatcher(POST, "/stores"),                            // 가게 등록
                 antMatcher(POST, "/stores/{storeId}/products"),                // 상품 등록
