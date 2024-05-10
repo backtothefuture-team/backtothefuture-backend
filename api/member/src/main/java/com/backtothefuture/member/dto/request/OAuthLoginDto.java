@@ -9,10 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 
 @Schema(name = "OAuthLoginDto", description = "소셜 로그인 요청 model입니다.")
 public record OAuthLoginDto(
-
-        @Schema(description = "인증 서버로부터 받은 승인 코드입니다.")
-        @NotBlank(message = "승인 코드는 필수입니다.")
-        String authorizationCode,
         @Schema(description = "어떤 종류의 소셜 로그인인지 식별 값입니다.", examples = {"KAKAO", "NAVER"})
         @EnumTypeMisMatch(message = "요청된 값이 존재하지 않거나 일치하는 provider type이 없습니다.")
         ProviderType providerType,
