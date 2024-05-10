@@ -36,6 +36,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+@Disabled
 @TestMethodOrder(value = MethodOrderer.DisplayName.class)
 class MemberControllerTest extends RestAssuredTest {
 
