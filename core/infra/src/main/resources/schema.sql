@@ -312,59 +312,5 @@ values (0);
 INSERT INTO BATCH_JOB_SEQ
 values (0);
 
-INSERT INTO member (member_id, auth_id, email, name, password, phone_number, profile, status, provider, roles,
-                    updated_at,
-                    updated_by, created_at, created_by,registration_token)
-VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'rrr', 'ACTIVE', null, 'ROLE_STORE_OWNER',
-        null,
-        null, null, null,'registration-token-test');
-
-INSERT INTO store (store_id, name, description, location, contact, image, member_id, updated_at, updated_by, created_at,
-                   created_by, start_time, end_time)
-VALUES (1, 'test', 'test', null, null, null, 1, null, null, null, null, '10:00', '21:00');
-
-INSERT INTO product (product_id, name, description, price, stock_quantity, thumbnail, store_id, updated_at, updated_by,
-                     created_at, created_by)
-VALUES (1, 'product1', 'product1', 1000, 10, null, 1, null, null, null, null),
-       (2, 'product2', 'product2', 2000, 10, null, 1, null, null, null, null);
-
-insert into reservation(reservation_id, member_id, store_id, total_price, updated_at, updated_by, created_at,
-                        created_by, reservation_time)
-values (1, 1, 1, 1000, null, null, null, null, '2024-04-29 03:40');
-
-insert into reservation(reservation_id, member_id, store_id, total_price, updated_at, updated_by, created_at,
-                        created_by, reservation_time)
-values (2, 1, 1, 3000, null, null, null, null, '2024-04-29 03:45');
-
-insert into reservation(reservation_id, member_id, store_id, total_price, updated_at, updated_by, created_at,
-                        created_by, reservation_time)
-values (3, 1, 1, 3000, null, null, null, null, '2024-04-04 13:00');
-
-insert into reservation_product(reservation_product_id, quantity, reservation_id, product_id, updated_at, updated_by,
-                                created_at, created_by)
-values (1, 1, 1, 1, null, null, null, null),
-       (2, 1, 1, 2, null, null, null, null);
-
-insert into reservation_product(reservation_product_id, quantity, reservation_id, product_id, updated_at, updated_by,
-                                created_at, created_by)
-values (3, 1, 2, 2, null, null, null, null);
-
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (1, 1, 'REGISTRATION', '2024-04-10 13:00:00');
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (2, 1, 'CONFIRMATION', '2024-04-10 14:00:00');
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (3, 1, 'PICKUP_WAITING', '2024-04-10 14:00:00');
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (4, 1, 'PICKUP_DONE', '2024-04-10 14:00:00');
-
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (5, 2, 'REGISTRATION', '2024-04-10 13:00:00');
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (6, 2, 'CONFIRMATION', '2024-04-10 14:00:00');
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (7, 2, 'PICKUP_WAITING', '2024-04-10 14:00:00');
-insert into reservation_status_history(id, reservation_id, order_type, event_time)
-VALUES (8, 2, 'PICKUP_DONE', '2024-04-10 14:00:00');
 
 
