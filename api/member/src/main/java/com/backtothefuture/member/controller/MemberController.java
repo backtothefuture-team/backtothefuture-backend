@@ -212,7 +212,7 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{memberId}/password")
+    @PatchMapping("/{memberId}/password")
     @Operation(summary = "비밀번호 재설정", description = "회원 비밀번호 재설정 API 입니다.", responses = {
             @ApiResponse(description = "비밀번호 변경 성공", responseCode = "200", content = @Content(schema = @Schema(implementation = BfResponse.class)))},
             parameters = {
