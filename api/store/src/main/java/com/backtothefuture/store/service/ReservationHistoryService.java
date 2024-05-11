@@ -10,6 +10,7 @@ import com.backtothefuture.store.dto.response.MemberDoneReservationResponseDto;
 import com.backtothefuture.store.dto.response.MemberProgressReservationResponseDto;
 import com.backtothefuture.store.dto.response.ReservationListResponseDto;
 import com.backtothefuture.store.dto.response.MemberDoneReservationListDto;
+import com.backtothefuture.store.dto.response.ReservationProductNameResponseDto;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.repository.ReservationPagingRepository;
 import java.util.ArrayList;
@@ -54,18 +55,21 @@ public class ReservationHistoryService {
 
             memberProceedingReservations.getContent()
                     .forEach(dto -> {
+
+                        List<ReservationProductNameResponseDto> productNames = reservationPagingRepository.getProductsByReservationId(
+                                        dto.reservationId())
+                                .stream()
+                                .map(Product::getName)
+                                .map(ReservationProductNameResponseDto::new)
+                                .collect(Collectors.toList());
+
                         response.add(MemberDoneReservationListDto.builder()
                                 .storeImg(dto.storeImg())
                                 .name(dto.name())
                                 .reservationId(dto.reservationId())
                                 .reservationTime(dto.reservationTime())
                                 .totalPrice(dto.totalPrice())
-                                .productNames(
-                                        reservationPagingRepository.getProductsByReservationId(dto.reservationId())
-                                                .stream()
-                                                .map(Product::getName)
-                                                .map(str -> Map.of(PRODUCT_NAME, str))
-                                                .collect(Collectors.toList()))
+                                .productNames(productNames)
                                 .build());
                     });
 
