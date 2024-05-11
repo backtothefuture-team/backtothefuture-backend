@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FCMUtil {
 
-    private final String REGISTER_TITLE = "주문 접수";
-    private final String REGISTER_BODY = "주문이 접수되었습니다.";
-    private final String REMIND_TITLE = "픽업 30분 전 알림";
-    private final String REMIND_BODY = "픽업 30분 전입니다.";
+    private static final String REGISTER_TITLE = "주문 접수";
+    private static final String REGISTER_BODY = "주문이 접수되었습니다.";
+    private static final String REMIND_TITLE = "픽업 30분 전 알림";
+    private static final String REMIND_BODY = "픽업 30분 전입니다.";
     private final FCMAsyncUtil fcmAsyncUtil;
 
     /**
