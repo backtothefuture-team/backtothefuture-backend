@@ -30,7 +30,7 @@ public class FCMBatchConfig extends BatchConfig {
     /*
      현재 시간 기준으로 예약 시간이 30~31분 뒤인 예약을 접수한 고객들의 기기 등록 토큰을 조회
      */
-    private final String QUERY =
+    private static final String QUERY =
             "select member.registration_token from member join reservation on member.member_id = reservation.member_id "
                     + "where reservation.reservation_time > DATE_ADD(NOW(), INTERVAL 30 MINUTE) and reservation.reservation_time < DATE_ADD(NOW(), INTERVAL 31 MINUTE)";
     private final RegistrationTokenMapper registrationTokenMapper;
