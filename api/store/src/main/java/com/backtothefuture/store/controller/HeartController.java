@@ -3,6 +3,7 @@ package com.backtothefuture.store.controller;
 import static com.backtothefuture.domain.common.enums.GlobalSuccessCode.SUCCESS;
 
 import com.backtothefuture.domain.response.BfResponse;
+import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.service.HeartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/stores/{storeId}/likes")
+@RequestMapping("/hearts/stores/{storeId}")
 @Tag(name = "찜 API", description = "찜 관련 API 입니다.")
 public class HeartController {
 
@@ -34,17 +36,23 @@ public class HeartController {
             examples = {
                     @ExampleObject(name = "success", value = "{\"code\": 200, \"message\": \"정상 처리되었습니다.\", \"data\": \"SUCCESS\"}")
             }))
-    @PostMapping("/{memberId}")
-    public ResponseEntity<BfResponse<?>> addLike(@PathVariable Long storeId, @PathVariable Long memberId) {
-        heartService.addHeart(memberId, storeId);
+    @PostMapping("")
+    public ResponseEntity<BfResponse<?>> addLike(
+            @PathVariable Long storeId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        heartService.addHeart(userDetails, storeId);
         return ResponseEntity.ok(new BfResponse<>(SUCCESS));
     }
 
     @Operation(summary = "상점 찜 취소", description = "특정 상점에 대해 특정 사용자의 찜을 취소합니다.")
     @ApiResponse(responseCode = "204", description = "찜 취소 성공", content = @Content(schema = @Schema(hidden = true)))
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<String> removeLike(@PathVariable Long storeId, @PathVariable Long memberId) {
-        heartService.removeHeart(memberId, storeId);
+    @DeleteMapping("")
+    public ResponseEntity<String> removeLike(
+            @PathVariable Long storeId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        heartService.removeHeart(userDetails, storeId);
         return ResponseEntity.noContent().build();
     }
 }
