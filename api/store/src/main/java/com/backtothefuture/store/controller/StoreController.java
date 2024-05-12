@@ -102,6 +102,13 @@ public class StoreController {
                 .body(new BfResponse<>(SUCCESS, response));
     }
 
+    @Operation(
+            summary = "가게 상세 조회 API",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "404", description = "조회 실패(존재하지 않는 storeId)", useReturnTypeSchema = true)
+            }
+    )
     @GetMapping("/{storeId}")
     public ResponseEntity<BfResponse<StoreDetailResponse>> readStore(@PathVariable Long storeId) {
         StoreDetailResponse response = storeService.findStore(storeId);
