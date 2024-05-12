@@ -69,7 +69,9 @@ public class MemberController {
             })
     @SecurityRequirements(value = {})
     @PostMapping("/login")
-    public ResponseEntity<BfResponse<LoginTokenDto>> login(@Valid @RequestBody MemberLoginDto memberLoginDto) {
+    public ResponseEntity<BfResponse<LoginTokenDto>> login(
+            @Valid @RequestBody MemberLoginDto memberLoginDto
+    ) {
         return ResponseEntity.ok(new BfResponse<>(memberService.login(memberLoginDto)));
     }
 

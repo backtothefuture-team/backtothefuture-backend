@@ -88,10 +88,11 @@ public class MemberService {
         UserDetailsImpl userDetail = (UserDetailsImpl) authenticated.getPrincipal();
 
         // accessToken, refreshToken 생성
+        Long id = userDetail.getId();
         String accessToken = jwtProvider.createAccessToken(userDetail);
         String refreshToken = jwtProvider.createRfreshToken(userDetail);
 
-        LoginTokenDto loginTokenDto = new LoginTokenDto(accessToken, refreshToken);
+        LoginTokenDto loginTokenDto = new LoginTokenDto(id, accessToken, refreshToken);
 
         // redis 토큰 정보 저장
         redisRepository.saveToken(userDetail.getId(), refreshToken);
@@ -170,10 +171,12 @@ public class MemberService {
         UserDetailsImpl userDetail = (UserDetailsImpl) UserDetailsImpl.from(member);
 
         // accessToken, refreshToken 생성
+        Long id = userDetail.getId();
         String accessToken = jwtProvider.createAccessToken(userDetail);
         String refreshToken = jwtProvider.createRfreshToken(userDetail);
 
         LoginTokenDto loginTokenDto = LoginTokenDto.builder()
+                .memberId(id)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
