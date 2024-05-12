@@ -9,13 +9,14 @@ import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
+import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.domain.SortingOption;
 import com.backtothefuture.store.dto.request.MemberLocationRequest;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
 import com.backtothefuture.store.dto.response.StoreResponse;
 import com.backtothefuture.store.exception.StoreException;
-import com.backtothefuture.store.repository.StoreRepository;
+import com.backtothefuture.store.repository.StorePagingRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class StoreService {
+
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
+    private final StorePagingRepository storePagingRepository;
     private final S3Util s3Util;
 
     /**
@@ -79,18 +82,18 @@ public class StoreService {
 
         switch (sortingOption) {
             case DISTANCE:
-                return storeRepository.findStoresByLocation(
+                return storePagingRepository.findStoresByLocation(
                         request.latitude(),
                         request.longitude(),
                         PageRequest.of(page, size)
                 );
 
             case STAR:
-                stores = storeRepository.findStoresBySortingIndex(sortingIndex, pageable);
+                stores = storePagingRepository.findStoresBySortingIndex(sortingIndex, pageable);
                 break;
 
             case DEFAULT:
-                stores = storeRepository.findStoresByCursor(cursor, pageable);
+                stores = storePagingRepository.findStoresByCursor(cursor, pageable);
         }
 
         return stores.stream()

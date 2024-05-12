@@ -4,14 +4,11 @@ import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.store.dto.response.StoreResponse;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface StoreRepository extends JpaRepository<Store, Long> {
-
-    Optional<Store> findById(Long id);
+public interface StorePagingRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT store FROM Store store "
             + "WHERE (:cursor = 0L OR store.id < :cursor) "
@@ -46,6 +43,4 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             @Param("longitude") double longitude,
             Pageable pageable
     );
-
-    boolean existsByName(String name);
 }

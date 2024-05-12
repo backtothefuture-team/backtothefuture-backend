@@ -20,6 +20,7 @@ import com.backtothefuture.domain.reservation.repository.ReservationProductRepos
 import com.backtothefuture.domain.reservation.repository.ReservationRepository;
 import com.backtothefuture.domain.reservation.repository.ReservationStatusHistoryRepository;
 import com.backtothefuture.domain.store.Store;
+import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.request.ReservationRequestDto;
 import com.backtothefuture.store.dto.response.ReservationResponseDto;
@@ -28,7 +29,6 @@ import com.backtothefuture.store.exception.ProductException;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.exception.StoreException;
 import com.backtothefuture.store.repository.CustomReservationRepository;
-import com.backtothefuture.store.repository.StoreRepository;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
