@@ -44,6 +44,8 @@ CREATE TABLE store
     total_rating_count  int,
     start_time          time,
     end_time            time,
+    latitude            double,
+    longitude           double,
     FOREIGN KEY (member_id) REFERENCES member (member_id),
     INDEX idx_sorting_index (sorting_index)
 );
