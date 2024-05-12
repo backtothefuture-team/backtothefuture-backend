@@ -5,15 +5,19 @@ import static com.backtothefuture.domain.common.enums.StoreErrorCode.DUPLICATED_
 import static com.backtothefuture.domain.common.enums.StoreErrorCode.IMAGE_UPLOAD_FAIL;
 import static com.backtothefuture.domain.common.enums.StoreErrorCode.UNSUPPORTED_IMAGE_EXTENSION;
 
+import com.backtothefuture.domain.common.enums.StoreErrorCode;
 import com.backtothefuture.domain.common.util.s3.S3Util;
 import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
+import com.backtothefuture.domain.product.Product;
+import com.backtothefuture.domain.product.repository.ProductRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.domain.SortingOption;
 import com.backtothefuture.store.dto.request.MemberLocationRequest;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
+import com.backtothefuture.store.dto.response.StoreDetailResponse;
 import com.backtothefuture.store.dto.response.StoreResponse;
 import com.backtothefuture.store.exception.StoreException;
 import com.backtothefuture.store.repository.StorePagingRepository;
@@ -35,6 +39,7 @@ public class StoreService {
 
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
+    private final ProductRepository productRepository;
     private final StorePagingRepository storePagingRepository;
     private final S3Util s3Util;
 
@@ -99,5 +104,14 @@ public class StoreService {
         return stores.stream()
                 .map(StoreResponse::from)
                 .toList();
+    }
+
+    public StoreDetailResponse findStore(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND_STORE_ID));
+
+        List<Product> products = productRepository.findAllByStoreId(storeId);
+
+        return StoreDetailResponse.from(store, products);
     }
 }
