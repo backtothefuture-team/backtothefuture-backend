@@ -1,8 +1,9 @@
-INSERT INTO member (member_id, auth_id, email, name, password, phone_number, status, provider, roles, updated_at,
-                    updated_by, created_at, created_by)
-VALUES (1, null, 'email@naver.com', '이상민', 'mmsc532mmmm', '010-0000-0000', 'ACTIVE', null, 'ROLE_STORE_OWNER', null,
-        null,
-        null, null);
+INSERT INTO member (email, name, password, phone_number, status, provider, roles, updated_at, updated_by, created_at,
+                    created_by)
+VALUES ('bagtothefuture@email.com', '백투더퓨처', '{bcrypt}$2a$10$sQLm0co8K9Qwt2xxeqgImO6XAE4ZtZy.05TNvq4/BSXZ4eVie0dua',
+        '010-0101-0202', 'ACTIVE', null,
+        'ROLE_USER', NOW(), null, NOW(), null);
+
 
 INSERT INTO store (name, description, location, contact, image, member_id, updated_at, updated_by, created_at,
                    created_by, average_rating, total_rating_count, start_time, end_time, sorting_index)
