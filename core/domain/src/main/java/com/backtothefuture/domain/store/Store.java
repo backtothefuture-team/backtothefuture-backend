@@ -56,6 +56,10 @@ public class Store extends MutableBaseEntity {
 
     private LocalTime endTime; // 영업 종료 시간
 
+    private double latitude;
+
+    private double longitude;
+
     public void setThumbnailUrl(String url) {
         this.image = url;
     }
