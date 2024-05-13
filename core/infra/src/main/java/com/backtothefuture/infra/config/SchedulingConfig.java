@@ -9,8 +9,8 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  */
 public class SchedulingConfig implements SchedulingConfigurer {
 
-    private final Integer POOL_SIZE = 5;
-    private final String THREAD_NAME_PREFIX = "SCHEDULE-THREAD";
+    private static final Integer POOL_SIZE = 5;
+    private static final String THREAD_NAME_PREFIX = "SCHEDULE-THREAD";
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
