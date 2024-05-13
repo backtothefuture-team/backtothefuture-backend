@@ -3,7 +3,6 @@ package com.backtothefuture.store.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,6 +20,6 @@ public class MemberDoneReservationListDto {
     private LocalDateTime reservationTime;
     @Schema(description = "주문 전체 금액입니다.")
     private Integer totalPrice;
-    @Schema(description = "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은 productName 입니다.")
-    private List<Map<String, String>> productNames;
+    @Schema(description = "예약(주문) 상품 이름 목록입니다.")
+    private List<ReservationProductNameResponseDto> productNames;
 }

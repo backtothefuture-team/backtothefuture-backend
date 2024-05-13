@@ -8,13 +8,14 @@ import com.backtothefuture.domain.reservation.repository.ReservationStatusHistor
 import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.dto.response.MemberDoneReservationResponseDto;
 import com.backtothefuture.store.dto.response.MemberProgressReservationResponseDto;
+import com.backtothefuture.store.dto.response.ProgressReservationHistoryResponseDto;
 import com.backtothefuture.store.dto.response.ReservationListResponseDto;
 import com.backtothefuture.store.dto.response.MemberDoneReservationListDto;
+import com.backtothefuture.store.dto.response.ReservationProductNameResponseDto;
 import com.backtothefuture.store.exception.ReservationException;
 import com.backtothefuture.store.repository.ReservationPagingRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,18 +55,21 @@ public class ReservationHistoryService {
 
             memberProceedingReservations.getContent()
                     .forEach(dto -> {
+
+                        List<ReservationProductNameResponseDto> productNames = reservationPagingRepository.getProductsByReservationId(
+                                        dto.reservationId())
+                                .stream()
+                                .map(Product::getName)
+                                .map(ReservationProductNameResponseDto::new)
+                                .collect(Collectors.toList());
+
                         response.add(MemberDoneReservationListDto.builder()
                                 .storeImg(dto.storeImg())
                                 .name(dto.name())
                                 .reservationId(dto.reservationId())
                                 .reservationTime(dto.reservationTime())
                                 .totalPrice(dto.totalPrice())
-                                .productNames(
-                                        reservationPagingRepository.getProductsByReservationId(dto.reservationId())
-                                                .stream()
-                                                .map(Product::getName)
-                                                .map(str -> Map.of(PRODUCT_NAME, str))
-                                                .collect(Collectors.toList()))
+                                .productNames(productNames)
                                 .build());
                     });
 
@@ -87,24 +91,30 @@ public class ReservationHistoryService {
 
         memberReservations
                 .forEach(dto -> {
+
+                    List<ReservationProductNameResponseDto> productNames = reservationPagingRepository.getProductsByReservationId(
+                                    dto.reservationId())
+                            .stream()
+                            .map(Product::getName)
+                            .map(ReservationProductNameResponseDto::new)
+                            .collect(Collectors.toList());
+
+                    List<ProgressReservationHistoryResponseDto> reservationHistories = reservationStatusHistoryRepository.findByReservationId(
+                                    dto.reservationId())
+                            .stream()
+                            .map(entity ->
+                                    new ProgressReservationHistoryResponseDto(entity.getOrderType(),
+                                            entity.getEventTime()))
+                            .collect(Collectors.toList());
+
                     response.add(MemberProgressReservationResponseDto.builder()
                             .storeImg(dto.storeImg())
                             .name(dto.name())
                             .reservationId(dto.reservationId())
                             .reservationTime(dto.reservationTime())
                             .totalPrice(dto.totalPrice())
-                            .productNames(
-                                    reservationPagingRepository.getProductsByReservationId(dto.reservationId())
-                                            .stream()
-                                            .map(Product::getName)
-                                            .map(str -> Map.of(PRODUCT_NAME, str))
-                                            .collect(Collectors.toList()))
-                            .reservationHistory(
-                                    reservationStatusHistoryRepository.findByReservationId(dto.reservationId())
-                                            .stream()
-                                            .map(entity ->
-                                                    Map.of(entity.getOrderType().name(), entity.getEventTime()))
-                                            .collect(Collectors.toList()))
+                            .productNames(productNames)
+                            .reservationHistories(reservationHistories)
                             .build());
                 });
 

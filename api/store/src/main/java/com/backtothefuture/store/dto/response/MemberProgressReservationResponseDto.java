@@ -21,13 +21,8 @@ public class MemberProgressReservationResponseDto {
     private LocalDateTime reservationTime;
     @Schema(description = "주문 총 금액입니다.")
     private Integer totalPrice;
-    @Schema(description = "예약(주문) 상품 이름입니다. 'productName : 이름' 형태입니다. json key 값은 productName 입니다.")
-    private List<Map<String, String>> productNames;
-    @Schema(description = "주문 진행 내역입니다. json key 값은"
-            + "REGISTRATION, // 예약 접수\n"
-            + "CONFIRMATION, // 예약 확정\n"
-            + "PICKUP_WAITING, // 픽업 대기\n"
-            + "PICKUP_DONE; // 픽업 완료\n"
-            + "중 하나입니다.")
-    private List<Map<String, LocalDateTime>> reservationHistory;
+    @Schema(description = "예약(주문) 상품 이름 목록입니다.")
+    private List<ReservationProductNameResponseDto> productNames;
+    @Schema(description = "주문 진행 내역입니다.")
+    private List<ProgressReservationHistoryResponseDto> reservationHistories;
 }
