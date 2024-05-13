@@ -8,6 +8,7 @@ import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.domain.SortingOption;
 import com.backtothefuture.store.dto.request.MemberLocationRequest;
 import com.backtothefuture.store.dto.request.StoreRegisterDto;
+import com.backtothefuture.store.dto.response.StoreDetailResponse;
 import com.backtothefuture.store.dto.response.StoreResponse;
 import com.backtothefuture.store.service.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,5 +100,21 @@ public class StoreController {
 
         return ResponseEntity.ok()
                 .body(new BfResponse<>(SUCCESS, response));
+    }
+
+    @Operation(
+            summary = "가게 상세 조회 API",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
+                    @ApiResponse(responseCode = "404", description = "조회 실패(존재하지 않는 storeId)", useReturnTypeSchema = true)
+            }
+    )
+    @GetMapping("/{storeId}")
+    public ResponseEntity<BfResponse<StoreDetailResponse>> readStore(@PathVariable Long storeId) {
+        StoreDetailResponse response = storeService.findStore(storeId);
+
+        return ResponseEntity.ok(
+                new BfResponse<>(SUCCESS, response)
+        );
     }
 }
