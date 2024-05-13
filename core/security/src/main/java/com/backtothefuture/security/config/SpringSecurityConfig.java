@@ -143,27 +143,26 @@ public class SpringSecurityConfig {
                 antMatcher(PATCH, "/member/{memberId}"),                // 회원 정보 수정
                 antMatcher(PATCH, "/member/{memberId}/password"),        // 비밀번호 재설정
                 antMatcher(DELETE, "/member/{memberId}"),                // 회원 탈퇴
+                antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
+                antMatcher(GET, "/member/registration/token"), // 고객 기기 등록 토큰 등록
 
                 // store
                 antMatcher(POST, "/stores"),                            // 가게 등록
                 antMatcher(POST, "/stores/{storeId}/products"),                // 상품 등록
                 antMatcher(DELETE, "/stores/{storeId}/products/{productId}"),    // 상품 삭제
                 antMatcher(PATCH, "/stores/{storeId}/products/{productId}"),  // 상품 수정
-                antMatcher(POST, "/member/refresh"), // 엑세스 토큰 갱신
 
                 // reservation
                 antMatcher(POST, "/reservations"), // 상품 주문
                 antMatcher(GET, "/reservations/**"), // 주문 조회
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
                 antMatcher(DELETE, "/reservations/**"), // 주문 삭제
+                antMatcher(GET, "/reservations/done"), // 고객 주문 완료 내역
+                antMatcher(GET, "/reservations/proceeding"), // 고객 진행 중인 주문 내역
 
                 // heart
                 antMatcher(POST, "/hearts/stores/{storeId}"), // 찜 등록
                 antMatcher(DELETE, "/hearts/stores/{storeId}"), // 찜 삭제
-
-                antMatcher(GET, "/reservations/done"), // 고객 주문 완료 내역
-                antMatcher(GET, "/reservations/proceeding"), // 고객 진행 중인 주문 내역
-                antMatcher(GET, "/member/registration/token"), // 고객 기기 등록 토큰 등록
 
                 // Review
                 antMatcher(POST, "/reviews/**"),
