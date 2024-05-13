@@ -9,6 +9,7 @@ import com.backtothefuture.domain.member.Member;
 import com.backtothefuture.domain.member.repository.MemberRepository;
 import com.backtothefuture.domain.store.Store;
 import com.backtothefuture.domain.store.repository.StoreRepository;
+import com.backtothefuture.security.service.UserDetailsImpl;
 import com.backtothefuture.store.exception.MemberException;
 import com.backtothefuture.store.exception.StoreException;
 import com.backtothefuture.store.repository.HeartRepository;
@@ -25,9 +26,9 @@ public class HeartService {
     private final StoreRepository storeRepository;
 
     @Transactional
-    public void addHeart(Long memberId, Long storeId) {
+    public void addHeart(UserDetailsImpl userDetails, Long storeId) {
 
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
 
         Store store = storeRepository.findById(storeId)
@@ -44,17 +45,19 @@ public class HeartService {
                 .build();
 
         heartRepository.save(heart);
+        store.addHeart();
     }
 
     @Transactional
-    public void removeHeart(Long memberId, Long storeId) {
+    public void removeHeart(UserDetailsImpl userDetails, Long storeId) {
 
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER_ID));
 
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(NOT_FOUND_STORE_ID));
 
-        heartRepository.deleteByMemberIdAndStoreId(memberId, storeId);
+        heartRepository.deleteByMemberIdAndStoreId(member.getId(), storeId);
+        store.removeHeart();
     }
 }

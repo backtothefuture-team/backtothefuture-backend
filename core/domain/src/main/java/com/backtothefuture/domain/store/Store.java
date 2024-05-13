@@ -48,6 +48,8 @@ public class Store extends MutableBaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;        // 회원
 
+    private int heartCount;
+
     private double averageRating;
 
     private int totalRatingCount;
@@ -80,5 +82,15 @@ public class Store extends MutableBaseEntity {
                 + String.format("%010d", storeId);
 
         return Long.parseLong(format);
+    }
+
+    public void addHeart() {
+        this.heartCount++;
+    }
+
+    public void removeHeart() {
+        if (this.heartCount > 0) {
+            this.heartCount--;
+        }
     }
 }
